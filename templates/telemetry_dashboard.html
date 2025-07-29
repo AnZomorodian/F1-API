@@ -325,6 +325,35 @@
             font-size: 0.9rem;
         }
 
+        .driver-comparison-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .driver-telemetry-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .driver-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .driver-header h3 {
+            margin: 0;
+            color: var(--text-primary);
+            font-size: 1.25rem;
+        }
+
         .comparison-metrics {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -559,10 +588,6 @@
                     <i class="fas fa-chart-line"></i>
                     Load Telemetry Data
                 </button>
-                <button class="action-btn" id="compareDriversBtn" onclick="loadDriverComparison()" disabled>
-                    <i class="fas fa-users"></i>
-                    Compare Drivers
-                </button>
                 <button class="action-btn" onclick="exportData()">
                     <i class="fas fa-download"></i>
                     Export Data
@@ -593,9 +618,33 @@
         <!-- Tab Contents -->
         <div id="telemetryTab" class="tab-content active">
             <section class="api-section">
-                <h2>📊 Telemetry Data Output</h2>
+                <h2>📊 Enhanced Telemetry Overview</h2>
+                <div class="telemetry-overview" id="telemetryOverview" style="display: none;">
+                    <div class="driver-comparison-container">
+                        <div class="driver-telemetry-card" id="driver1Card">
+                            <div class="driver-header">
+                                <h3 id="driver1Name">Driver 1</h3>
+                                <div class="driver-badge" id="driver1Badge">-</div>
+                            </div>
+                            <div class="telemetry-analytics" id="driver1Analytics">
+                                <!-- Driver 1 analytics will be populated here -->
+                            </div>
+                        </div>
+                        
+                        <div class="driver-telemetry-card" id="driver2Card">
+                            <div class="driver-header">
+                                <h3 id="driver2Name">Driver 2</h3>
+                                <div class="driver-badge" id="driver2Badge">-</div>
+                            </div>
+                            <div class="telemetry-analytics" id="driver2Analytics">
+                                <!-- Driver 2 analytics will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="api-response" id="telemetryOutput">
-                    <p class="placeholder-text">🏁 Complete the 4-step selection process above to view detailed telemetry analysis</p>
+                    <p class="placeholder-text">🏁 Complete the 4-step selection process above to view detailed telemetry analysis for both selected drivers</p>
                 </div>
             </section>
         </div>
@@ -1177,23 +1226,164 @@
             const telemetryKeys = Object.keys(data.telemetry_data);
 
             if (telemetryKeys.length === 0) {
-                output.innerHTML = '<div class="error">❌ No telemetry data available for the selected driver</div>';
+                output.innerHTML = '<div class="error">❌ No telemetry data available for the selected drivers</div>';
                 return;
             }
 
-            const driver = telemetryKeys[0];
-            const driverData = data.telemetry_data[driver];
+            // Update Enhanced Telemetry Overview
+            updateEnhancedTelemetryOverview(data);
 
-            const formattedLapTime = formatLapTime(driverData.lap_time);
-
-            output.innerHTML = `
+            // Show comprehensive driver data
+            let outputHtml = `
                 <div class="response-content">
                     <div class="success">
-                        <h3>✅ Telemetry Data Loaded Successfully</h3>
-                        <p>Driver: <strong>${driver}</strong> | Lap Time: <strong>${formattedLapTime}</strong></p>
-                    </div>
+                        <h3>✅ Enhanced Telemetry Overview - ${telemetryKeys.length} Driver${telemetryKeys.length > 1 ? 's' : ''}</h3>
+                        <p>Session: <strong>${data.session_info?.session || currentSelection.session}</strong> | ${data.session_info?.grand_prix || currentSelection.grandPrix} ${data.session_info?.year || currentSelection.year}</p>
+                    </div>`;
 
-                    <div class="data-summary">
+            // Display data for each driver
+            telemetryKeys.forEach((driver, index) => {
+                const driverData = data.telemetry_data[driver];
+                const driverDisplayName = getDriverDisplayName(driver);
+                const formattedLapTime = formatLapTime(driverData.lap_time);
+
+                outputHtml += `
+                    <div class="driver-telemetry-section" style="margin: 2rem 0; border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; background: var(--surface);">
+                        <div class="driver-header">
+                            <h3 style="color: var(--primary-red); margin: 0 0 1rem 0;">🏎️ ${driverDisplayName} (${driver})</h3>
+                            <div class="driver-stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                                <div class="stat-card" style="background: var(--background); padding: 1rem; border-radius: 8px; text-align: center;">
+                                    <div style="font-size: 1.5rem; font-weight: bold; color: var(--primary-red);">${formattedLapTime}</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-secondary);">Best Lap Time</div>
+                                </div>
+                                <div class="stat-card" style="background: var(--background); padding: 1rem; border-radius: 8px; text-align: center;">
+                                    <div style="font-size: 1.5rem; font-weight: bold; color: var(--primary-red);">${Math.max(...driverData.speed).toFixed(0)} km/h</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-secondary);">Top Speed</div>
+                                </div>
+                                <div class="stat-card" style="background: var(--background); padding: 1rem; border-radius: 8px; text-align: center;">
+                                    <div style="font-size: 1.5rem; font-weight: bold; color: var(--primary-red);">${Math.max(...driverData.rpm)}</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-secondary);">Max RPM</div>
+                                </div>
+                                <div class="stat-card" style="background: var(--background); padding: 1rem; border-radius: 8px; text-align: center;">
+                                    <div style="font-size: 1.5rem; font-weight: bold; color: var(--primary-red);">${Math.max(...driverData.gear)}</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-secondary);">Highest Gear</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="raw-data-section">
+                            <h4 style="color: var(--text-secondary); margin-bottom: 1rem;">📊 Detailed Telemetry Data</h4>
+                            <div style="background: var(--background); padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 0.9rem; max-height: 300px; overflow-y: auto;">
+                                <strong>Speed:</strong> [${driverData.speed.slice(0, 10).join(', ')}${driverData.speed.length > 10 ? '...' : ''}]<br>
+                                <strong>Throttle:</strong> [${driverData.throttle.slice(0, 10).join(', ')}${driverData.throttle.length > 10 ? '...' : ''}]<br>
+                                <strong>Brake:</strong> [${driverData.brake.slice(0, 10).join(', ')}${driverData.brake.length > 10 ? '...' : ''}]<br>
+                                <strong>RPM:</strong> [${driverData.rpm.slice(0, 10).join(', ')}${driverData.rpm.length > 10 ? '...' : ''}]<br>
+                                <strong>Gear:</strong> [${driverData.gear.slice(0, 10).join(', ')}${driverData.gear.length > 10 ? '...' : ''}]<br>
+                                <strong>Distance:</strong> [${driverData.distance.slice(0, 10).join(', ')}${driverData.distance.length > 10 ? '...' : ''}]
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            outputHtml += `</div>`;
+
+            output.innerHTML = outputHtml;
+        }
+
+        function updateEnhancedTelemetryOverview(data) {
+            const overviewDiv = document.getElementById('telemetryOverview');
+            const telemetryKeys = Object.keys(data.telemetry_data);
+            
+            // Update driver cards based on available data
+            if (telemetryKeys.length > 0) {
+                const driver1 = telemetryKeys[0];
+                const driver1Data = data.telemetry_data[driver1];
+                updateDriverOverviewCard('driver1', driver1, driver1Data);
+            }
+            
+            if (telemetryKeys.length > 1) {
+                const driver2 = telemetryKeys[1];
+                const driver2Data = data.telemetry_data[driver2];
+                updateDriverOverviewCard('driver2', driver2, driver2Data);
+            }
+            
+            overviewDiv.style.display = 'block';
+        }
+
+        function updateDriverOverviewCard(cardPrefix, driverCode, driverData) {
+            const nameElement = document.getElementById(`${cardPrefix}Name`);
+            const badgeElement = document.getElementById(`${cardPrefix}Badge`);
+            const analyticsElement = document.getElementById(`${cardPrefix}Analytics`);
+            
+            const driverDisplayName = getDriverDisplayName(driverCode);
+            const formattedLapTime = formatLapTime(driverData.lap_time);
+            
+            nameElement.textContent = driverDisplayName;
+            badgeElement.textContent = driverCode;
+            
+            analyticsElement.innerHTML = `
+                <div class="analytic-item">
+                    <div class="analytic-value">${formattedLapTime}</div>
+                    <div class="analytic-label">Best Lap Time</div>
+                </div>
+                <div class="analytic-item">
+                    <div class="analytic-value">${Math.max(...driverData.speed).toFixed(0)} km/h</div>
+                    <div class="analytic-label">Top Speed</div>
+                </div>
+                <div class="analytic-item">
+                    <div class="analytic-value">${Math.max(...driverData.rpm)}</div>
+                    <div class="analytic-label">Max RPM</div>
+                </div>
+                <div class="analytic-item">
+                    <div class="analytic-value">${Math.max(...driverData.gear)}</div>
+                    <div class="analytic-label">Highest Gear</div>
+                </div>
+                <div class="analytic-item">
+                    <div class="analytic-value">${Math.max(...driverData.brake).toFixed(1)}%</div>
+                    <div class="analytic-label">Max Braking</div>
+                </div>
+                <div class="analytic-item">
+                    <div class="analytic-value">${Math.max(...driverData.throttle)}%</div>
+                    <div class="analytic-label">Max Throttle</div>
+                </div>
+            `;
+        }
+
+        // Enhanced driver name mapping function
+        function getDriverDisplayName(driverCode) {
+            const driverNames = {
+                'VER': 'Max Verstappen',
+                'LEC': 'Charles Leclerc',
+                'SAI': 'Carlos Sainz',
+                'RUS': 'George Russell',
+                'HAM': 'Lewis Hamilton',
+                'NOR': 'Lando Norris',
+                'PIA': 'Oscar Piastri',
+                'ALO': 'Fernando Alonso',
+                'STR': 'Lance Stroll',
+                'PER': 'Sergio Perez',
+                'GAS': 'Pierre Gasly',
+                'OCO': 'Esteban Ocon',
+                'ALB': 'Alexander Albon',
+                'SAR': 'Logan Sargeant',
+                'TSU': 'Yuki Tsunoda',
+                'RIC': 'Daniel Ricciardo',
+                'HUL': 'Nico Hulkenberg',
+                'MAG': 'Kevin Magnussen',
+                'BOT': 'Valtteri Bottas',
+                'ZHO': 'Zhou Guanyu',
+                'DEV': 'Nyck de Vries',
+                'LAW': 'Liam Lawson',
+                'BEA': 'Oliver Bearman',
+                'COL': 'Franco Colapinto',
+                'DRU': 'Felipe Drugovich'
+            };
+            return driverNames[driverCode] || driverCode;
+        }
+
+        function displayComprehensiveData(data) {
+            const output = document.getElementById('telemetryOutput');
                         <h4>📊 Enhanced Telemetry Overview</h4>
                         <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));">
                             <div class="stat-item">
@@ -1488,7 +1678,7 @@
 
         function resetDashboard() {
             // Reset all selections
-            currentSelection = { year: null, grandPrix: null, session: null, driver: null };
+            currentSelection = { year: null, grandPrix: null, session: null, driver1: null, driver2: null };
             currentTelemetryData = null;
             sessionData = null;
             availableDrivers = [];
@@ -1502,7 +1692,7 @@
 
             // Reset outputs
             document.getElementById('telemetryOutput').innerHTML = 
-                '<p class="placeholder-text">🏁 Complete the 4-step selection process above to view detailed telemetry analysis</p>';
+                '<p class="placeholder-text">🏁 Complete the 4-step selection process above to view detailed telemetry analysis for both selected drivers</p>';
 
             document.getElementById('comparisonOutput').innerHTML = 
                 '<p class="placeholder-text">Driver comparison analysis will appear here after completing selection</p>';
@@ -1515,8 +1705,9 @@
             document.getElementById('throttleBrakeChart').innerHTML = '<i class="fas fa-chart-area"></i><p>Throttle and brake telemetry chart will appear here after data selection</p>';
             document.getElementById('rpmGearChart').innerHTML = '<i class="fas fa-cogs"></i><p>RPM and gear telemetry chart will appear here after data selection</p>';
 
-            // Hide summary
+            // Hide summary and overview
             document.getElementById('dataSummary').style.display = 'none';
+            document.getElementById('telemetryOverview').style.display = 'none';
 
             // Switch back to telemetry tab
             switchTab('telemetry');

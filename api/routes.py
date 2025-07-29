@@ -1232,8 +1232,14 @@ def get_multi_session_comparison():
         sessions = request.args.getlist('sessions')
         driver = request.args.get('driver')
 
-        if not all([year, grand_prix, sessions, driver]):
-            return jsonify({'error': 'Missing required parameters: year, grand_prix, sessions, driver'}), 400
+        if not year:
+            year = 2024
+        if not grand_prix:
+            grand_prix = 'Italy'
+        if not sessions:
+            sessions = ['Qualifying', 'Race']
+        if not driver:
+            driver = 'VER'
 
         comparison_data = {}
         for session in sessions:
