@@ -849,7 +849,7 @@
         }
 
         function updateProgress() {
-            const steps = ['year', 'grandPrix', 'session', 'driver'];
+            const steps = ['year', 'grandPrix', 'session'];
             let completedSteps = 0;
 
             steps.forEach((step, index) => {
@@ -868,27 +868,35 @@
                 }
             });
 
-            const progressPercent = (completedSteps / steps.length) * 100;
+            // Also check if at least one driver is selected
+            const hasDriver = currentSelection.driver1 || currentSelection.driver2;
+            if (hasDriver) {
+                completedSteps++;
+                const driverStep = document.getElementById('driverStep');
+                driverStep.classList.add('completed');
+                driverStep.classList.remove('active');
+            }
+
+            const progressPercent = (completedSteps / 4) * 100;
             document.getElementById('progressFill').style.width = progressPercent + '%';
 
             const progressMessages = [
-                'Step 1: Select a year to begin telemetry analysis',
-                'Step 2: Choose a Grand Prix from the selected season',
-                'Step 3: Select a session type for detailed analysis',
-                'Step 4: Choose a driver to view their telemetry data',
-                '✅ All steps completed! Ready for telemetry analysis'
+                'Step 1: Select a year to auto-load telemetry analysis',
+                'Step 2: Grand Prix auto-selected, loading sessions...',
+                'Step 3: Session auto-selected, loading drivers...',
+                'Step 4: Drivers auto-selected, loading telemetry...',
+                '🏁 All steps completed! Comprehensive telemetry data displayed!'
             ];
 
             document.getElementById('progressText').textContent = progressMessages[completedSteps];
 
-            // Enable/disable action buttons
-            const allStepsComplete = completedSteps === steps.length;
-            document.getElementById('loadTelemetryBtn').disabled = !allStepsComplete;
-            document.getElementById('compareDriversBtn').disabled = completedSteps < 3;
+            // Enable/disable action buttons based on basic completion
+            const basicComplete = completedSteps >= 3;
+            document.getElementById('loadTelemetryBtn').disabled = !basicComplete;
 
             // Enable/disable tabs
             ['chartsTabBtn', 'comparisonTabBtn', 'analysisTabBtn'].forEach(btnId => {
-                document.getElementById(btnId).disabled = !allStepsComplete;
+                document.getElementById(btnId).disabled = !basicComplete;
             });
         }
 
@@ -909,7 +917,16 @@
                 yearStep.classList.remove('loading');
                 document.getElementById('grandPrixSelect').disabled = false;
 
-                showNotification(`✅ Year ${year} selected. Choose a Grand Prix to continue.`, 'success');
+                showNotification(`✅ Year ${year} selected. Auto-selecting first Grand Prix...`, 'success');
+                
+                // AUTO-SELECT FIRST GRAND PRIX
+                const grandPrixSelect = document.getElementById('grandPrixSelect');
+                const firstOption = grandPrixSelect.options[1]; // Skip "Choose Grand Prix..." option
+                if (firstOption) {
+                    grandPrixSelect.value = firstOption.value;
+                    currentSelection.grandPrix = firstOption.value;
+                    await onGrandPrixChange();
+                }
             } else {
                 currentSelection.year = null;
                 resetSubsequentSelections(['grandPrix', 'session', 'driver']);
@@ -950,7 +967,13 @@
                 gpStep.classList.remove('loading');
                 document.getElementById('sessionSelect').disabled = false;
 
-                showNotification(`✅ ${grandPrix} Grand Prix selected. Choose a session type.`, 'success');
+                showNotification(`✅ ${grandPrix} Grand Prix selected. Auto-selecting Race session...`, 'success');
+                
+                // AUTO-SELECT RACE SESSION
+                const sessionSelect = document.getElementById('sessionSelect');
+                sessionSelect.value = 'Race';
+                currentSelection.session = 'Race';
+                await onSessionChange();
             } else {
                 currentSelection.grandPrix = null;
                 resetSubsequentSelections(['session', 'driver']);
@@ -990,7 +1013,26 @@
 
                     document.getElementById('driver1Select').disabled = false;
                     document.getElementById('driver2Select').disabled = false;
-                    showNotification(`✅ ${session} session selected. Choose a driver for analysis.`, 'success');
+                    showNotification(`✅ ${session} session selected. Auto-selecting top drivers...`, 'success');
+                    
+                    // AUTO-SELECT FIRST TWO DRIVERS
+                    if (availableDrivers.length >= 2) {
+                        const driver1Select = document.getElementById('driver1Select');
+                        const driver2Select = document.getElementById('driver2Select');
+                        
+                        driver1Select.value = availableDrivers[0];
+                        driver2Select.value = availableDrivers[1];
+                        currentSelection.driver1 = availableDrivers[0];
+                        currentSelection.driver2 = availableDrivers[1];
+                        
+                        onDriver1Change();
+                        onDriver2Change();
+                        
+                        // AUTO-LOAD TELEMETRY DATA
+                        setTimeout(() => {
+                            loadTelemetryData();
+                        }, 1000);
+                    }
                 } catch (error) {
                     showNotification(`❌ Error loading session data: ${error.message}`, 'error');
                     currentSelection.session = null;
@@ -1093,6 +1135,33 @@
 
             // Function to get driver display name
             function getDriverDisplayName(driverCode) {
+                const driverNames = {
+                    'VER': 'Max Verstappen',
+                    'LEC': 'Charles Leclerc',
+                    'SAI': 'Carlos Sainz',
+                    'RUS': 'George Russell',
+                    'HAM': 'Lewis Hamilton',
+                    'NOR': 'Lando Norris',
+                    'PIA': 'Oscar Piastri',
+                    'ALO': 'Fernando Alonso',
+                    'STR': 'Lance Stroll',
+                    'PER': 'Sergio Perez',
+                    'GAS': 'Pierre Gasly',
+                    'OCO': 'Esteban Ocon',
+                    'ALB': 'Alexander Albon',
+                    'SAR': 'Logan Sargeant',
+                    'TSU': 'Yuki Tsunoda',
+                    'RIC': 'Daniel Ricciardo',
+                    'HUL': 'Nico Hulkenberg',
+                    'MAG': 'Kevin Magnussen',
+                    'BOT': 'Valtteri Bottas',
+                    'ZHO': 'Zhou Guanyu',
+                    'DEV': 'Nyck de Vries',
+                    'LAW': 'Liam Lawson',
+                    'BEA': 'Oliver Bearman',
+                    'COL': 'Franco Colapinto',
+                    'DRU': 'Felipe Drugovich'
+                };
                 return driverNames[driverCode] || driverCode;
             }
 

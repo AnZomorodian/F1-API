@@ -1099,11 +1099,8 @@ def get_enhanced_metrics():
 def get_real_time_session_status():
     """Get real-time session status and live timing"""
     try:
-        year = request.args.get('year', type=int)
-        grand_prix = request.args.get('grand_prix')
-
-        if not all([year, grand_prix]):
-            return jsonify({'error': 'Missing required parameters: year, grand_prix'}), 400
+        year = request.args.get('year', type=int, default=2024)
+        grand_prix = request.args.get('grand_prix', default='Italy')
 
         analyzer = RealTimeAnalyzer()
         live_status = analyzer.get_live_session_status(year, grand_prix)
@@ -1118,12 +1115,9 @@ def get_real_time_session_status():
 def get_real_time_performance_trends():
     """Get real-time performance trends analysis"""
     try:
-        year = request.args.get('year', type=int)
-        grand_prix = request.args.get('grand_prix')
-        session = request.args.get('session')
-
-        if not all([year, grand_prix, session]):
-            return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
+        year = request.args.get('year', type=int, default=2024)
+        grand_prix = request.args.get('grand_prix', default='Italy')
+        session = request.args.get('session', default='Race')
 
         analyzer = RealTimeAnalyzer()
         trends = analyzer.get_performance_trends(year, grand_prix, session)
@@ -1138,11 +1132,8 @@ def get_real_time_performance_trends():
 def get_streaming_data():
     """Get data formatted for real-time streaming applications"""
     try:
-        year = request.args.get('year', type=int)
-        grand_prix = request.args.get('grand_prix')
-
-        if not all([year, grand_prix]):
-            return jsonify({'error': 'Missing required parameters: year, grand_prix'}), 400
+        year = request.args.get('year', type=int, default=2024)
+        grand_prix = request.args.get('grand_prix', default='Italy')
 
         streamer = LiveDataStreamer()
         streaming_data = streamer.get_streaming_data(year, grand_prix)

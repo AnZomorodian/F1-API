@@ -47,6 +47,10 @@ This is a comprehensive Formula 1 data analysis platform built with Flask that p
 ✓ **Telemetry Dashboard Major Update**: Removed compare drivers button, enhanced telemetry overview with automatic data display for both drivers using full names
 ✓ **Enhanced Telemetry Display**: Added comprehensive driver analytics with real-time statistics, lap times, and performance metrics
 ✓ **Navigation Consistency**: Updated all page headers to show "Telemetry & Analytics" instead of separate Analytics page
+✓ **MAJOR API FIX**: Fixed all real-time API endpoints to use default parameters instead of throwing validation errors
+✓ **About Page Structure Fix**: Properly closed main content and added complete footer structure matching other pages
+✓ **Cascading Auto-Selection**: Implemented automatic selection flow - year triggers GP, GP triggers session, session triggers drivers and auto-loads telemetry
+✓ **Enhanced User Experience**: Auto-selection reduces clicks from 4+ steps to 1 click, immediately showing comprehensive telemetry data
 
 ## User Preferences
 
