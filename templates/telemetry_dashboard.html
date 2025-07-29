@@ -7,59 +7,174 @@
     <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.plot.ly/plotly-2.26.0.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
     <style>
         .chart-container {
             background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
-            border-radius: 10px;
-            padding: 1.5rem;
-            margin: 1rem 0;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1.5rem 0;
             border: 1px solid #444;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+        .chart-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
         }
         .control-panel {
             background: linear-gradient(135deg, #2d2d2d 0%, #3d3d3d 100%);
-            border-radius: 10px;
-            padding: 1.5rem;
+            border-radius: 15px;
+            padding: 2rem;
             margin-bottom: 2rem;
+            border: 1px solid #555;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
         }
         .loading-spinner {
             display: none;
             text-align: center;
-            padding: 2rem;
+            padding: 3rem;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 15px;
+            margin: 2rem 0;
+        }
+        .loading-spinner .spinner-border {
+            width: 4rem;
+            height: 4rem;
         }
         .driver-selector {
             display: flex;
             flex-wrap: wrap;
-            gap: 0.5rem;
-            margin: 1rem 0;
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
         }
         .driver-badge {
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
+            padding: 0.75rem 1.25rem;
+            border-radius: 25px;
             border: 2px solid #444;
-            background: #2d2d2d;
+            background: linear-gradient(135deg, #2d2d2d 0%, #3d3d3d 100%);
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
         .driver-badge.selected {
-            background: #dc3545;
+            background: linear-gradient(135deg, #dc3545 0%, #ff4757 100%);
             border-color: #dc3545;
             color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
         }
         .driver-badge:hover {
             border-color: #dc3545;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.3);
         }
         .quick-viz-btn {
             background: linear-gradient(135deg, #17a2b8 0%, #007bff 100%);
             border: none;
             color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 25px;
+            padding: 1rem 1.75rem;
+            border-radius: 30px;
             margin: 0.5rem;
-            transition: transform 0.2s;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 0.95rem;
+            box-shadow: 0 6px 20px rgba(23, 162, 184, 0.3);
+            position: relative;
+            overflow: hidden;
         }
         .quick-viz-btn:hover {
-            transform: scale(1.05);
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 10px 30px rgba(23, 162, 184, 0.5);
+        }
+        .quick-viz-btn:active {
+            transform: scale(0.98);
+        }
+        .quick-viz-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        .quick-viz-btn:hover::before {
+            left: 100%;
+        }
+        .session-info {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #ffd700;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #2d2d2d 0%, #3d3d3d 100%);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid #555;
+        }
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ffd700;
+        }
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .chart-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .chart-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .chart-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #333;
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1);
+            width: 0%;
+            transition: width 0.3s ease;
         }
     </style>
 </head>
@@ -80,10 +195,40 @@
     <div class="container-fluid my-4">
         <!-- Header -->
         <div class="text-center mb-4">
-            <h1 class="display-5 text-primary">
-                <i class="fas fa-chart-line"></i> F1 Telemetry Dashboard
+            <h1 class="display-4 text-primary mb-3">
+                <i class="fas fa-racing-car"></i> F1 Telemetry Dashboard
             </h1>
-            <p class="lead text-muted">Real-time telemetry data visualization and analysis</p>
+            <p class="lead text-muted mb-4">Advanced real-time telemetry data visualization and performance analysis</p>
+            
+            <!-- Live Session Info -->
+            <div class="session-info">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-value" id="sessionStatus">READY</div>
+                            <small class="text-muted">Session Status</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-value" id="driversCount">2</div>
+                            <small class="text-muted">Selected Drivers</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-value" id="chartsLoaded">0</div>
+                            <small class="text-muted">Charts Loaded</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-value" id="lastUpdate">--:--</div>
+                            <small class="text-muted">Last Update</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Control Panel -->
@@ -206,7 +351,20 @@
         <div class="row">
             <div class="col-12">
                 <div class="chart-container" id="speedChartContainer" style="display: none;">
-                    <h5><i class="fas fa-tachometer-alt"></i> Speed Comparison</h5>
+                    <div class="chart-header">
+                        <h5><i class="fas fa-tachometer-alt"></i> Speed Comparison</h5>
+                        <div class="chart-controls">
+                            <button class="chart-btn" onclick="exportChart('speedChart')">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                            <button class="chart-btn" onclick="fullscreenChart('speedChart')">
+                                <i class="fas fa-expand"></i> Fullscreen
+                            </button>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="speedProgress"></div>
+                    </div>
                     <div id="speedChart"></div>
                 </div>
             </div>
@@ -215,13 +373,39 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="chart-container" id="throttleBrakeContainer" style="display: none;">
-                    <h5><i class="fas fa-car"></i> Throttle & Brake</h5>
+                    <div class="chart-header">
+                        <h5><i class="fas fa-car"></i> Throttle & Brake Analysis</h5>
+                        <div class="chart-controls">
+                            <button class="chart-btn" onclick="exportChart('throttleBrakeChart')">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                            <button class="chart-btn" onclick="toggleChartType('throttleBrakeChart')">
+                                <i class="fas fa-chart-area"></i> Toggle View
+                            </button>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="throttleBrakeProgress"></div>
+                    </div>
                     <div id="throttleBrakeChart"></div>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="chart-container" id="rpmGearContainer" style="display: none;">
-                    <h5><i class="fas fa-cog"></i> RPM & Gear</h5>
+                    <div class="chart-header">
+                        <h5><i class="fas fa-cog"></i> RPM & Gear Analysis</h5>
+                        <div class="chart-controls">
+                            <button class="chart-btn" onclick="exportChart('rpmGearChart')">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                            <button class="chart-btn" onclick="showStats('rpmGear')">
+                                <i class="fas fa-chart-bar"></i> Stats
+                            </button>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="rpmGearProgress"></div>
+                    </div>
                     <div id="rpmGearChart"></div>
                 </div>
             </div>
@@ -246,7 +430,20 @@
         <div class="row">
             <div class="col-12">
                 <div class="chart-container" id="drsChartContainer" style="display: none;">
-                    <h5><i class="fas fa-wind"></i> DRS Usage</h5>
+                    <div class="chart-header">
+                        <h5><i class="fas fa-wind"></i> DRS Usage Analysis</h5>
+                        <div class="chart-controls">
+                            <button class="chart-btn" onclick="exportChart('drsChart')">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                            <button class="chart-btn" onclick="analyzeDRS()">
+                                <i class="fas fa-analytics"></i> Analyze Zones
+                            </button>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="drsProgress"></div>
+                    </div>
                     <div id="drsChart"></div>
                 </div>
             </div>
@@ -304,6 +501,8 @@
     <script>
         // Global variables
         let selectedDrivers = ['VER', 'HAM'];
+        let loadedCharts = 0;
+        let sessionData = null;
 
         // Driver selection functionality
         document.addEventListener('DOMContentLoaded', function() {
@@ -324,17 +523,112 @@
                             selectedDrivers.push(driver);
                         }
                     }
+                    
+                    updateDriverCount();
+                    animateDriverSelection(this);
                 });
             });
+            
+            updateLastUpdate();
+            setInterval(updateLastUpdate, 30000); // Update every 30 seconds
         });
+
+        // Enhanced UI functions
+        function updateDriverCount() {
+            document.getElementById('driversCount').textContent = selectedDrivers.length;
+        }
+
+        function updateChartsLoaded() {
+            document.getElementById('chartsLoaded').textContent = loadedCharts;
+        }
+
+        function updateLastUpdate() {
+            const now = new Date();
+            document.getElementById('lastUpdate').textContent = now.toLocaleTimeString().substring(0, 5);
+        }
+
+        function updateSessionStatus(status) {
+            document.getElementById('sessionStatus').textContent = status;
+        }
+
+        function animateDriverSelection(element) {
+            element.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                element.style.transform = '';
+            }, 200);
+        }
+
+        function updateProgress(chartId, progress) {
+            const progressBar = document.getElementById(chartId + 'Progress');
+            if (progressBar) {
+                progressBar.style.width = progress + '%';
+            }
+        }
+
+        // Chart utility functions
+        function exportChart(chartId) {
+            try {
+                const chart = document.getElementById(chartId);
+                Plotly.downloadImage(chart, {
+                    format: 'png',
+                    width: 1200,
+                    height: 800,
+                    filename: `f1_telemetry_${chartId}_${new Date().toISOString().split('T')[0]}`
+                });
+            } catch (error) {
+                alert('Export feature not available for this chart');
+            }
+        }
+
+        function fullscreenChart(chartId) {
+            const chart = document.getElementById(chartId);
+            if (chart.requestFullscreen) {
+                chart.requestFullscreen();
+            } else if (chart.webkitRequestFullscreen) {
+                chart.webkitRequestFullscreen();
+            }
+        }
+
+        function toggleChartType(chartId) {
+            // Placeholder for chart type toggling
+            console.log('Toggle chart type for:', chartId);
+        }
+
+        function showStats(chartType) {
+            alert(`Statistics for ${chartType} analysis will be implemented in the next update.`);
+        }
+
+        function analyzeDRS() {
+            alert('DRS zone analysis feature coming soon!');
+        }
 
         // Loading management
         function showLoading() {
             document.getElementById('loadingSpinner').style.display = 'block';
+            updateSessionStatus('LOADING');
         }
 
         function hideLoading() {
             document.getElementById('loadingSpinner').style.display = 'none';
+            updateSessionStatus('READY');
+            updateLastUpdate();
+        }
+
+        function showChartLoading(chartId) {
+            updateProgress(chartId, 0);
+            setTimeout(() => updateProgress(chartId, 30), 100);
+            setTimeout(() => updateProgress(chartId, 60), 300);
+            setTimeout(() => updateProgress(chartId, 90), 500);
+        }
+
+        function hideChartLoading(chartId) {
+            updateProgress(chartId, 100);
+            setTimeout(() => {
+                const progressBar = document.getElementById(chartId + 'Progress');
+                if (progressBar && progressBar.parentElement) {
+                    progressBar.parentElement.style.display = 'none';
+                }
+            }, 500);
         }
 
         function hideAllCharts() {
@@ -377,26 +671,67 @@
                 // Display charts
                 if (data.telemetry_charts) {
                     const charts = data.telemetry_charts;
+                    loadedCharts = 0;
                     
                     if (charts.speed_chart) {
-                        Plotly.newPlot('speedChart', charts.speed_chart.data, charts.speed_chart.layout, {responsive: true});
-                        document.getElementById('speedChartContainer').style.display = 'block';
+                        showChartLoading('speed');
+                        setTimeout(() => {
+                            Plotly.newPlot('speedChart', charts.speed_chart.data, charts.speed_chart.layout, {
+                                responsive: true,
+                                displayModeBar: true,
+                                modeBarButtonsToRemove: ['pan2d', 'lasso2d']
+                            });
+                            document.getElementById('speedChartContainer').style.display = 'block';
+                            hideChartLoading('speed');
+                            loadedCharts++;
+                            updateChartsLoaded();
+                        }, 500);
                     }
                     
                     if (charts.throttle_brake_chart) {
-                        Plotly.newPlot('throttleBrakeChart', charts.throttle_brake_chart.data, charts.throttle_brake_chart.layout, {responsive: true});
-                        document.getElementById('throttleBrakeContainer').style.display = 'block';
+                        showChartLoading('throttleBrake');
+                        setTimeout(() => {
+                            Plotly.newPlot('throttleBrakeChart', charts.throttle_brake_chart.data, charts.throttle_brake_chart.layout, {
+                                responsive: true,
+                                displayModeBar: true
+                            });
+                            document.getElementById('throttleBrakeContainer').style.display = 'block';
+                            hideChartLoading('throttleBrake');
+                            loadedCharts++;
+                            updateChartsLoaded();
+                        }, 700);
                     }
                     
                     if (charts.rpm_gear_chart) {
-                        Plotly.newPlot('rpmGearChart', charts.rpm_gear_chart.data, charts.rpm_gear_chart.layout, {responsive: true});
-                        document.getElementById('rpmGearContainer').style.display = 'block';
+                        showChartLoading('rpmGear');
+                        setTimeout(() => {
+                            Plotly.newPlot('rpmGearChart', charts.rpm_gear_chart.data, charts.rpm_gear_chart.layout, {
+                                responsive: true,
+                                displayModeBar: true
+                            });
+                            document.getElementById('rpmGearContainer').style.display = 'block';
+                            hideChartLoading('rpmGear');
+                            loadedCharts++;
+                            updateChartsLoaded();
+                        }, 900);
                     }
                     
                     if (charts.drs_chart) {
-                        Plotly.newPlot('drsChart', charts.drs_chart.data, charts.drs_chart.layout, {responsive: true});
-                        document.getElementById('drsChartContainer').style.display = 'block';
+                        showChartLoading('drs');
+                        setTimeout(() => {
+                            Plotly.newPlot('drsChart', charts.drs_chart.data, charts.drs_chart.layout, {
+                                responsive: true,
+                                displayModeBar: true
+                            });
+                            document.getElementById('drsChartContainer').style.display = 'block';
+                            hideChartLoading('drs');
+                            loadedCharts++;
+                            updateChartsLoaded();
+                        }, 1100);
                     }
+                    
+                    // Store session data for future use
+                    sessionData = data.session_info;
                 }
                 
             } catch (error) {

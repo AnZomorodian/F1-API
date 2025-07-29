@@ -73,15 +73,15 @@ def get_session_data():
         year = request.args.get('year', type=int)
         grand_prix = request.args.get('grand_prix')
         session = request.args.get('session')
-        
+
         if not all([year, grand_prix, session]):
             return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
-        
+
         session_data = data_loader.load_session_data(year, grand_prix, session)
-        
+
         if session_data is None:
             return jsonify({'error': 'Failed to load session data'}), 404
-            
+
         return jsonify({
             'session_info': {
                 'year': year,
@@ -93,7 +93,7 @@ def get_session_data():
             'drivers': list(session_data.drivers) if hasattr(session_data, 'drivers') and session_data.drivers is not None else [],
             'laps_count': len(session_data.laps) if hasattr(session_data, 'laps') else 0
         })
-        
+
     except Exception as e:
         logging.error(f"Error getting session data: {str(e)}")
         logging.error(traceback.format_exc())
@@ -107,14 +107,14 @@ def get_telemetry_data():
         grand_prix = request.args.get('grand_prix')
         session = request.args.get('session')
         drivers = request.args.getlist('drivers')
-        
+
         if not all([year, grand_prix, session, drivers]):
             return jsonify({'error': 'Missing required parameters: year, grand_prix, session, drivers'}), 400
-        
+
         session_data = data_loader.load_session_data(year, grand_prix, session)
         if session_data is None:
             return jsonify({'error': 'Failed to load session data'}), 404
-        
+
         telemetry_data = {}
         for driver in drivers:
             try:
@@ -123,7 +123,7 @@ def get_telemetry_data():
                     fastest_lap = driver_laps.pick_fastest()
                     if fastest_lap is not None:
                         telemetry = fastest_lap.get_telemetry()
-                        
+
                         telemetry_data[driver] = {
                             'lap_time': str(fastest_lap['LapTime']),
                         'speed': telemetry['Speed'].tolist(),
@@ -136,7 +136,7 @@ def get_telemetry_data():
             except Exception as driver_error:
                 logging.warning(f"Error processing driver {driver}: {str(driver_error)}")
                 continue
-        
+
         return jsonify({
             'telemetry_data': telemetry_data,
             'session_info': {
@@ -145,7 +145,7 @@ def get_telemetry_data():
                 'session': session
             }
         })
-        
+
     except Exception as e:
         logging.error(f"Error getting telemetry data: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -157,14 +157,14 @@ def get_lap_times():
         year = request.args.get('year', type=int)
         grand_prix = request.args.get('grand_prix')
         session = request.args.get('session')
-        
+
         if not all([year, grand_prix, session]):
             return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
-        
+
         session_data = data_loader.load_session_data(year, grand_prix, session)
         if session_data is None:
             return jsonify({'error': 'Failed to load session data'}), 404
-        
+
         lap_times = {}
         for driver in session_data.drivers:
             try:
@@ -182,7 +182,7 @@ def get_lap_times():
             except Exception as driver_error:
                 logging.warning(f"Error processing driver {driver}: {str(driver_error)}")
                 continue
-        
+
         return jsonify({
             'lap_times': lap_times,
             'session_info': {
@@ -191,7 +191,7 @@ def get_lap_times():
                 'session': session
             }
         })
-        
+
     except Exception as e:
         logging.error(f"Error getting lap times: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -202,13 +202,13 @@ def get_tire_strategy():
     try:
         year = request.args.get('year', type=int)
         grand_prix = request.args.get('grand_prix')
-        
+
         if not all([year, grand_prix]):
             return jsonify({'error': 'Missing required parameters: year, grand_prix'}), 400
-        
+
         analyzer = TirePerformanceAnalyzer()
         tire_data = analyzer.analyze_race_tire_performance(year, grand_prix)
-        
+
         return jsonify({
             'tire_strategy': tire_data,
             'session_info': {
@@ -216,7 +216,7 @@ def get_tire_strategy():
                 'grand_prix': grand_prix
             }
         })
-        
+
     except Exception as e:
         logging.error(f"Error getting tire strategy: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -228,13 +228,13 @@ def get_weather_analytics():
         year = request.args.get('year', type=int)
         grand_prix = request.args.get('grand_prix')
         session = request.args.get('session')
-        
+
         if not all([year, grand_prix, session]):
             return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
-        
+
         analyzer = WeatherAnalytics()
         weather_data = analyzer.analyze_session_weather(year, grand_prix, session)
-        
+
         return jsonify({
             'weather_analysis': weather_data,
             'session_info': {
@@ -243,7 +243,7 @@ def get_weather_analytics():
                 'session': session
             }
         })
-        
+
     except Exception as e:
         logging.error(f"Error getting weather analytics: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -254,13 +254,13 @@ def get_race_strategy():
     try:
         year = request.args.get('year', type=int)
         grand_prix = request.args.get('grand_prix')
-        
+
         if not all([year, grand_prix]):
             return jsonify({'error': 'Missing required parameters: year, grand_prix'}), 400
-        
+
         analyzer = RaceStrategyAnalyzer()
         strategy_data = analyzer.analyze_race_strategy(year, grand_prix)
-        
+
         return jsonify({
             'race_strategy': strategy_data,
             'session_info': {
@@ -268,7 +268,7 @@ def get_race_strategy():
                 'grand_prix': grand_prix
             }
         })
-        
+
     except Exception as e:
         logging.error(f"Error getting race strategy: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -281,13 +281,13 @@ def get_driver_stress():
         grand_prix = request.args.get('grand_prix')
         session = request.args.get('session')
         driver = request.args.get('driver')
-        
+
         if not all([year, grand_prix, session, driver]):
             return jsonify({'error': 'Missing required parameters: year, grand_prix, session, driver'}), 400
-        
+
         analyzer = DriverStressAnalyzer()
         stress_data = analyzer.analyze_driver_stress(year, grand_prix, session, driver)
-        
+
         return jsonify({
             'stress_analysis': stress_data,
             'session_info': {
@@ -297,7 +297,7 @@ def get_driver_stress():
                 'driver': driver
             }
         })
-        
+
     except Exception as e:
         logging.error(f"Error getting driver stress analysis: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -309,13 +309,13 @@ def get_downforce_analysis():
         year = request.args.get('year', type=int)
         grand_prix = request.args.get('grand_prix')
         session = request.args.get('session')
-        
+
         if not all([year, grand_prix, session]):
             return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
-        
+
         analyzer = DownforceAnalyzer()
         downforce_data = analyzer.analyze_downforce_settings(year, grand_prix, session)
-        
+
         return jsonify({
             'downforce_analysis': downforce_data,
             'session_info': {
@@ -324,7 +324,7 @@ def get_downforce_analysis():
                 'session': session
             }
         })
-        
+
     except Exception as e:
         logging.error(f"Error getting downforce analysis: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -337,13 +337,13 @@ def get_brake_analysis():
         grand_prix = request.args.get('grand_prix')
         session = request.args.get('session')
         driver = request.args.get('driver')
-        
+
         if not all([year, grand_prix, session, driver]):
             return jsonify({'error': 'Missing required parameters: year, grand_prix, session, driver'}), 400
-        
+
         analyzer = BrakeAnalyzer()
         brake_data = analyzer.analyze_braking_performance(year, grand_prix, session, driver)
-        
+
         return jsonify({
             'brake_analysis': brake_data,
             'session_info': {
@@ -353,7 +353,7 @@ def get_brake_analysis():
                 'driver': driver
             }
         })
-        
+
     except Exception as e:
         logging.error(f"Error getting brake analysis: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -365,13 +365,13 @@ def get_composite_performance():
         year = request.args.get('year', type=int)
         grand_prix = request.args.get('grand_prix')
         session = request.args.get('session')
-        
+
         if not all([year, grand_prix, session]):
             return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
-        
+
         analyzer = CompositePerformanceAnalyzer()
         performance_data = analyzer.analyze_composite_performance(year, grand_prix, session)
-        
+
         return jsonify({
             'composite_performance': performance_data,
             'session_info': {
@@ -380,7 +380,7 @@ def get_composite_performance():
                 'session': session
             }
         })
-        
+
     except Exception as e:
         logging.error(f"Error getting composite performance: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -392,13 +392,13 @@ def get_advanced_analytics():
         year = request.args.get('year', type=int)
         grand_prix = request.args.get('grand_prix')
         session = request.args.get('session')
-        
+
         if not all([year, grand_prix, session]):
             return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
-        
+
         analyzer = AdvancedF1Analytics()
         analytics_data = analyzer.comprehensive_session_analysis(year, grand_prix, session)
-        
+
         return jsonify({
             'advanced_analytics': analytics_data,
             'session_info': {
@@ -407,7 +407,7 @@ def get_advanced_analytics():
                 'session': session
             }
         })
-        
+
     except Exception as e:
         logging.error(f"Error getting advanced analytics: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -419,13 +419,13 @@ def get_enhanced_analytics():
         year = request.args.get('year', type=int)
         grand_prix = request.args.get('grand_prix')
         session = request.args.get('session')
-        
+
         if not all([year, grand_prix, session]):
             return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
-        
+
         analyzer = EnhancedF1Analytics()
         enhanced_data = analyzer.enhanced_session_analysis(year, grand_prix, session)
-        
+
         return jsonify({
             'enhanced_analytics': enhanced_data,
             'session_info': {
@@ -434,7 +434,7 @@ def get_enhanced_analytics():
                 'session': session
             }
         })
-        
+
     except Exception as e:
         logging.error(f"Error getting enhanced analytics: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -448,15 +448,15 @@ def get_live_timing():
         year = request.args.get('year', type=int)
         grand_prix = request.args.get('grand_prix')
         session = request.args.get('session')
-        
+
         if not all([year, grand_prix, session]):
             return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
-        
+
         analyzer = LiveTimingAnalyzer()
         live_data = analyzer.get_live_session_status(year, grand_prix, session)
-        
+
         return jsonify(live_data)
-        
+
     except Exception as e:
         logging.error(f"Error getting live timing: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -468,15 +468,15 @@ def get_sector_analysis():
         year = request.args.get('year', type=int)
         grand_prix = request.args.get('grand_prix')
         session = request.args.get('session')
-        
+
         if not all([year, grand_prix, session]):
             return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
-        
+
         analyzer = LiveTimingAnalyzer()
         sector_data = analyzer.get_sector_analysis(year, grand_prix, session)
-        
+
         return jsonify(sector_data)
-        
+
     except Exception as e:
         logging.error(f"Error getting sector analysis: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -487,15 +487,15 @@ def get_pit_stop_analysis():
     try:
         year = request.args.get('year', type=int)
         grand_prix = request.args.get('grand_prix')
-        
+
         if not all([year, grand_prix]):
             return jsonify({'error': 'Missing required parameters: year, grand_prix'}), 400
-        
+
         analyzer = LiveTimingAnalyzer()
         pit_data = analyzer.get_pit_stop_analysis(year, grand_prix)
-        
+
         return jsonify(pit_data)
-        
+
     except Exception as e:
         logging.error(f"Error getting pit stop analysis: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -507,15 +507,15 @@ def get_drs_analysis():
         year = request.args.get('year', type=int)
         grand_prix = request.args.get('grand_prix')
         session = request.args.get('session')
-        
+
         if not all([year, grand_prix, session]):
             return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
-        
+
         analyzer = LiveTimingAnalyzer()
         drs_data = analyzer.get_drs_usage_analysis(year, grand_prix, session)
-        
+
         return jsonify(drs_data)
-        
+
     except Exception as e:
         logging.error(f"Error getting DRS analysis: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -526,15 +526,15 @@ def get_championship_standings():
     try:
         year = request.args.get('year', type=int)
         up_to_race = request.args.get('up_to_race')
-        
+
         if not year:
             return jsonify({'error': 'Missing required parameter: year'}), 400
-        
+
         tracker = ChampionshipTracker()
         standings = tracker.get_season_standings(year, up_to_race)
-        
+
         return jsonify(standings)
-        
+
     except Exception as e:
         logging.error(f"Error getting championship standings: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -544,16 +544,16 @@ def get_championship_predictions():
     """Get championship outcome predictions"""
     try:
         year = request.args.get('year', type=int)
-        
+
         if not year:
             return jsonify({'error': 'Missing required parameter: year'}), 400
-        
+
         tracker = ChampionshipTracker()
         standings = tracker.get_season_standings(year)
         predictions = tracker.predict_championship_outcome(year, standings)
-        
+
         return jsonify(predictions)
-        
+
     except Exception as e:
         logging.error(f"Error getting championship predictions: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -565,15 +565,15 @@ def get_championship_head_to_head():
         year = request.args.get('year', type=int)
         driver1 = request.args.get('driver1')
         driver2 = request.args.get('driver2')
-        
+
         if not all([year, driver1, driver2]):
             return jsonify({'error': 'Missing required parameters: year, driver1, driver2'}), 400
-        
+
         tracker = ChampionshipTracker()
         comparison = tracker.get_head_to_head_comparison(year, driver1, driver2)
-        
+
         return jsonify(comparison)
-        
+
     except Exception as e:
         logging.error(f"Error getting championship head-to-head comparison: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -584,15 +584,15 @@ def get_team_performance():
     try:
         year = request.args.get('year', type=int)
         team = request.args.get('team')
-        
+
         if not all([year, team]):
             return jsonify({'error': 'Missing required parameters: year, team'}), 400
-        
+
         tracker = ChampionshipTracker()
         team_data = tracker.get_team_performance_analysis(year, team)
-        
+
         return jsonify(team_data)
-        
+
     except Exception as e:
         logging.error(f"Error getting team performance: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -603,15 +603,15 @@ def get_current_standings():
     try:
         year = request.args.get('year', type=int)
         grand_prix = request.args.get('grand_prix')
-        
+
         if not all([year, grand_prix]):
             return jsonify({'error': 'Missing required parameters: year, grand_prix'}), 400
-        
+
         analyzer = LiveTimingAnalyzer()
         standings = analyzer.get_current_standings(year, grand_prix)
-        
+
         return jsonify(standings)
-        
+
     except Exception as e:
         logging.error(f"Error getting current standings: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -627,15 +627,15 @@ def get_telemetry_charts():
         session = request.args.get('session')
         drivers = request.args.getlist('drivers')
         lap_type = request.args.get('lap_type', 'fastest')
-        
+
         if not all([year, grand_prix, session, drivers]):
             return jsonify({'error': 'Missing required parameters: year, grand_prix, session, drivers'}), 400
-        
+
         visualizer = TelemetryVisualizer()
         charts = visualizer.create_telemetry_comparison_chart(year, grand_prix, session, drivers, lap_type)
-        
+
         return jsonify(charts)
-        
+
     except Exception as e:
         logging.error(f"Error getting telemetry charts: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -647,15 +647,15 @@ def get_sector_charts():
         year = request.args.get('year', type=int)
         grand_prix = request.args.get('grand_prix')
         session = request.args.get('session')
-        
+
         if not all([year, grand_prix, session]):
             return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
-        
+
         visualizer = TelemetryVisualizer()
         sector_data = visualizer.create_sector_time_analysis(year, grand_prix, session)
-        
+
         return jsonify(sector_data)
-        
+
     except Exception as e:
         logging.error(f"Error getting sector charts: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -668,15 +668,15 @@ def get_lap_evolution():
         grand_prix = request.args.get('grand_prix')
         session = request.args.get('session')
         drivers = request.args.getlist('drivers')
-        
+
         if not all([year, grand_prix, session, drivers]):
             return jsonify({'error': 'Missing required parameters: year, grand_prix, session, drivers'}), 400
-        
+
         visualizer = TelemetryVisualizer()
         evolution_data = visualizer.create_lap_time_evolution(year, grand_prix, session, drivers)
-        
+
         return jsonify(evolution_data)
-        
+
     except Exception as e:
         logging.error(f"Error getting lap evolution: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -689,15 +689,15 @@ def get_overtaking_analysis():
     try:
         year = request.args.get('year', type=int)
         grand_prix = request.args.get('grand_prix')
-        
+
         if not all([year, grand_prix]):
             return jsonify({'error': 'Missing required parameters: year, grand_prix'}), 400
-        
+
         analyzer = AdvancedPerformanceAnalyzer()
         overtaking_data = analyzer.analyze_overtaking_opportunities(year, grand_prix)
-        
+
         return jsonify(overtaking_data)
-        
+
     except Exception as e:
         logging.error(f"Error getting overtaking analysis: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -710,15 +710,15 @@ def get_cornering_analysis():
         grand_prix = request.args.get('grand_prix')
         session = request.args.get('session')
         driver = request.args.get('driver')
-        
+
         if not all([year, grand_prix, session, driver]):
             return jsonify({'error': 'Missing required parameters: year, grand_prix, session, driver'}), 400
-        
+
         analyzer = AdvancedPerformanceAnalyzer()
         cornering_data = analyzer.analyze_cornering_performance(year, grand_prix, session, driver)
-        
+
         return jsonify(cornering_data)
-        
+
     except Exception as e:
         logging.error(f"Error getting cornering analysis: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -729,15 +729,15 @@ def get_fuel_effect_analysis():
     try:
         year = request.args.get('year', type=int)
         grand_prix = request.args.get('grand_prix')
-        
+
         if not all([year, grand_prix]):
             return jsonify({'error': 'Missing required parameters: year, grand_prix'}), 400
-        
+
         analyzer = AdvancedPerformanceAnalyzer()
         fuel_data = analyzer.analyze_fuel_effect(year, grand_prix)
-        
+
         return jsonify(fuel_data)
-        
+
     except Exception as e:
         logging.error(f"Error getting fuel effect analysis: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -749,15 +749,15 @@ def get_consistency_analysis():
         year = request.args.get('year', type=int)
         grand_prix = request.args.get('grand_prix')
         session = request.args.get('session')
-        
+
         if not all([year, grand_prix, session]):
             return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
-        
+
         analyzer = AdvancedPerformanceAnalyzer()
         consistency_data = analyzer.analyze_consistency_metrics(year, grand_prix, session)
-        
+
         return jsonify(consistency_data)
-        
+
     except Exception as e:
         logging.error(f"Error getting consistency analysis: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -768,15 +768,15 @@ def get_racecraft_analysis():
     try:
         year = request.args.get('year', type=int)
         grand_prix = request.args.get('grand_prix')
-        
+
         if not all([year, grand_prix]):
             return jsonify({'error': 'Missing required parameters: year, grand_prix'}), 400
-        
+
         analyzer = AdvancedPerformanceAnalyzer()
         racecraft_data = analyzer.analyze_racecraft_metrics(year, grand_prix)
-        
+
         return jsonify(racecraft_data)
-        
+
     except Exception as e:
         logging.error(f"Error getting racecraft analysis: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -790,15 +790,15 @@ def get_tyre_analysis():
         year = request.args.get('year', type=int)
         grand_prix = request.args.get('grand_prix')
         session = request.args.get('session')
-        
+
         if not all([year, grand_prix, session]):
             return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
-        
+
         analyzer = EnhancedF1Analytics()
         tyre_data = analyzer.get_tyre_performance_degradation(year, grand_prix, session)
-        
+
         return jsonify(tyre_data)
-        
+
     except Exception as e:
         logging.error(f"Error getting tyre analysis: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -810,15 +810,15 @@ def get_weather_analysis():
         year = request.args.get('year', type=int)
         grand_prix = request.args.get('grand_prix')
         session = request.args.get('session')
-        
+
         if not all([year, grand_prix, session]):
             return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
-        
+
         analyzer = EnhancedF1Analytics()
         weather_data = analyzer.get_weather_impact_analysis(year, grand_prix, session)
-        
+
         return jsonify(weather_data)
-        
+
     except Exception as e:
         logging.error(f"Error getting weather analysis: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -830,15 +830,16 @@ def get_session_progression():
         year = request.args.get('year', type=int)
         grand_prix = request.args.get('grand_prix')
         session = request.args.get('session')
-        
+
         if not all([year, grand_prix, session]):
-            return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
-        
+            ```python
+return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
+
         analyzer = EnhancedF1Analytics()
         progression_data = analyzer.get_session_progression_analysis(year, grand_prix, session)
-        
+
         return jsonify(progression_data)
-        
+
     except Exception as e:
         logging.error(f"Error getting session progression: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -850,15 +851,15 @@ def get_track_characteristics():
         year = request.args.get('year', type=int)
         grand_prix = request.args.get('grand_prix')
         session = request.args.get('session')
-        
+
         if not all([year, grand_prix, session]):
             return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
-        
+
         analyzer = TrackAnalyzer()
         track_data = analyzer.get_track_characteristics(year, grand_prix, session)
-        
+
         return jsonify(track_data)
-        
+
     except Exception as e:
         logging.error(f"Error getting track characteristics: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -870,15 +871,15 @@ def get_driver_mastery():
         year = request.args.get('year', type=int)
         grand_prix = request.args.get('grand_prix')
         session = request.args.get('session')
-        
+
         if not all([year, grand_prix, session]):
             return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
-        
+
         analyzer = TrackAnalyzer()
         mastery_data = analyzer.get_driver_track_mastery(year, grand_prix, session)
-        
+
         return jsonify(mastery_data)
-        
+
     except Exception as e:
         logging.error(f"Error getting driver mastery: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -891,15 +892,15 @@ def get_racing_line_analysis():
         grand_prix = request.args.get('grand_prix')
         session = request.args.get('session')
         driver = request.args.get('driver')
-        
+
         if not all([year, grand_prix, session, driver]):
             return jsonify({'error': 'Missing required parameters: year, grand_prix, session, driver'}), 400
-        
+
         analyzer = TrackAnalyzer()
         racing_line_data = analyzer.get_optimal_racing_line_analysis(year, grand_prix, session, driver)
-        
+
         return jsonify(racing_line_data)
-        
+
     except Exception as e:
         logging.error(f"Error getting racing line analysis: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -912,15 +913,15 @@ def get_driver_comparison():
         grand_prix = request.args.get('grand_prix')
         session = request.args.get('session')
         drivers = request.args.getlist('drivers')
-        
+
         if not all([year, grand_prix, session, drivers]):
             return jsonify({'error': 'Missing required parameters: year, grand_prix, session, drivers'}), 400
-        
+
         analyzer = DriverComparisonAnalyzer()
         comparison_data = analyzer.get_comprehensive_driver_comparison(year, grand_prix, session, drivers)
-        
+
         return jsonify(comparison_data)
-        
+
     except Exception as e:
         logging.error(f"Error getting driver comparison: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -934,15 +935,15 @@ def get_head_to_head():
         session = request.args.get('session')
         driver1 = request.args.get('driver1')
         driver2 = request.args.get('driver2')
-        
+
         if not all([year, grand_prix, session, driver1, driver2]):
             return jsonify({'error': 'Missing required parameters: year, grand_prix, session, driver1, driver2'}), 400
-        
+
         analyzer = DriverComparisonAnalyzer()
         head_to_head_data = analyzer.get_head_to_head_detailed_analysis(year, grand_prix, session, driver1, driver2)
-        
+
         return jsonify(head_to_head_data)
-        
+
     except Exception as e:
         logging.error(f"Error getting head-to-head analysis: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -954,12 +955,12 @@ def get_track_dominance():
         year = request.args.get('year', type=int)
         grand_prix = request.args.get('grand_prix')
         session = request.args.get('session')
-        
+
         if not all([year, grand_prix, session]):
             return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
-        
+
         dominance_data = create_track_dominance_map(year, grand_prix, session)
-        
+
         return jsonify({
             'track_dominance': dominance_data,
             'session_info': {
@@ -968,7 +969,7 @@ def get_track_dominance():
                 'session': session
             }
         })
-        
+
     except Exception as e:
         logging.error(f"Error getting track dominance: {str(e)}")
         return jsonify({'error': str(e)}), 500
@@ -978,18 +979,128 @@ def get_driver_manager_data():
     """Get dynamic driver manager data"""
     try:
         year = request.args.get('year', type=int)
-        
+
         if not year:
             return jsonify({'error': 'Missing required parameter: year'}), 400
-        
+
         manager = DynamicDriverManager()
         driver_data = manager.get_season_driver_data(year)
-        
+
         return jsonify({
             'driver_manager_data': driver_data,
             'year': year
         })
-        
+
     except Exception as e:
         logging.error(f"Error getting driver manager data: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@api_bp.route('/performance-overview', methods=['GET'])
+def get_performance_overview():
+    """Get performance overview data for analytics dashboard"""
+    try:
+        year = request.args.get('year', 2024, type=int)
+        grand_prix = request.args.get('grand_prix', 'Bahrain')
+        session = request.args.get('session', 'Race')
+        drivers = request.args.getlist('drivers')
+
+        # Simulated performance data - replace with real analytics
+        performance_data = {
+            'metrics': {
+                'fastest_lap': '1:23.456',
+                'average_speed': 285.7,
+                'efficiency_score': 94.2,
+                'consistency_rating': 87.5
+            },
+            'driver_comparison': [
+                {'driver': 'VER', 'speed': 92, 'braking': 88, 'cornering': 95, 'consistency': 87, 'racecraft': 91},
+                {'driver': 'HAM', 'speed': 89, 'braking': 91, 'cornering': 88, 'consistency': 92, 'racecraft': 87}
+            ],
+            'session_info': {
+                'year': year,
+                'grand_prix': grand_prix,
+                'session': session
+            }
+        }
+
+        return jsonify(performance_data)
+
+    except Exception as e:
+        logging.error(f"Error getting performance overview: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@api_bp.route('/real-time-metrics', methods=['GET'])
+def get_real_time_metrics():
+    """Get real-time performance metrics"""
+    try:
+        from datetime import datetime
+        import random
+
+        # Simulated real-time data
+        metrics = {
+            'timestamp': datetime.now().isoformat(),
+            'fastest_lap': f"1:{20 + random.randint(0, 10)}.{random.randint(100, 999)}",
+            'average_speed': round(280 + random.uniform(-10, 10), 1),
+            'efficiency_score': round(90 + random.uniform(-5, 5), 1),
+            'track_conditions': 'Optimal',
+            'weather': {
+                'temperature': 28 + random.randint(-3, 3),
+                'humidity': 45 + random.randint(-10, 10),
+                'wind_speed': random.randint(5, 15)
+            }
+        }
+
+        return jsonify(metrics)
+
+    except Exception as e:
+        logging.error(f"Error getting real-time metrics: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@api_bp.route('/ai-insights', methods=['GET'])
+def get_ai_insights():
+    """Get AI-generated insights and recommendations"""
+    try:
+        year = request.args.get('year', 2024, type=int)
+        grand_prix = request.args.get('grand_prix', 'Bahrain')
+        session = request.args.get('session', 'Race')
+
+        # Simulated AI insights
+        insights = {
+            'performance_insights': [
+                {
+                    'type': 'optimization',
+                    'severity': 'medium',
+                    'message': 'Brake point adjustment in Turn 4 could save 0.2s per lap',
+                    'confidence': 0.87
+                },
+                {
+                    'type': 'strength',
+                    'severity': 'low',
+                    'message': 'Exceptional tire management extending stint by 3-4 laps',
+                    'confidence': 0.92
+                },
+                {
+                    'type': 'finding',
+                    'severity': 'high',
+                    'message': 'Driver shows 15% better consistency in Sector 2',
+                    'confidence': 0.94
+                }
+            ],
+            'predictions': {
+                'predicted_finish': 'P3',
+                'points_probability': 0.78,
+                'predicted_best_lap': '1:22.8',
+                'optimal_strategy': 'Medium-Hard-Medium'
+            },
+            'session_info': {
+                'year': year,
+                'grand_prix': grand_prix,
+                'session': session
+            }
+        }
+
+        return jsonify(insights)
+
+    except Exception as e:
+        logging.error(f"Error getting AI insights: {str(e)}")
         return jsonify({'error': str(e)}), 500
