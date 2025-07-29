@@ -394,20 +394,7 @@
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <nav class="nav">
-            <a href="/" class="logo">
-                Track.lytix
-            </a>
-            <div class="nav-links">
-                <a href="/" class="nav-link">Dashboard</a>
-                <a href="/docs" class="nav-link active">Documentation</a>
-                <a href="/telemetry" class="nav-link">Telemetry & Analytics</a>
-                <a href="/about" class="nav-link">About</a>
-            </div>
-        </nav>
-    </header>
+    {% include 'header.html' %}
 
     <!-- Main Content -->
     <main class="main">
@@ -573,6 +560,24 @@
                         <td>/api/statistics/predictive-modeling</td>
                         <td>AI lap time predictions</td>
                         <td>year, grand_prix, session, driver</td>
+                    </tr>
+                    <tr>
+                        <td><span class="method-badge method-get">GET</span></td>
+                        <td>/api/statistics/driver-clustering</td>
+                        <td>ML driver grouping analysis</td>
+                        <td>year, grand_prix</td>
+                    </tr>
+                    <tr>
+                        <td><span class="method-badge method-get">GET</span></td>
+                        <td>/api/performance-intelligence</td>
+                        <td>AI performance insights</td>
+                        <td>year, grand_prix, session, driver</td>
+                    </tr>
+                    <tr>
+                        <td><span class="method-badge method-get">GET</span></td>
+                        <td>/api/enhanced-metrics</td>
+                        <td>Advanced AI analytics</td>
+                        <td>year, grand_prix, session</td>
                     </tr>
                     <tr>
                         <td><span class="method-badge method-get">GET</span></td>
@@ -799,71 +804,6 @@ Response:
         </section>
     </main>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3>Track.lytix</h3>
-                <p>Advanced Formula 1 data analysis platform providing real-time insights, comprehensive telemetry analysis, and championship tracking with AI-powered intelligence.</p>
-                <div class="social-links">
-                    <a href="https://t.me/tracklytix" class="social-link" target="_blank" rel="noopener">
-                        <i class="fab fa-telegram"></i>
-                        Telegram
-                    </a>
-                    <a href="https://discord.gg/tracklytix" class="social-link" target="_blank" rel="noopener">
-                        <i class="fab fa-discord"></i>
-                        Discord
-                    </a>
-                    <a href="https://github.com/tracklytix" class="social-link" target="_blank" rel="noopener">
-                        <i class="fab fa-github"></i>
-                        GitHub
-                    </a>
-                </div>
-            </div>
-            
-            <div class="footer-section">
-                <h3>Analytics Features</h3>
-                <a href="#" class="footer-link">Real-time Data Streaming</a>
-                <a href="#" class="footer-link">AI-Powered Insights</a>
-                <a href="#" class="footer-link">Championship Intelligence</a>
-                <a href="#" class="footer-link">Advanced Telemetry</a>
-                <a href="#" class="footer-link">Strategy Optimization</a>
-                <a href="#" class="footer-link">Predictive Modeling</a>
-            </div>
-            
-            <div class="footer-section">
-                <h3>Platform Resources</h3>
-                <a href="/docs" class="footer-link">API Documentation</a>
-                <a href="/telemetry" class="footer-link">Telemetry Dashboard</a>
-                <a href="/analytics" class="footer-link">Analytics Suite</a>
-                <a href="#" class="footer-link">Developer Guide</a>
-                <a href="#" class="footer-link">Data Sources</a>
-                <a href="#" class="footer-link">Rate Limits</a>
-            </div>
-            
-            <div class="footer-section">
-                <h3>Platform Stats</h3>
-                <p><strong>Data Source:</strong> Official F1 Timing Data</p>
-                <p><strong>Coverage:</strong> 2018-2025 Seasons</p>
-                <p><strong>Update Frequency:</strong> Real-time</p>
-                <p><strong>Response Time:</strong> < 200ms avg</p>
-                <p><strong>API Endpoints:</strong> 45+ Active</p>
-                <p><strong>Data Points:</strong> 2.4M+ Processed</p>
-            </div>
-        </div>
-        
-        <div class="footer-bottom">
-            <div class="footer-bottom-content">
-                <p>&copy; 2025 Track.lytix. Built With Nothing, Powered By DeepInk Team.</p>
-                <div class="footer-tech">
-                    <span>Powered by AI</span>
-                    <span>•</span>
-                    <span>Real-time Data</span>
-                    <span>•</span>
-                    <span>Open Source</span>
-                </div>
-            </div>
-        </div>
-    </footer>
+    {% include 'footer.html' %}
 </body>
 </html>
