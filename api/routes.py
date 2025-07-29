@@ -7,7 +7,7 @@ from utils.race_strategy import RaceStrategyAnalyzer
 from utils.tire_performance import TirePerformanceAnalyzer
 from utils.stress_index import DriverStressAnalyzer
 from utils.downforce_analysis import DownforceAnalyzer
-fromutils.brake_analysis import BrakeAnalyzer
+from utils.brake_analysis import BrakeAnalyzer
 from utils.composite_performance import CompositePerformanceAnalyzer
 from utils.enhanced_analytics import EnhancedF1Analytics
 from utils.driver_manager import DynamicDriverManager
