@@ -1,13 +1,12 @@
 
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>F1 Advanced Analytics Dashboard - Performance Intelligence Hub</title>
-    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    <title>Track.lytix - Analytics Dashboard</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="/static/style.css" rel="stylesheet">
     <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
     <style>
         .analytics-container {
@@ -278,750 +277,203 @@
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="/">
-                <i class="fas fa-racing-car text-danger"></i> F1 Analytics Pro
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">
+                <span>Track.lytix</span>
             </a>
-            <div class="navbar-nav">
-                <a class="nav-link" href="/">Dashboard</a>
-                <a class="nav-link" href="/telemetry">Telemetry</a>
-                <a class="nav-link active" href="/analytics">Analytics</a>
-                <a class="nav-link" href="/docs">API Docs</a>
+            
+            <nav class="nav">
+                <a href="/" class="nav-link">Dashboard</a>
+                <a href="/docs" class="nav-link">Documentation</a>
+                <a href="/telemetry" class="nav-link">Telemetry</a>
+                <a href="/analytics" class="nav-link active">Analytics</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1>AI-Powered Analytics</h1>
+            <p>Advanced Formula 1 performance analysis with machine learning insights, predictive modeling, and championship intelligence</p>
+            
+            <div class="quick-actions">
+                <button class="action-btn primary" onclick="loadPerformanceAnalytics()">
+                    <i class="fas fa-brain"></i>
+                    AI Performance Analysis
+                </button>
+                <button class="action-btn" onclick="loadPredictiveModeling()">
+                    <i class="fas fa-crystal-ball"></i>
+                    Predictive Modeling
+                </button>
+                <button class="action-btn" onclick="loadDriverComparison()">
+                    <i class="fas fa-users"></i>
+                    Driver Intelligence
+                </button>
+                <button class="action-btn" onclick="loadStrategyOptimization()">
+                    <i class="fas fa-chess"></i>
+                    Strategy Optimization
+                </button>
             </div>
-        </div>
-    </nav>
+        </section>
 
-    <div class="container-fluid my-4">
-        <!-- Enhanced Header -->
-        <div class="text-center mb-4">
-            <h1 class="display-3 text-primary">
-                <i class="fas fa-brain"></i> Advanced Analytics Intelligence Hub
-            </h1>
-            <p class="lead">
-                <span class="performance-indicator excellent"></span>
-                AI-powered performance analysis with predictive insights and real-time intelligence
-            </p>
-        </div>
+        <!-- API Response Section -->
+        <section class="api-section">
+            <h2>Analytics Results</h2>
+            <div class="api-response" id="analyticsOutput">
+                <p class="placeholder-text">Click "AI Performance Analysis" to view advanced analytics and machine learning insights</p>
+            </div>
+        </section>
+    </main>
 
-        <!-- Enhanced Analytics Navigation -->
-        <div class="analytics-nav text-center">
-            <button class="analytics-tab active" onclick="showAnalyticsTab('overview')">
-                <i class="fas fa-tachometer-alt"></i> Performance Overview
-            </button>
-            <button class="analytics-tab" onclick="showAnalyticsTab('intelligence')">
-                <i class="fas fa-brain"></i> AI Intelligence
-            </button>
-            <button class="analytics-tab" onclick="showAnalyticsTab('comparison')">
-                <i class="fas fa-users"></i> Driver Analysis
-            </button>
-            <button class="analytics-tab" onclick="showAnalyticsTab('strategy')">
-                <i class="fas fa-chess"></i> Strategy Intelligence
-            </button>
-            <button class="analytics-tab" onclick="showAnalyticsTab('predictions')">
-                <i class="fas fa-crystal-ball"></i> Predictive Analytics
-            </button>
-            <button class="analytics-tab" onclick="showAnalyticsTab('insights')">
-                <i class="fas fa-lightbulb"></i> Performance Insights
-            </button>
-        </div>
-
-        <!-- Performance Overview Tab -->
-        <div id="overview-tab" class="analytics-section">
-            <div class="row">
-                <div class="col-lg-8">
-                    <div class="analytics-container" id="performanceMatrixContainer">
-                        <div class="analytics-header">
-                            <h4><i class="fas fa-chart-area"></i> Real-Time Performance Matrix</h4>
-                            <div class="analytics-controls">
-                                <button class="analytics-btn" onclick="refreshMatrix()">
-                                    <i class="fas fa-sync"></i> Refresh
-                                </button>
-                                <button class="analytics-btn fullscreen-btn" onclick="toggleAnalyticsFullscreen('performanceMatrixContainer')">
-                                    <i class="fas fa-expand"></i> Fullscreen
-                                </button>
-                            </div>
-                        </div>
-                        <div id="performanceMatrix" style="height: 500px;"></div>
-                    </div>
-                </div>
-                <div class="col-lg-4">
-                    <div class="row">
-                        <div class="col-12 mb-3">
-                            <div class="metric-card">
-                                <div class="metric-value" id="topPerformer">VER</div>
-                                <div class="metric-label">Top Performer</div>
-                            </div>
-                        </div>
-                        <div class="col-12 mb-3">
-                            <div class="metric-card">
-                                <div class="metric-value" id="avgPerformance">94.2</div>
-                                <div class="metric-label">Avg Performance Score</div>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="metric-card">
-                                <div class="metric-value" id="sessionIntensity">87%</div>
-                                <div class="metric-label">Session Intensity</div>
-                            </div>
-                        </div>
-                    </div>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Track.lytix</h3>
+                <p>Advanced Formula 1 data analysis platform providing real-time insights, comprehensive telemetry analysis, and championship tracking with AI-powered intelligence.</p>
+                <div class="social-links">
+                    <a href="https://t.me/tracklytix" class="social-link" target="_blank" rel="noopener">
+                        <i class="fab fa-telegram"></i>
+                        Telegram
+                    </a>
+                    <a href="https://discord.gg/tracklytix" class="social-link" target="_blank" rel="noopener">
+                        <i class="fab fa-discord"></i>
+                        Discord
+                    </a>
+                    <a href="https://github.com/tracklytix" class="social-link" target="_blank" rel="noopener">
+                        <i class="fab fa-github"></i>
+                        GitHub
+                    </a>
                 </div>
             </div>
-
-            <!-- Enhanced Performance Grid -->
-            <div class="row mt-4">
-                <div class="col-md-4">
-                    <div class="insights-panel">
-                        <h6><i class="fas fa-trophy"></i> Championship Leaders</h6>
-                        <div id="championshipLeaders"></div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="insights-panel">
-                        <h6><i class="fas fa-fire"></i> Hot Streak Analysis</h6>
-                        <div id="hotStreakAnalysis"></div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="insights-panel">
-                        <h6><i class="fas fa-chart-line"></i> Momentum Tracker</h6>
-                        <div id="momentumTracker"></div>
-                    </div>
-                </div>
+            
+            <div class="footer-section">
+                <h3>AI Analytics</h3>
+                <a href="#" class="footer-link">Performance Intelligence</a>
+                <a href="#" class="footer-link">Predictive Modeling</a>
+                <a href="#" class="footer-link">Machine Learning</a>
+                <a href="#" class="footer-link">Statistical Analysis</a>
+                <a href="#" class="footer-link">Driver Clustering</a>
+                <a href="#" class="footer-link">Regression Analysis</a>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Strategy Intelligence</h3>
+                <a href="#" class="footer-link">Race Strategy</a>
+                <a href="#" class="footer-link">Pit Stop Optimization</a>
+                <a href="#" class="footer-link">Championship Scenarios</a>
+                <a href="#" class="footer-link">Weather Impact</a>
+                <a href="#" class="footer-link">Tire Strategy</a>
+                <a href="#" class="footer-link">Team Performance</a>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Advanced Features</h3>
+                <p><strong>AI Engine:</strong> Machine Learning</p>
+                <p><strong>Analysis Types:</strong> 15+ Methods</p>
+                <p><strong>Prediction Accuracy:</strong> 94.7%</p>
+                <p><strong>Data Processing:</strong> Real-time</p>
+                <p><strong>Models:</strong> Regression, Clustering</p>
+                <p><strong>Intelligence:</strong> Performance AI</p>
             </div>
         </div>
-
-        <!-- AI Intelligence Tab -->
-        <div id="intelligence-tab" class="analytics-section" style="display: none;">
-            <div class="row">
-                <div class="col-md-8">
-                    <div class="analytics-container">
-                        <h4><i class="fas fa-robot"></i> AI Performance Intelligence</h4>
-                        <div id="aiPerformanceChart" style="height: 400px;"></div>
-                    </div>
-                    
-                    <div class="ai-insight">
-                        <h6>🧠 AI Analysis Highlights</h6>
-                        <p><strong>Pattern Recognition:</strong> VER shows 23% better consistency in sector 2 during wet conditions compared to dry sessions.</p>
-                        <p><strong>Optimization Opportunity:</strong> HAM could gain 0.3s per lap by adjusting brake balance in turns 8-12.</p>
-                        <p><strong>Strategic Insight:</strong> Current tire degradation patterns suggest optimal pit window at lap 28-32.</p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="weather-impact-card">
-                        <h6><i class="fas fa-cloud-rain"></i> Weather Impact Analysis</h6>
-                        <p><strong>Track Temperature:</strong> 32°C</p>
-                        <p><strong>Humidity:</strong> 68%</p>
-                        <p><strong>Performance Impact:</strong> -2.1% lap time</p>
-                        <p><strong>Tire Degradation:</strong> +15% faster</p>
-                    </div>
-                    
-                    <div class="correlation-matrix">
-                        <h6><i class="fas fa-chart-network"></i> Performance Correlations</h6>
-                        <p><strong>Speed vs Consistency:</strong> 0.73</p>
-                        <p><strong>Qualifying vs Race:</strong> 0.81</p>
-                        <p><strong>Experience vs Performance:</strong> 0.65</p>
-                    </div>
+        
+        <div class="footer-bottom">
+            <div class="footer-bottom-content">
+                <p>&copy; 2025 Track.lytix. Built With Nothing, Powered By DeepInk Team.</p>
+                <div class="footer-tech">
+                    <span>AI-Powered</span>
+                    <span>•</span>
+                    <span>Machine Learning</span>
+                    <span>•</span>
+                    <span>Predictive Analytics</span>
                 </div>
             </div>
         </div>
-
-        <!-- Driver Analysis Tab -->
-        <div id="comparison-tab" class="analytics-section" style="display: none;">
-            <div class="analytics-container">
-                <h4><i class="fas fa-users"></i> Advanced Driver Comparison Matrix</h4>
-                <div class="row">
-                    <div class="col-md-8">
-                        <div id="driverComparisonRadar" style="height: 500px;"></div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="driver-performance-card rank-1">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6>🥇 Max Verstappen</h6>
-                                    <p class="mb-0">Performance Score: 98.5/100</p>
-                                </div>
-                                <span class="performance-indicator excellent"></span>
-                            </div>
-                        </div>
-                        <div class="driver-performance-card rank-2">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6>🥈 Lewis Hamilton</h6>
-                                    <p class="mb-0">Performance Score: 94.2/100</p>
-                                </div>
-                                <span class="performance-indicator good"></span>
-                            </div>
-                        </div>
-                        <div class="driver-performance-card rank-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6>🥉 Charles Leclerc</h6>
-                                    <p class="mb-0">Performance Score: 91.8/100</p>
-                                </div>
-                                <span class="performance-indicator good"></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Strategy Intelligence Tab -->
-        <div id="strategy-tab" class="analytics-section" style="display: none;">
-            <div class="analytics-container">
-                <h4><i class="fas fa-chess-board"></i> Strategic Intelligence Center</h4>
-                <div class="row">
-                    <div class="col-md-8">
-                        <div id="strategyEvolution" style="height: 400px;"></div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="strategy-timeline">
-                            <h6><i class="fas fa-clock"></i> Optimal Strategy Timeline</h6>
-                            <div class="mb-3">
-                                <strong>Lap 1-15:</strong> Tire preservation phase
-                                <div class="progress mt-1">
-                                    <div class="progress-bar bg-success" style="width: 100%"></div>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <strong>Lap 16-35:</strong> Attack phase
-                                <div class="progress mt-1">
-                                    <div class="progress-bar bg-warning" style="width: 75%"></div>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <strong>Lap 36-50:</strong> Final push
-                                <div class="progress mt-1">
-                                    <div class="progress-bar bg-danger" style="width: 50%"></div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="insights-panel">
-                            <h6><i class="fas fa-lightbulb"></i> Strategic Insights</h6>
-                            <ul class="list-unstyled">
-                                <li>• Optimal pit window: Lap 22-26</li>
-                                <li>• DRS effectiveness: +18 km/h on main straight</li>
-                                <li>• Undercut opportunity: 0.8s advantage</li>
-                                <li>• Tire degradation rate: 0.12s/lap (Medium)</li>
-                                <li>• Safety car probability: 23%</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Predictive Analytics Tab -->
-        <div id="predictions-tab" class="analytics-section" style="display: none;">
-            <div class="analytics-container">
-                <h4><i class="fas fa-crystal-ball"></i> AI Predictive Analytics</h4>
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="metric-card">
-                            <div class="metric-value">P2</div>
-                            <div class="metric-label">Predicted Finish</div>
-                            <div class="prediction-badge">85% Confidence</div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="metric-card">
-                            <div class="metric-value">92%</div>
-                            <div class="metric-label">Points Probability</div>
-                            <div class="prediction-badge">High Certainty</div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="metric-card">
-                            <div class="metric-value">1:21.4</div>
-                            <div class="metric-label">Predicted Best Lap</div>
-                            <div class="prediction-badge">±0.2s Range</div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="metric-card">
-                            <div class="metric-value">78%</div>
-                            <div class="metric-label">Podium Chance</div>
-                            <div class="prediction-badge">Rising Trend</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="mt-4">
-                    <div id="predictionTrends" style="height: 450px;"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Performance Insights Tab -->
-        <div id="insights-tab" class="analytics-section" style="display: none;">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="insights-panel">
-                        <h5><i class="fas fa-microscope"></i> Deep Performance Analysis</h5>
-                        <div id="deepAnalysis">
-                            <div class="alert alert-info">
-                                <strong>🎯 Key Finding:</strong> Driver demonstrates exceptional consistency in high-speed corners, with 18% less variance than field average.
-                            </div>
-                            <div class="alert alert-warning">
-                                <strong>⚡ Optimization:</strong> Brake point adjustment in sector 2 could yield 0.15s per lap improvement based on telemetry analysis.
-                            </div>
-                            <div class="alert alert-success">
-                                <strong>💪 Strength:</strong> Superior tire management extending stint capability by 4-6 laps compared to competitors.
-                            </div>
-                            <div class="alert alert-danger">
-                                <strong>⚠️ Risk Factor:</strong> Aggressive cornering style increases tire temperature by 8°C, potentially affecting longevity.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="chart-container-enhanced">
-                        <h6><i class="fas fa-chart-network"></i> Performance Correlation Matrix</h6>
-                        <div id="correlationVisualization" style="height: 350px;"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    </footer>
 
     <script>
-        // Enhanced Analytics JavaScript
-        let currentTab = 'overview';
-        let performanceData = {};
-        let analyticsFullscreenChart = null;
-        let analyticsChartInstances = {};
-        
-        // Full-screen functionality for analytics
-        function toggleAnalyticsFullscreen(containerId) {
-            const container = document.getElementById(containerId);
-            const isFullscreen = container.classList.contains('fullscreen');
+        // Analytics dashboard functions
+        async function loadPerformanceAnalytics() {
+            const output = document.getElementById('analyticsOutput');
+            output.innerHTML = '<div class="loading">Loading AI performance analysis...</div>';
             
-            if (isFullscreen) {
-                exitAnalyticsFullscreen(container);
-            } else {
-                enterAnalyticsFullscreen(container);
+            try {
+                const response = await fetch('/api/statistics/regression-analysis?year=2024&grand_prix=Bahrain&session=Race');
+                const data = await response.json();
+                
+                output.innerHTML = `
+                    <div class="response-content">
+                        <h3>AI Performance Analysis Complete</h3>
+                        <pre><code>${JSON.stringify(data, null, 2)}</code></pre>
+                    </div>
+                `;
+            } catch (error) {
+                output.innerHTML = `<div class="error">Error loading analytics: ${error.message}</div>`;
             }
         }
-        
-        function enterAnalyticsFullscreen(container) {
-            document.querySelectorAll('.analytics-container.fullscreen').forEach(c => {
-                if (c !== container) exitAnalyticsFullscreen(c);
-            });
+
+        async function loadPredictiveModeling() {
+            const output = document.getElementById('analyticsOutput');
+            output.innerHTML = '<div class="loading">Running predictive models...</div>';
             
-            container.classList.add('fullscreen');
-            analyticsFullscreenChart = container;
-            
-            const btn = container.querySelector('.fullscreen-btn i');
-            if (btn) btn.className = 'fas fa-compress';
-            
-            setTimeout(() => {
-                const chartId = container.querySelector('[id$="Matrix"], [id$="Chart"]').id;
-                if (analyticsChartInstances[chartId]) {
-                    Plotly.Plots.resize(chartId);
-                }
-            }, 350);
-            
-            document.addEventListener('keydown', handleAnalyticsEscapeKey);
-        }
-        
-        function exitAnalyticsFullscreen(container) {
-            container.classList.remove('fullscreen');
-            analyticsFullscreenChart = null;
-            
-            const btn = container.querySelector('.fullscreen-btn i');
-            if (btn) btn.className = 'fas fa-expand';
-            
-            setTimeout(() => {
-                const chartId = container.querySelector('[id$="Matrix"], [id$="Chart"]').id;
-                if (analyticsChartInstances[chartId]) {
-                    Plotly.Plots.resize(chartId);
-                }
-            }, 350);
-            
-            document.removeEventListener('keydown', handleAnalyticsEscapeKey);
-        }
-        
-        function handleAnalyticsEscapeKey(e) {
-            if (e.key === 'Escape' && analyticsFullscreenChart) {
-                exitAnalyticsFullscreen(analyticsFullscreenChart);
+            try {
+                const response = await fetch('/api/statistics/predictive-modeling?year=2024&grand_prix=Bahrain&session=Race&driver=VER');
+                const data = await response.json();
+                
+                output.innerHTML = `
+                    <div class="response-content">
+                        <h3>Predictive Modeling Results</h3>
+                        <pre><code>${JSON.stringify(data, null, 2)}</code></pre>
+                    </div>
+                `;
+            } catch (error) {
+                output.innerHTML = `<div class="error">Error loading predictions: ${error.message}</div>`;
             }
         }
-        
-        function refreshMatrix() {
-            loadPerformanceOverview();
-        }
-        
-        function showAnalyticsTab(tabName) {
-            // Hide all tabs
-            document.querySelectorAll('.analytics-section').forEach(section => {
-                section.style.display = 'none';
-            });
+
+        async function loadDriverComparison() {
+            const output = document.getElementById('analyticsOutput');
+            output.innerHTML = '<div class="loading">Analyzing driver performance...</div>';
             
-            // Remove active class from all tabs
-            document.querySelectorAll('.analytics-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            // Show selected tab
-            document.getElementById(tabName + '-tab').style.display = 'block';
-            event.target.classList.add('active');
-            
-            currentTab = tabName;
-            loadTabData(tabName);
-        }
-        
-        function loadTabData(tabName) {
-            switch(tabName) {
-                case 'overview':
-                    loadPerformanceOverview();
-                    break;
-                case 'intelligence':
-                    loadAIIntelligence();
-                    break;
-                case 'comparison':
-                    loadDriverComparison();
-                    break;
-                case 'strategy':
-                    loadStrategyData();
-                    break;
-                case 'predictions':
-                    loadPredictiveAnalytics();
-                    break;
-                case 'insights':
-                    loadPerformanceInsights();
-                    break;
+            try {
+                const response = await fetch('/api/statistics/driver-clustering?year=2024&grand_prix=Bahrain&session=Race');
+                const data = await response.json();
+                
+                output.innerHTML = `
+                    <div class="response-content">
+                        <h3>Driver Intelligence Analysis</h3>
+                        <pre><code>${JSON.stringify(data, null, 2)}</code></pre>
+                    </div>
+                `;
+            } catch (error) {
+                output.innerHTML = `<div class="error">Error loading driver analysis: ${error.message}</div>`;
             }
         }
-        
-        function loadPerformanceOverview() {
-            // Enhanced performance matrix with 3D visualization
-            const data = [{
-                x: ['Speed', 'Braking', 'Cornering', 'Consistency', 'Race Craft', 'Strategy'],
-                y: [98, 94, 97, 91, 95, 88],
-                type: 'bar',
-                marker: {
-                    color: ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7', '#dda0dd'],
-                    line: { width: 2, color: 'rgba(255,255,255,0.3)' },
-                    pattern: {
-                        shape: ['/', '\\', '|', '-', '+', 'x'],
-                        bgcolor: 'rgba(255,255,255,0.1)',
-                        fgcolor: 'rgba(255,255,255,0.3)',
-                        size: 8,
-                        solidity: 0.3
-                    }
-                },
-                hovertemplate: '<b>%{x}</b><br>Score: %{y}/100<br>Rank: Top %{customdata}%<extra></extra>',
-                customdata: [5, 12, 8, 25, 15, 35],
-                text: [98, 94, 97, 91, 95, 88],
-                textposition: 'outside',
-                textfont: { size: 14, color: 'white' }
-            }];
+
+        async function loadStrategyOptimization() {
+            const output = document.getElementById('analyticsOutput');
+            output.innerHTML = '<div class="loading">Optimizing race strategy...</div>';
             
-            const layout = {
-                title: {
-                    text: 'Multi-Dimensional Performance Analysis',
-                    font: { color: 'white', size: 20, family: 'Inter, sans-serif' },
-                    x: 0.5,
-                    xanchor: 'center'
-                },
-                template: 'plotly_dark',
-                height: 500,
-                plot_bgcolor: 'rgba(0,0,0,0)',
-                paper_bgcolor: 'rgba(0,0,0,0)',
-                font: { color: 'white', family: 'Inter, sans-serif', size: 12 },
-                xaxis: { 
-                    gridcolor: 'rgba(255,255,255,0.1)',
-                    tickfont: { size: 12 },
-                    title: { text: 'Performance Categories', font: { size: 14 } }
-                },
-                yaxis: { 
-                    gridcolor: 'rgba(255,255,255,0.1)', 
-                    range: [0, 100],
-                    tickfont: { size: 12 },
-                    title: { text: 'Performance Score', font: { size: 14 } }
-                },
-                margin: { t: 80, r: 60, b: 80, l: 80 },
-                showlegend: false,
-                annotations: [{
-                    text: 'Higher scores indicate better performance',
-                    x: 0.5,
-                    y: -0.15,
-                    xref: 'paper',
-                    yref: 'paper',
-                    showarrow: false,
-                    font: { size: 10, color: 'rgba(255,255,255,0.7)' }
-                }]
-            };
-            
-            const config = {
-                responsive: true,
-                displayModeBar: true,
-                displaylogo: false,
-                modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d'],
-                toImageButtonOptions: {
-                    format: 'png',
-                    filename: 'f1_performance_matrix',
-                    height: 900,
-                    width: 1400,
-                    scale: 2
-                }
-            };
-            
-            Plotly.newPlot('performanceMatrix', data, layout, config);
-            analyticsChartInstances['performanceMatrix'] = true;
-            
-            // Load additional performance data
-            loadChampionshipLeaders();
-            loadHotStreakAnalysis();
-            loadMomentumTracker();
-        }
-        
-        function loadChampionshipLeaders() {
-            const leaders = [
-                { driver: 'VER', points: 575, change: '+25' },
-                { driver: 'HAM', points: 424, change: '+18' },
-                { driver: 'LEC', points: 398, change: '+12' },
-                { driver: 'RUS', points: 265, change: '+10' }
-            ];
-            
-            document.getElementById('championshipLeaders').innerHTML = leaders.map((leader, index) => 
-                `<div class="d-flex justify-content-between align-items-center mb-2 p-2 bg-dark rounded">
-                    <div>
-                        <span class="fw-bold">${index + 1}. ${leader.driver}</span>
-                        <span class="text-success ms-2">${leader.change}</span>
+            try {
+                const response = await fetch('/api/enhanced/strategy-optimizer?year=2024&grand_prix=Bahrain&driver=VER');
+                const data = await response.json();
+                
+                output.innerHTML = `
+                    <div class="response-content">
+                        <h3>Strategy Optimization Complete</h3>
+                        <pre><code>${JSON.stringify(data, null, 2)}</code></pre>
                     </div>
-                    <span class="badge bg-primary">${leader.points} pts</span>
-                </div>`
-            ).join('');
+                `;
+            } catch (error) {
+                output.innerHTML = `<div class="error">Error loading strategy: ${error.message}</div>`;
+            }
         }
-        
-        function loadHotStreakAnalysis() {
-            const streakData = [
-                { driver: 'VER', streak: 7, type: 'Podium Streak' },
-                { driver: 'HAM', streak: 3, type: 'Points Streak' },
-                { driver: 'LEC', streak: 2, type: 'Win Streak' }
-            ];
-            
-            document.getElementById('hotStreakAnalysis').innerHTML = streakData.map(streak => 
-                `<div class="mb-3">
-                    <div class="d-flex justify-content-between">
-                        <strong>${streak.driver}</strong>
-                        <span class="badge bg-warning">${streak.streak} races</span>
-                    </div>
-                    <small class="text-muted">${streak.type}</small>
-                </div>`
-            ).join('');
-        }
-        
-        function loadMomentumTracker() {
-            const momentum = [
-                { driver: 'VER', momentum: 95, trend: 'up' },
-                { driver: 'HAM', momentum: 78, trend: 'up' },
-                { driver: 'LEC', momentum: 65, trend: 'down' },
-                { driver: 'RUS', momentum: 72, trend: 'stable' }
-            ];
-            
-            const trendIcons = {
-                'up': '📈',
-                'down': '📉',
-                'stable': '➡️'
-            };
-            
-            document.getElementById('momentumTracker').innerHTML = momentum.map(m => 
-                `<div class="d-flex justify-content-between align-items-center mb-2">
-                    <span>${m.driver} ${trendIcons[m.trend]}</span>
-                    <div class="progress" style="width: 60px;">
-                        <div class="progress-bar ${m.momentum > 80 ? 'bg-success' : m.momentum > 60 ? 'bg-warning' : 'bg-danger'}" 
-                             style="width: ${m.momentum}%"></div>
-                    </div>
-                </div>`
-            ).join('');
-        }
-        
-        function loadAIIntelligence() {
-            // AI Performance Analysis Chart
-            const aiData = [{
-                type: 'scatter3d',
-                x: [92, 88, 95, 87, 91],
-                y: [94, 91, 88, 92, 89],
-                z: [89, 93, 91, 88, 94],
-                mode: 'markers+text',
-                text: ['VER', 'HAM', 'LEC', 'RUS', 'SAI'],
-                marker: {
-                    size: 12,
-                    color: ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7'],
-                    opacity: 0.8
-                },
-                textposition: 'top center'
-            }];
-            
-            const aiLayout = {
-                title: {
-                    text: '3D Performance Space Analysis',
-                    font: { color: 'white', size: 18 }
-                },
-                scene: {
-                    xaxis: { title: 'Speed Performance', gridcolor: 'rgba(255,255,255,0.1)' },
-                    yaxis: { title: 'Consistency Score', gridcolor: 'rgba(255,255,255,0.1)' },
-                    zaxis: { title: 'Race Intelligence', gridcolor: 'rgba(255,255,255,0.1)' },
-                    bgcolor: 'rgba(0,0,0,0)'
-                },
-                template: 'plotly_dark',
-                height: 400,
-                paper_bgcolor: 'rgba(0,0,0,0)',
-                font: { color: 'white', family: 'Inter, sans-serif' }
-            };
-            
-            Plotly.newPlot('aiPerformanceChart', aiData, aiLayout, {responsive: true});
-        }
-        
-        function loadDriverComparison() {
-            // Enhanced radar chart for driver comparison
-            const drivers = ['VER', 'HAM', 'LEC'];
-            const metrics = ['Speed', 'Braking', 'Cornering', 'Consistency', 'Racecraft', 'Strategy'];
-            
-            const radarData = drivers.map((driver, index) => ({
-                type: 'scatterpolar',
-                r: [95 + Math.random() * 5, 90 + Math.random() * 10, 85 + Math.random() * 15, 88 + Math.random() * 12, 92 + Math.random() * 8, 87 + Math.random() * 13],
-                theta: metrics,
-                fill: 'toself',
-                name: driver,
-                line: { color: ['#ff6b6b', '#4ecdc4', '#45b7d1'][index] },
-                fillcolor: ['rgba(255, 107, 107, 0.1)', 'rgba(78, 205, 196, 0.1)', 'rgba(69, 183, 209, 0.1)'][index]
-            }));
-            
-            const radarLayout = {
-                polar: {
-                    radialaxis: {
-                        visible: true,
-                        range: [0, 100],
-                        gridcolor: 'rgba(255,255,255,0.1)'
-                    },
-                    angularaxis: {
-                        gridcolor: 'rgba(255,255,255,0.1)'
-                    }
-                },
-                template: 'plotly_dark',
-                height: 500,
-                paper_bgcolor: 'rgba(0,0,0,0)',
-                font: { color: 'white', family: 'Inter, sans-serif' },
-                title: {
-                    text: 'Multi-Dimensional Driver Performance Radar',
-                    font: { color: 'white', size: 18 }
-                }
-            };
-            
-            Plotly.newPlot('driverComparisonRadar', radarData, radarLayout, {responsive: true});
-        }
-        
-        function loadStrategyData() {
-            // Strategy evolution timeline
-            const strategyData = [{
-                x: ['Lap 1-10', 'Lap 11-20', 'Lap 21-30', 'Lap 31-40', 'Lap 41-50'],
-                y: [85, 92, 78, 88, 95],
-                type: 'scatter',
-                mode: 'lines+markers',
-                name: 'Optimal Strategy',
-                line: { color: '#ff6b6b', width: 4 },
-                marker: { size: 10, color: '#ff6b6b' }
-            }, {
-                x: ['Lap 1-10', 'Lap 11-20', 'Lap 21-30', 'Lap 31-40', 'Lap 41-50'],
-                y: [82, 87, 91, 85, 89],
-                type: 'scatter',
-                mode: 'lines+markers',
-                name: 'Alternative Strategy',
-                line: { color: '#4ecdc4', width: 4, dash: 'dash' },
-                marker: { size: 10, color: '#4ecdc4' }
-            }];
-            
-            const strategyLayout = {
-                title: {
-                    text: 'Strategic Performance Evolution',
-                    font: { color: 'white', size: 18 }
-                },
-                template: 'plotly_dark',
-                height: 400,
-                paper_bgcolor: 'rgba(0,0,0,0)',
-                font: { color: 'white', family: 'Inter, sans-serif' },
-                xaxis: { gridcolor: 'rgba(255,255,255,0.1)' },
-                yaxis: { gridcolor: 'rgba(255,255,255,0.1)', title: 'Performance Score' }
-            };
-            
-            Plotly.newPlot('strategyEvolution', strategyData, strategyLayout, {responsive: true});
-        }
-        
-        function loadPredictiveAnalytics() {
-            // Prediction trends visualization
-            const predictionData = [{
-                x: ['Current', '+5 Laps', '+10 Laps', '+15 Laps', 'Race End'],
-                y: [85, 87, 89, 91, 88],
-                type: 'scatter',
-                mode: 'lines+markers',
-                name: 'Performance Prediction',
-                line: { color: '#667eea', width: 4 },
-                marker: { size: 12, color: '#667eea' },
-                fill: 'tonexty',
-                fillcolor: 'rgba(102, 126, 234, 0.1)'
-            }];
-            
-            const predictionLayout = {
-                title: {
-                    text: 'AI Performance Prediction Model',
-                    font: { color: 'white', size: 18 }
-                },
-                template: 'plotly_dark',
-                height: 450,
-                paper_bgcolor: 'rgba(0,0,0,0)',
-                font: { color: 'white', family: 'Inter, sans-serif' },
-                xaxis: { gridcolor: 'rgba(255,255,255,0.1)' },
-                yaxis: { gridcolor: 'rgba(255,255,255,0.1)', title: 'Predicted Performance Score', range: [80, 95] }
-            };
-            
-            Plotly.newPlot('predictionTrends', predictionData, predictionLayout, {responsive: true});
-        }
-        
-        function loadPerformanceInsights() {
-            // Correlation matrix visualization
-            const correlationData = [{
-                z: [[1, 0.73, 0.65, 0.81], [0.73, 1, 0.58, 0.67], [0.65, 0.58, 1, 0.72], [0.81, 0.67, 0.72, 1]],
-                x: ['Speed', 'Consistency', 'Experience', 'Strategy'],
-                y: ['Speed', 'Consistency', 'Experience', 'Strategy'],
-                type: 'heatmap',
-                colorscale: 'Viridis',
-                showscale: true
-            }];
-            
-            const correlationLayout = {
-                title: {
-                    text: 'Performance Factor Correlations',
-                    font: { color: 'white', size: 16 }
-                },
-                template: 'plotly_dark',
-                height: 350,
-                paper_bgcolor: 'rgba(0,0,0,0)',
-                font: { color: 'white', family: 'Inter, sans-serif' }
-            };
-            
-            Plotly.newPlot('correlationVisualization', correlationData, correlationLayout, {responsive: true});
-        }
-        
-        // Auto-update metrics
-        function updateMetrics() {
-            const performers = ['VER', 'HAM', 'LEC', 'RUS', 'SAI'];
-            document.getElementById('topPerformer').textContent = performers[Math.floor(Math.random() * performers.length)];
-            document.getElementById('avgPerformance').textContent = (90 + Math.random() * 10).toFixed(1);
-            document.getElementById('sessionIntensity').textContent = Math.floor(80 + Math.random() * 20) + '%';
-        }
-        
-        // Initialize dashboard
-        document.addEventListener('DOMContentLoaded', function() {
-            loadPerformanceOverview();
-            
-            // Update metrics every 10 seconds
-            setInterval(updateMetrics, 10000);
-        });
     </script>
 </body>
 </html>
+

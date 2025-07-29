@@ -66,6 +66,28 @@
             font-weight: 700;
             color: var(--text-primary);
             text-decoration: none;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .logo:hover {
+            color: var(--primary-red);
+            transform: translateY(-2px);
+        }
+
+        .logo::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary-red), #ff6b35);
+            transition: width 0.3s ease;
+        }
+
+        .logo:hover::after {
+            width: 100%;
         }
 
         .logo i {
@@ -542,19 +564,19 @@
             <div class="quick-actions">
                 <button class="action-btn primary" onclick="testHealthCheck()">
                     <i class="fas fa-heartbeat"></i>
-                    Health Check
+                    System Health Check
                 </button>
                 <button class="action-btn" onclick="loadSeasonData()">
                     <i class="fas fa-calendar-alt"></i>
-                    2025 Season
+                    Load 2025 Season Data
                 </button>
                 <button class="action-btn" onclick="testNewAnalytics()">
-                    <i class="fas fa-rocket"></i>
-                    Test Analytics
+                    <i class="fas fa-brain"></i>
+                    AI Analytics Demo
                 </button>
                 <a href="/telemetry" class="action-btn">
-                    <i class="fas fa-chart-line"></i>
-                    Telemetry Dashboard
+                    <i class="fas fa-chart-area"></i>
+                    Interactive Telemetry
                 </a>
             </div>
         </section>
@@ -847,7 +869,7 @@
         
         <div class="footer-bottom">
             <div class="footer-bottom-content">
-                <p>&copy; 2025 Track.lytix. Built with FastF1 API and powered by real-time Formula 1 data.</p>
+                <p>&copy; 2025 Track.lytix. Built With Nothing, Powered By DeepInk Team.</p>
                 <div class="footer-tech">
                     <span>Powered by AI</span>
                     <span>•</span>

@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Track.lytix - Telemetry Dashboard</title>
-    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="/static/style.css" rel="stylesheet">
     <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
     <style>
         .chart-container {
@@ -256,958 +255,169 @@
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="/">
-                <i class="fas fa-racing-car text-danger"></i> F1 Analytics Pro
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">
+                <span>Track.lytix</span>
             </a>
-            <div class="navbar-nav">
-                <a class="nav-link" href="/">Dashboard</a>
-                <a class="nav-link active" href="/telemetry">Telemetry</a>
-                <a class="nav-link" href="/analytics">Analytics</a>
-                <a class="nav-link" href="/docs">API Docs</a>
-            </div>
+            
+            <nav class="nav">
+                <a href="/" class="nav-link">Dashboard</a>
+                <a href="/docs" class="nav-link">Documentation</a>
+                <a href="/telemetry" class="nav-link active">Telemetry</a>
+                <a href="/analytics" class="nav-link">Analytics</a>
+            </nav>
         </div>
-    </nav>
+    </header>
 
-    <div class="container-fluid my-4">
-        <!-- Enhanced Header -->
-        <div class="text-center mb-4">
-            <h1 class="display-3 text-primary mb-3">
-                <i class="fas fa-racing-car"></i> Enhanced F1 Telemetry Dashboard
-            </h1>
-            <p class="lead text-muted mb-4">
-                <span class="live-indicator"></span>
-                Advanced real-time telemetry analysis with AI-powered insights
-            </p>
-
-            <!-- Enhanced Session Info -->
-            <div class="session-info">
-                <div class="row g-4">
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <div class="stat-value" id="sessionStatus">READY</div>
-                            <small class="text-muted">Session Status</small>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <div class="stat-value" id="driversCount">2</div>
-                            <small class="text-muted">Selected Drivers</small>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <div class="stat-value" id="chartsLoaded">0</div>
-                            <small class="text-muted">Active Charts</small>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <div class="stat-value" id="dataPoints">0</div>
-                            <small class="text-muted">Data Points</small>
-                        </div>
-                    </div>
-                </div>
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1>Interactive Telemetry</h1>
+            <p>Real-time Formula 1 telemetry analysis with advanced data visualization and driver performance insights</p>
+            
+            <div class="quick-actions">
+                <button class="action-btn primary" onclick="loadTelemetryData()">
+                    <i class="fas fa-chart-line"></i>
+                    Load Telemetry Data
+                </button>
+                <button class="action-btn" onclick="generateCharts()">
+                    <i class="fas fa-chart-bar"></i>
+                    Generate Visualizations
+                </button>
+                <button class="action-btn" onclick="downloadData()">
+                    <i class="fas fa-download"></i>
+                    Export Data
+                </button>
+                <button class="action-btn" onclick="resetDashboard()">
+                    <i class="fas fa-refresh"></i>
+                    Reset Dashboard
+                </button>
             </div>
-        </div>
+        </section>
 
-        <!-- Enhanced Control Panel -->
-        <div class="control-panel">
-            <h4><i class="fas fa-cogs"></i> Advanced Session Configuration</h4>
-            <div class="row g-4">
-                <div class="col-md-3">
-                    <label class="form-label fw-bold">Championship Year</label>
-                    <select class="form-select" id="yearSelect">
-                        <option value="2025">2025 Season</option>
-                        <option value="2024" selected>2024 Season</option>
-                        <option value="2023">2023 Season</option>
-                        <option value="2022">2022 Season</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label fw-bold">Grand Prix</label>
-                    <select class="form-select" id="grandPrixSelect">
-                        <option value="Bahrain" selected>🇧🇭 Bahrain GP</option>
-                        <option value="Saudi Arabia">🇸🇦 Saudi Arabia GP</option>
-                        <option value="Australia">🇦🇺 Australia GP</option>
-                        <option value="Japan">🇯🇵 Japan GP</option>
-                        <option value="China">🇨🇳 China GP</option>
-                        <option value="Miami">🇺🇸 Miami GP</option>
-                        <option value="Monaco">🇲🇨 Monaco GP</option>
-                        <option value="Canada">🇨🇦 Canada GP</option>
-                        <option value="Spain">🇪🇸 Spain GP</option>
-                        <option value="Austria">🇦🇹 Austria GP</option>
-                        <option value="Great Britain">🇬🇧 British GP</option>
-                        <option value="Hungary">🇭🇺 Hungary GP</option>
-                        <option value="Belgium">🇧🇪 Belgium GP</option>
-                        <option value="Netherlands">🇳🇱 Netherlands GP</option>
-                        <option value="Italy">🇮🇹 Italy GP</option>
-                        <option value="Singapore">🇸🇬 Singapore GP</option>
-                        <option value="United States">🇺🇸 US GP</option>
-                        <option value="Mexico">🇲🇽 Mexico GP</option>
-                        <option value="Brazil">🇧🇷 Brazil GP</option>
-                        <option value="Las Vegas">🇺🇸 Las Vegas GP</option>
-                        <option value="Qatar">🇶🇦 Qatar GP</option>
-                        <option value="Abu Dhabi">🇦🇪 Abu Dhabi GP</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label fw-bold">Session Type</label>
-                    <select class="form-select" id="sessionSelect">
-                        <option value="Practice 1">🏃 Practice 1</option>
-                        <option value="Practice 2">🏃 Practice 2</option>
-                        <option value="Practice 3">🏃 Practice 3</option>
-                        <option value="Qualifying">⏱️ Qualifying</option>
-                        <option value="Race" selected>🏁 Race</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label fw-bold">Analysis Mode</label>
-                    <select class="form-select" id="lapTypeSelect">
-                        <option value="fastest" selected>⚡ Fastest Lap</option>
-                        <option value="first">🚦 Opening Lap</option>
-                        <option value="last">🏁 Final Lap</option>
-                    </select>
-                </div>
+        <!-- API Response Section -->
+        <section class="api-section">
+            <h2>Telemetry Data Output</h2>
+            <div class="api-response" id="telemetryOutput">
+                <p class="placeholder-text">Click "Load Telemetry Data" to view real-time telemetry analysis and charts</p>
             </div>
+        </section>
+    </main>
 
-            <div class="mt-4">
-                <label class="form-label fw-bold">Driver Selection (Choose up to 4 drivers)</label>
-                <div class="driver-selector d-flex flex-wrap gap-2 mt-3" id="driverSelector">
-                    <div class="driver-badge selected" data-driver="VER">🇳🇱 VER</div>
-                    <div class="driver-badge selected" data-driver="HAM">🇬🇧 HAM</div>
-                    <div class="driver-badge" data-driver="LEC">🇲🇨 LEC</div>
-                    <div class="driver-badge" data-driver="RUS">🇬🇧 RUS</div>
-                    <div class="driver-badge" data-driver="SAI">🇪🇸 SAI</div>
-                    <div class="driver-badge" data-driver="NOR">🇬🇧 NOR</div>
-                    <div class="driver-badge" data-driver="PIA">🇦🇺 PIA</div>
-                    <div class="driver-badge" data-driver="ALO">🇪🇸 ALO</div>
-                    <div class="driver-badge" data-driver="STR">🇨🇦 STR</div>
-                    <div class="driver-badge" data-driver="GAS">🇫🇷 GAS</div>
-                    <div class="driver-badge" data-driver="OCO">🇫🇷 OCO</div>
-                    <div class="driver-badge" data-driver="ALB">🇹🇭 ALB</div>
-                    <div class="driver-badge" data-driver="TSU">🇯🇵 TSU</div>
-                    <div class="driver-badge" data-driver="RIC">🇦🇺 RIC</div>
-                    <div class="driver-badge" data-driver="HUL">🇩🇪 HUL</div>
-                    <div class="driver-badge" data-driver="MAG">🇩🇰 MAG</div>
-                    <div class="driver-badge" data-driver="ZHO">🇨🇳 ZHO</div>
-                    <div class="driver-badge" data-driver="BOT">🇫🇮 BOT</div>
-                    <div class="driver-badge" data-driver="SAR">🇺🇸 SAR</div>
-                    <div class="driver-badge" data-driver="COL">🇦🇷 COL</div>
-                </div>
-            </div>
-
-            <div class="text-center mt-5">
-                <h5 class="mb-4">🚀 Advanced Analytics Suite</h5>
-                <div class="d-flex flex-wrap justify-content-center gap-3">
-                    <button class="quick-viz-btn" onclick="loadEnhancedTelemetry()">
-                        <i class="fas fa-chart-area"></i> Enhanced Telemetry
-                    </button>
-                    <button class="quick-viz-btn" onclick="loadPerformanceComparison()">
-                        <i class="fas fa-tachometer-alt"></i> Performance Comparison
-                    </button>
-                    <button class="quick-viz-btn" onclick="loadSectorAnalysis()">
-                        <i class="fas fa-stopwatch"></i> Sector Analysis
-                    </button>
-                    <button class="quick-viz-btn" onclick="loadCorneringAnalysis()">
-                        <i class="fas fa-route"></i> Cornering Analysis
-                    </button>
-                    <button class="quick-viz-btn" onclick="loadTireStrategy()">
-                        <i class="fas fa-circle"></i> Tire Strategy
-                    </button>
-                    <button class="quick-viz-btn" onclick="loadWeatherImpact()">
-                        <i class="fas fa-cloud-rain"></i> Weather Impact
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Loading Spinner -->
-        <div class="loading-spinner" id="loadingSpinner">
-            <div class="spinner-border text-primary" style="width: 4rem; height: 4rem;" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-            <h4 class="mt-3">Analyzing F1 Data...</h4>
-            <p>Processing telemetry and generating advanced visualizations</p>
-        </div>
-
-        <!-- Enhanced Telemetry Charts -->
-        <div class="row" id="telemetrySection" style="display: none;">
-            <!-- Speed Analysis Section -->
-            <div class="col-12 mb-4">
-                <div class="chart-container" id="speedChartContainer">
-                    <div class="chart-header">
-                        <div class="chart-title-section">
-                            <h4><i class="fas fa-tachometer-alt"></i> Speed Analysis & Comparison</h4>
-                            <div class="chart-status-indicator"></div>
-                        </div>
-                        <div class="chart-controls">
-                            <button class="chart-btn" onclick="toggleSpeedUnits()">
-                                <i class="fas fa-exchange-alt"></i> Units
-                            </button>
-                            <button class="chart-btn" onclick="resetZoom('speedChart')">
-                                <i class="fas fa-expand-arrows-alt"></i> Reset Zoom
-                            </button>
-                            <button class="chart-btn fullscreen-btn" onclick="toggleFullscreen('speedChartContainer')">
-                                <i class="fas fa-expand"></i> Fullscreen
-                            </button>
-                            <button class="chart-btn" onclick="exportChart('speedChart')">
-                                <i class="fas fa-download"></i> Export
-                            </button>
-                        </div>
-                    </div>
-                    <div id="speedChart" style="height: 500px;"></div>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Track.lytix</h3>
+                <p>Advanced Formula 1 data analysis platform providing real-time insights, comprehensive telemetry analysis, and championship tracking with AI-powered intelligence.</p>
+                <div class="social-links">
+                    <a href="https://t.me/tracklytix" class="social-link" target="_blank" rel="noopener">
+                        <i class="fab fa-telegram"></i>
+                        Telegram
+                    </a>
+                    <a href="https://discord.gg/tracklytix" class="social-link" target="_blank" rel="noopener">
+                        <i class="fab fa-discord"></i>
+                        Discord
+                    </a>
+                    <a href="https://github.com/tracklytix" class="social-link" target="_blank" rel="noopener">
+                        <i class="fab fa-github"></i>
+                        GitHub
+                    </a>
                 </div>
             </div>
             
-            <!-- Track Map Visualization -->
-            <div class="col-12 mb-4">
-                <div class="chart-container" id="trackMapContainer">
-                    <div class="chart-header">
-                        <div class="chart-title-section">
-                            <h4><i class="fas fa-map"></i> Track Position & Speed Heatmap</h4>
-                            <div class="chart-status-indicator"></div>
-                        </div>
-                        <div class="chart-controls">
-                            <button class="chart-btn" onclick="toggleHeatmapMode()">
-                                <i class="fas fa-fire"></i> Heat Mode
-                            </button>
-                            <button class="chart-btn fullscreen-btn" onclick="toggleFullscreen('trackMapContainer')">
-                                <i class="fas fa-expand"></i> Fullscreen
-                            </button>
-                        </div>
-                    </div>
-                    <div id="trackMapChart" style="height: 400px;"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row" id="performanceSection" style="display: none;">
-            <!-- Throttle & Brake Dynamics -->
-            <div class="col-lg-6 mb-4">
-                <div class="chart-container" id="throttleBrakeContainer">
-                    <div class="chart-header">
-                        <div class="chart-title-section">
-                            <h5><i class="fas fa-car"></i> Throttle & Brake Dynamics</h5>
-                            <div class="chart-status-indicator"></div>
-                        </div>
-                        <div class="chart-controls">
-                            <button class="chart-btn" onclick="toggleThrottleBrakeView()">
-                                <i class="fas fa-eye"></i> Toggle View
-                            </button>
-                            <button class="chart-btn" onclick="syncCharts('throttleBrake')">
-                                <i class="fas fa-link"></i> Sync
-                            </button>
-                            <button class="chart-btn fullscreen-btn" onclick="toggleFullscreen('throttleBrakeContainer')">
-                                <i class="fas fa-expand"></i> Fullscreen
-                            </button>
-                        </div>
-                    </div>
-                    <div id="throttleBrakeChart" style="height: 400px;"></div>
-                </div>
+            <div class="footer-section">
+                <h3>Telemetry Features</h3>
+                <a href="#" class="footer-link">Speed Analysis</a>
+                <a href="#" class="footer-link">Throttle & Brake Data</a>
+                <a href="#" class="footer-link">RPM & Gear Tracking</a>
+                <a href="#" class="footer-link">DRS Usage Patterns</a>
+                <a href="#" class="footer-link">Sector Time Analysis</a>
+                <a href="#" class="footer-link">Driver Comparisons</a>
             </div>
             
-            <!-- Engine Performance -->
-            <div class="col-lg-6 mb-4">
-                <div class="chart-container" id="rpmGearContainer">
-                    <div class="chart-header">
-                        <div class="chart-title-section">
-                            <h5><i class="fas fa-cog"></i> Engine Performance & Gear Analysis</h5>
-                            <div class="chart-status-indicator"></div>
-                        </div>
-                        <div class="chart-controls">
-                            <button class="chart-btn" onclick="toggleEngineMetrics()">
-                                <i class="fas fa-sliders-h"></i> Metrics
-                            </button>
-                            <button class="chart-btn fullscreen-btn" onclick="toggleFullscreen('rpmGearContainer')">
-                                <i class="fas fa-expand"></i> Fullscreen
-                            </button>
-                        </div>
-                    </div>
-                    <div id="rpmGearChart" style="height: 400px;"></div>
-                </div>
+            <div class="footer-section">
+                <h3>Data Visualization</h3>
+                <a href="#" class="footer-link">Interactive Charts</a>
+                <a href="#" class="footer-link">Real-time Updates</a>
+                <a href="#" class="footer-link">Export Options</a>
+                <a href="#" class="footer-link">Multi-driver View</a>
+                <a href="#" class="footer-link">Session Analysis</a>
+                <a href="#" class="footer-link">Performance Metrics</a>
             </div>
             
-            <!-- G-Force Analysis -->
-            <div class="col-lg-6 mb-4">
-                <div class="chart-container" id="gforceContainer">
-                    <div class="chart-header">
-                        <div class="chart-title-section">
-                            <h5><i class="fas fa-arrows-alt"></i> G-Force Analysis</h5>
-                            <div class="chart-status-indicator"></div>
-                        </div>
-                        <div class="chart-controls">
-                            <button class="chart-btn" onclick="toggle3DView('gforce')">
-                                <i class="fas fa-cube"></i> 3D View
-                            </button>
-                            <button class="chart-btn fullscreen-btn" onclick="toggleFullscreen('gforceContainer')">
-                                <i class="fas fa-expand"></i> Fullscreen
-                            </button>
-                        </div>
-                    </div>
-                    <div id="gforceChart" style="height: 400px;"></div>
-                </div>
+            <div class="footer-section">
+                <h3>Technical Details</h3>
+                <p><strong>Data Source:</strong> FastF1 Official API</p>
+                <p><strong>Update Rate:</strong> Real-time</p>
+                <p><strong>Precision:</strong> Millisecond accuracy</p>
+                <p><strong>Coverage:</strong> All F1 sessions</p>
+                <p><strong>Drivers:</strong> Complete grid (20)</p>
+                <p><strong>Visualization:</strong> Plotly.js</p>
             </div>
-            
-            <!-- Tire Temperature Analysis -->
-            <div class="col-lg-6 mb-4">
-                <div class="chart-container" id="tireTempContainer">
-                    <div class="chart-header">
-                        <div class="chart-title-section">
-                            <h5><i class="fas fa-thermometer-half"></i> Tire Temperature Analysis</h5>
-                            <div class="chart-status-indicator"></div>
-                        </div>
-                        <div class="chart-controls">
-                            <button class="chart-btn" onclick="toggleTireView()">
-                                <i class="fas fa-circle"></i> Tire View
-                            </button>
-                            <button class="chart-btn fullscreen-btn" onclick="toggleFullscreen('tireTempContainer')">
-                                <i class="fas fa-expand"></i> Fullscreen
-                            </button>
-                        </div>
-                    </div>
-                    <div id="tireTempChart" style="height: 400px;"></div>
+        </div>
+        
+        <div class="footer-bottom">
+            <div class="footer-bottom-content">
+                <p>&copy; 2025 Track.lytix. Built With Nothing, Powered By DeepInk Team.</p>
+                <div class="footer-tech">
+                    <span>Real-time Telemetry</span>
+                    <span>•</span>
+                    <span>Interactive Charts</span>
+                    <span>•</span>
+                    <span>Performance Analysis</span>
                 </div>
             </div>
         </div>
-
-        <!-- Performance Metrics Grid -->
-        <div class="row" id="metricsSection" style="display: none;">
-            <div class="col-md-4">
-                <div class="performance-metric">
-                    <h6><i class="fas fa-trophy"></i> Performance Leaders</h6>
-                    <div id="performanceLeaders"></div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="performance-metric">
-                    <h6><i class="fas fa-chart-bar"></i> Sector Times</h6>
-                    <div id="sectorTimes"></div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="performance-metric">
-                    <h6><i class="fas fa-balance-scale"></i> Consistency Index</h6>
-                    <div id="consistencyIndex"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Advanced Analytics Section -->
-        <div class="row" id="advancedSection" style="display: none;">
-            <div class="col-12">
-                <div class="chart-container">
-                    <div class="chart-header">
-                        <h4><i class="fas fa-brain"></i> AI-Powered Performance Insights</h4>
-                    </div>
-                    <div id="aiInsights"></div>
-                </div>
-            </div>
-        </div>
-    </div>
+    </footer>
 
     <script>
-        // Enhanced JavaScript functionality
-        let selectedDrivers = ['VER', 'HAM'];
-        let loadedCharts = 0;
-        let dataPoints = 0;
-        let currentView = 'speed';
-        let fullscreenChart = null;
-        let chartInstances = {};
-
-        // Driver selection with enhanced feedback
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeDriverSelection();
-            updateMetrics();
-            setInterval(updateMetrics, 5000);
-        });
-
-        function initializeDriverSelection() {
-            const driverBadges = document.querySelectorAll('.driver-badge');
-
-            driverBadges.forEach(badge => {
-                badge.addEventListener('click', function() {
-                    const driver = this.dataset.driver;
-
-                    if (this.classList.contains('selected')) {
-                        if (selectedDrivers.length > 1) {
-                            this.classList.remove('selected');
-                            selectedDrivers = selectedDrivers.filter(d => d !== driver);
-                            animateDeselection(this);
-                        }
-                    } else {
-                        if (selectedDrivers.length < 4) {
-                            this.classList.add('selected');
-                            selectedDrivers.push(driver);
-                            animateSelection(this);
-                        }
-                    }
-
-                    updateDriverCount();
-                });
-            });
-        }
-
-        function animateSelection(element) {
-            element.style.transform = 'scale(1.2)';
-            setTimeout(() => {
-                element.style.transform = '';
-            }, 300);
-        }
-
-        function animateDeselection(element) {
-            element.style.transform = 'scale(0.8)';
-            setTimeout(() => {
-                element.style.transform = '';
-            }, 300);
-        }
-
-        function updateMetrics() {
-            document.getElementById('driversCount').textContent = selectedDrivers.length;
-            document.getElementById('chartsLoaded').textContent = loadedCharts;
-            document.getElementById('dataPoints').textContent = dataPoints.toLocaleString();
-        }
-
-        function showLoading() {
-            document.getElementById('loadingSpinner').style.display = 'block';
-            document.getElementById('sessionStatus').textContent = 'LOADING';
-        }
-
-        function hideLoading() {
-            document.getElementById('loadingSpinner').style.display = 'none';
-            document.getElementById('sessionStatus').textContent = 'READY';
-        }
-
-        // Enhanced telemetry loading
-        async function loadEnhancedTelemetry() {
-            showLoading();
-
-            const params = new URLSearchParams({
-                year: document.getElementById('yearSelect').value,
-                grand_prix: document.getElementById('grandPrixSelect').value,
-                session: document.getElementById('sessionSelect').value,
-                lap_type: document.getElementById('lapTypeSelect').value
-            });
-
-            selectedDrivers.forEach(driver => params.append('drivers', driver));
-
+        // Telemetry dashboard functions
+        async function loadTelemetryData() {
+            const output = document.getElementById('telemetryOutput');
+            output.innerHTML = '<div class="loading">Loading telemetry data...</div>';
+            
             try {
-                const response = await fetch(`/api/telemetry-charts?${params.toString()}`);
+                const response = await fetch('/api/telemetry?year=2024&grand_prix=Bahrain&session=Race&driver=VER');
                 const data = await response.json();
-
-                if (data.error) {
-                    alert('Error: ' + data.error);
-                    return;
-                }
-
-                if (data.telemetry_charts) {
-                    await renderEnhancedCharts(data.telemetry_charts);
-                    showSections(['telemetrySection', 'performanceSection', 'metricsSection']);
-                    loadedCharts = Object.keys(data.telemetry_charts).length;
-                    dataPoints = calculateDataPoints(data.telemetry_charts);
-                    updateMetrics();
-                }
-
-            } catch (error) {
-                alert('Error loading telemetry: ' + error.message);
-            } finally {
-                hideLoading();
-            }
-        }
-
-        async function renderEnhancedCharts(charts) {
-            if (charts.speed_chart) {
-                const speedLayout = {
-                    ...charts.speed_chart.layout,
-                    plot_bgcolor: 'rgba(0,0,0,0)',
-                    paper_bgcolor: 'rgba(0,0,0,0)',
-                    font: { color: 'white', family: 'Inter, sans-serif' },
-                    margin: { t: 40, r: 40, b: 60, l: 60 },
-                    hovermode: 'x unified',
-                    showlegend: true,
-                    legend: {
-                        orientation: 'h',
-                        y: -0.2,
-                        x: 0.5,
-                        xanchor: 'center'
-                    }
-                };
-
-                Plotly.newPlot('speedChart', charts.speed_chart.data, speedLayout, {
-                    responsive: true,
-                    displayModeBar: true,
-                    modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d']
-                });
-            }
-
-            if (charts.throttle_brake_chart) {
-                Plotly.newPlot('throttleBrakeChart', charts.throttle_brake_chart.data, {
-                    ...charts.throttle_brake_chart.layout,
-                    plot_bgcolor: 'rgba(0,0,0,0)',
-                    paper_bgcolor: 'rgba(0,0,0,0)',
-                    font: { color: 'white', family: 'Inter, sans-serif' }
-                }, { responsive: true });
-            }
-
-            if (charts.rpm_gear_chart) {
-                Plotly.newPlot('rpmGearChart', charts.rpm_gear_chart.data, {
-                    ...charts.rpm_gear_chart.layout,
-                    plot_bgcolor: 'rgba(0,0,0,0)',
-                    paper_bgcolor: 'rgba(0,0,0,0)',
-                    font: { color: 'white', family: 'Inter, sans-serif' }
-                }, { responsive: true });
-            }
-        }
-
-        function showSections(sectionIds) {
-            sectionIds.forEach(id => {
-                document.getElementById(id).style.display = 'block';
-            });
-        }
-
-        function calculateDataPoints(charts) {
-            let total = 0;
-            Object.values(charts).forEach(chart => {
-                if (chart.data && Array.isArray(chart.data)) {
-                    chart.data.forEach(trace => {
-                        if (trace.x && Array.isArray(trace.x)) {
-                            total += trace.x.length;
-                        }
-                    });
-                }
-            });
-            return total;
-        }
-
-        // Additional enhanced functions
-        async function loadPerformanceComparison() {
-            showLoading();
-            try {
-                // Simulate loading performance comparison
-                await new Promise(resolve => setTimeout(resolve, 2000));
-                showSections(['performanceSection', 'metricsSection']);
-
-                // Generate mock performance data
-                generatePerformanceMetrics();
-
-            } catch (error) {
-                alert('Error loading performance comparison: ' + error.message);
-            } finally {
-                hideLoading();
-            }
-        }
-
-        function generatePerformanceMetrics() {
-            const leaders = selectedDrivers.map(driver => ({
-                driver,
-                score: (Math.random() * 100).toFixed(1)
-            })).sort((a, b) => b.score - a.score);
-
-            document.getElementById('performanceLeaders').innerHTML = leaders.map((leader, index) => 
-                `<div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="fw-bold">${index + 1}. ${leader.driver}</span>
-                    <span class="badge bg-primary">${leader.score}/100</span>
-                </div>`
-            ).join('');
-
-            // Generate sector times
-            const sectorData = selectedDrivers.map(driver => ({
-                driver,
-                s1: (Math.random() * 30 + 20).toFixed(3),
-                s2: (Math.random() * 35 + 25).toFixed(3),
-                s3: (Math.random() * 25 + 15).toFixed(3)
-            }));
-
-            document.getElementById('sectorTimes').innerHTML = sectorData.map(data => 
-                `<div class="mb-2">
-                    <strong>${data.driver}</strong><br>
-                    <small>S1: ${data.s1}s | S2: ${data.s2}s | S3: ${data.s3}s</small>
-                </div>`
-            ).join('');
-
-            // Generate consistency index
-            const consistency = selectedDrivers.map(driver => ({
-                driver,
-                index: (Math.random() * 40 + 60).toFixed(1)
-            }));
-
-            document.getElementById('consistencyIndex').innerHTML = consistency.map(cons => 
-                `<div class="d-flex justify-content-between align-items-center mb-2">
-                    <span>${cons.driver}</span>
-                    <span class="badge ${cons.index > 80 ? 'bg-success' : cons.index > 70 ? 'bg-warning' : 'bg-danger'}">${cons.index}%</span>
-                </div>`
-            ).join('');
-        }
-
-        // Placeholder functions for other features
-        async function loadSectorAnalysis() { 
-            await loadEnhancedTelemetry(); 
-        }
-
-        async function loadCorneringAnalysis() { 
-            await loadPerformanceComparison(); 
-        }
-
-        async function loadTireStrategy() { 
-            alert('Tire strategy analysis coming soon!'); 
-        }
-
-        async function loadWeatherImpact() { 
-            alert('Weather impact analysis coming soon!'); 
-        }
-
-        function toggleSpeedUnits() {
-            alert('Speed unit toggle feature coming soon!');
-        }
-
-        function toggleThrottleBrakeView() {
-            alert('View toggle feature coming soon!');
-        }
-
-        function exportChart(chartId) {
-            try {
-                const chart = document.getElementById(chartId);
-                Plotly.downloadImage(chart, {
-                    format: 'png',
-                    width: 1400,
-                    height: 900,
-                    filename: `f1_enhanced_${chartId}_${new Date().toISOString().split('T')[0]}`
-                });
-            } catch (error) {
-                alert('Export feature not available for this chart');
-            }
-        }
-
-        // Full-screen functionality
-        function toggleFullscreen(containerId) {
-            const container = document.getElementById(containerId);
-            const isFullscreen = container.classList.contains('fullscreen');
-            
-            if (isFullscreen) {
-                exitFullscreen(container);
-            } else {
-                enterFullscreen(container);
-            }
-        }
-        
-        function enterFullscreen(container) {
-            // Close any other fullscreen charts
-            document.querySelectorAll('.chart-container.fullscreen').forEach(c => {
-                if (c !== container) exitFullscreen(c);
-            });
-            
-            container.classList.add('fullscreen');
-            fullscreenChart = container;
-            
-            // Update button icon
-            const btn = container.querySelector('.fullscreen-btn i');
-            if (btn) {
-                btn.className = 'fas fa-compress';
-            }
-            
-            // Resize chart after animation
-            setTimeout(() => {
-                const chartId = container.querySelector('[id$="Chart"]').id;
-                if (chartInstances[chartId]) {
-                    Plotly.Plots.resize(chartId);
-                }
-            }, 350);
-            
-            // Add escape key listener
-            document.addEventListener('keydown', handleEscapeKey);
-        }
-        
-        function exitFullscreen(container) {
-            container.classList.remove('fullscreen');
-            fullscreenChart = null;
-            
-            // Update button icon
-            const btn = container.querySelector('.fullscreen-btn i');
-            if (btn) {
-                btn.className = 'fas fa-expand';
-            }
-            
-            // Resize chart after animation
-            setTimeout(() => {
-                const chartId = container.querySelector('[id$="Chart"]').id;
-                if (chartInstances[chartId]) {
-                    Plotly.Plots.resize(chartId);
-                }
-            }, 350);
-            
-            document.removeEventListener('keydown', handleEscapeKey);
-        }
-        
-        function handleEscapeKey(e) {
-            if (e.key === 'Escape' && fullscreenChart) {
-                exitFullscreen(fullscreenChart);
-            }
-        }
-        
-        // Enhanced chart rendering with better styling
-        async function renderEnhancedCharts(charts) {
-            const commonLayout = {
-                plot_bgcolor: 'rgba(0,0,0,0)',
-                paper_bgcolor: 'rgba(0,0,0,0)',
-                font: { 
-                    color: 'white', 
-                    family: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
-                    size: 12
-                },
-                margin: { t: 60, r: 60, b: 80, l: 80 },
-                hovermode: 'x unified',
-                showlegend: true,
-                legend: {
-                    orientation: 'h',
-                    y: -0.15,
-                    x: 0.5,
-                    xanchor: 'center',
-                    bgcolor: 'rgba(0,0,0,0.3)',
-                    bordercolor: 'rgba(255,255,255,0.2)',
-                    borderwidth: 1
-                },
-                xaxis: {
-                    gridcolor: 'rgba(255,255,255,0.1)',
-                    zerolinecolor: 'rgba(255,255,255,0.2)',
-                    tickfont: { size: 10 }
-                },
-                yaxis: {
-                    gridcolor: 'rgba(255,255,255,0.1)',
-                    zerolinecolor: 'rgba(255,255,255,0.2)',
-                    tickfont: { size: 10 }
-                }
-            };
-            
-            const config = {
-                responsive: true,
-                displayModeBar: true,
-                modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d'],
-                displaylogo: false,
-                toImageButtonOptions: {
-                    format: 'png',
-                    filename: 'f1_telemetry_chart',
-                    height: 900,
-                    width: 1400,
-                    scale: 2
-                }
-            };
-
-            if (charts.speed_chart) {
-                const speedLayout = {
-                    ...commonLayout,
-                    ...charts.speed_chart.layout,
-                    title: {
-                        text: 'Speed Analysis & Comparison',
-                        font: { size: 18, color: 'white' },
-                        x: 0.5,
-                        xanchor: 'center'
-                    }
-                };
-
-                await Plotly.newPlot('speedChart', charts.speed_chart.data, speedLayout, config);
-                chartInstances['speedChart'] = true;
-            }
-
-            if (charts.throttle_brake_chart) {
-                const throttleLayout = {
-                    ...commonLayout,
-                    ...charts.throttle_brake_chart.layout,
-                    title: {
-                        text: 'Throttle & Brake Dynamics',
-                        font: { size: 16, color: 'white' },
-                        x: 0.5,
-                        xanchor: 'center'
-                    }
-                };
                 
-                await Plotly.newPlot('throttleBrakeChart', charts.throttle_brake_chart.data, throttleLayout, config);
-                chartInstances['throttleBrakeChart'] = true;
+                output.innerHTML = `
+                    <div class="response-content">
+                        <h3>Telemetry Data Loaded Successfully</h3>
+                        <pre><code>${JSON.stringify(data, null, 2)}</code></pre>
+                    </div>
+                `;
+            } catch (error) {
+                output.innerHTML = `<div class="error">Error loading telemetry: ${error.message}</div>`;
             }
+        }
 
-            if (charts.rpm_gear_chart) {
-                const rpmLayout = {
-                    ...commonLayout,
-                    ...charts.rpm_gear_chart.layout,
-                    title: {
-                        text: 'Engine Performance & Gear Analysis',
-                        font: { size: 16, color: 'white' },
-                        x: 0.5,
-                        xanchor: 'center'
-                    }
-                };
-                
-                await Plotly.newPlot('rpmGearChart', charts.rpm_gear_chart.data, rpmLayout, config);
-                chartInstances['rpmGearChart'] = true;
-            }
-            
-            // Generate additional charts
-            generateGForceChart();
-            generateTireTempChart();
-            generateTrackMapChart();
+        function generateCharts() {
+            const output = document.getElementById('telemetryOutput');
+            output.innerHTML = `
+                <div class="response-content">
+                    <h3>Chart Generation</h3>
+                    <p>Interactive telemetry charts would be generated here using Plotly.js</p>
+                    <div class="chart-placeholder">
+                        <i class="fas fa-chart-area"></i>
+                        <p>Speed, Throttle, Brake, RPM, and Gear charts</p>
+                    </div>
+                </div>
+            `;
         }
-        
-        function generateGForceChart() {
-            const gforceData = [{
-                x: Array.from({length: 100}, (_, i) => i),
-                y: Array.from({length: 100}, () => (Math.random() - 0.5) * 4),
-                z: Array.from({length: 100}, () => (Math.random() - 0.5) * 2),
-                type: 'scatter3d',
-                mode: 'markers+lines',
-                marker: {
-                    size: 3,
-                    color: Array.from({length: 100}, () => Math.random()),
-                    colorscale: 'Viridis',
-                    showscale: true
-                },
-                line: { width: 2 },
-                name: 'G-Force Vector'
-            }];
-            
-            const gforceLayout = {
-                plot_bgcolor: 'rgba(0,0,0,0)',
-                paper_bgcolor: 'rgba(0,0,0,0)',
-                font: { color: 'white', family: 'Inter, sans-serif' },
-                scene: {
-                    xaxis: { title: 'Lateral G', gridcolor: 'rgba(255,255,255,0.1)' },
-                    yaxis: { title: 'Longitudinal G', gridcolor: 'rgba(255,255,255,0.1)' },
-                    zaxis: { title: 'Vertical G', gridcolor: 'rgba(255,255,255,0.1)' },
-                    bgcolor: 'rgba(0,0,0,0)'
-                },
-                title: {
-                    text: '3D G-Force Analysis',
-                    font: { size: 16, color: 'white' },
-                    x: 0.5
-                }
-            };
-            
-            Plotly.newPlot('gforceChart', gforceData, gforceLayout, { responsive: true, displaylogo: false });
-            chartInstances['gforceChart'] = true;
+
+        function downloadData() {
+            alert('Telemetry data export feature activated');
         }
-        
-        function generateTireTempChart() {
-            const tireTempData = [{
-                x: ['FL', 'FR', 'RL', 'RR'],
-                y: [85, 92, 78, 88],
-                type: 'bar',
-                marker: {
-                    color: ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4'],
-                    line: { width: 2, color: 'rgba(255,255,255,0.3)' }
-                },
-                text: ['85°C', '92°C', '78°C', '88°C'],
-                textposition: 'outside',
-                name: 'Tire Temperature'
-            }];
-            
-            const tireTempLayout = {
-                plot_bgcolor: 'rgba(0,0,0,0)',
-                paper_bgcolor: 'rgba(0,0,0,0)',
-                font: { color: 'white', family: 'Inter, sans-serif' },
-                xaxis: { 
-                    title: 'Tire Position',
-                    gridcolor: 'rgba(255,255,255,0.1)'
-                },
-                yaxis: { 
-                    title: 'Temperature (°C)',
-                    gridcolor: 'rgba(255,255,255,0.1)'
-                },
-                title: {
-                    text: 'Tire Temperature Distribution',
-                    font: { size: 16, color: 'white' },
-                    x: 0.5
-                }
-            };
-            
-            Plotly.newPlot('tireTempChart', tireTempData, tireTempLayout, { responsive: true, displaylogo: false });
-            chartInstances['tireTempChart'] = true;
+
+        function resetDashboard() {
+            document.getElementById('telemetryOutput').innerHTML = 
+                '<p class="placeholder-text">Click "Load Telemetry Data" to view real-time telemetry analysis and charts</p>';
         }
-        
-        function generateTrackMapChart() {
-            const trackData = [{
-                x: Array.from({length: 200}, (_, i) => Math.cos(i * 0.1) * (1 + Math.sin(i * 0.05) * 0.3)),
-                y: Array.from({length: 200}, (_, i) => Math.sin(i * 0.1) * (1 + Math.cos(i * 0.05) * 0.3)),
-                mode: 'lines+markers',
-                type: 'scatter',
-                marker: {
-                    size: 4,
-                    color: Array.from({length: 200}, (_, i) => 200 + Math.sin(i * 0.2) * 100),
-                    colorscale: 'Jet',
-                    showscale: true,
-                    colorbar: { title: 'Speed (km/h)' }
-                },
-                line: { width: 3 },
-                name: 'Track Position'
-            }];
-            
-            const trackLayout = {
-                plot_bgcolor: 'rgba(0,0,0,0)',
-                paper_bgcolor: 'rgba(0,0,0,0)',
-                font: { color: 'white', family: 'Inter, sans-serif' },
-                xaxis: { 
-                    title: 'Track X Position',
-                    gridcolor: 'rgba(255,255,255,0.1)',
-                    scaleanchor: 'y'
-                },
-                yaxis: { 
-                    title: 'Track Y Position',
-                    gridcolor: 'rgba(255,255,255,0.1)'
-                },
-                title: {
-                    text: 'Track Position & Speed Heatmap',
-                    font: { size: 16, color: 'white' },
-                    x: 0.5
-                }
-            };
-            
-            Plotly.newPlot('trackMapChart', trackData, trackLayout, { responsive: true, displaylogo: false });
-            chartInstances['trackMapChart'] = true;
-        }
-        
-        // Additional chart control functions
-        function resetZoom(chartId) {
-            if (chartInstances[chartId]) {
-                Plotly.relayout(chartId, { 'xaxis.autorange': true, 'yaxis.autorange': true });
-            }
-        }
-        
-        function syncCharts(type) {
-            // Sync multiple charts for comparison
-            alert('Chart synchronization activated - all ' + type + ' charts will now sync zoom and pan!');
-        }
-        
-        function toggleHeatmapMode() {
-            alert('Heatmap mode toggle - switching between speed and tire temperature visualization!');
-        }
-        
-        function toggle3DView(chartType) {
-            alert('3D view toggle for ' + chartType + ' - enhanced spatial visualization!');
-        }
-        
-        function toggleEngineMetrics() {
-            alert('Engine metrics toggle - switching between RPM, gear, and power output views!');
-        }
-        
-        function toggleTireView() {
-            alert('Tire view toggle - switching between temperature, pressure, and wear visualization!');
-        }
-        
-        // Window resize handler for fullscreen charts
-        window.addEventListener('resize', () => {
-            if (fullscreenChart) {
-                setTimeout(() => {
-                    Object.keys(chartInstances).forEach(chartId => {
-                        if (chartInstances[chartId]) {
-                            Plotly.Plots.resize(chartId);
-                        }
-                    });
-                }, 100);
-            }
-        });
-        
-        // Auto-load demo data
-        setTimeout(() => {
-            loadEnhancedTelemetry();
-        }, 3000);
     </script>
 </body>
 </html>
+
