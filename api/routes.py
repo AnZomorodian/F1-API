@@ -1189,7 +1189,9 @@ def get_streaming_data():
         streamer = LiveDataStreamer()
         streaming_data = streamer.get_streaming_data(year, grand_prix)
 
-        return make_json_serializable(jsonify(streaming_data))
+        # Ensure proper JSON serialization
+        clean_data = make_json_serializable(streaming_data)
+        return jsonify(clean_data)
 
     except Exception as e:
         logging.error(f"Error in streaming data: {str(e)}")
@@ -1976,9 +1978,9 @@ def get_track_analysis():
         if session_data is None:
             return jsonify({'error': 'Session data not available'}), 404
 
-        # Initialize AI Track Analyzer with real FastF1 data
-        from utils.ai_track_analyzer import AITrackAnalyzer
-        ai_analyzer = AITrackAnalyzer()
+        # Initialize Enhanced AI Track Analyzer with real FastF1 data
+        from utils.enhanced_ai_track_analyzer import EnhancedAITrackAnalyzer
+        ai_analyzer = EnhancedAITrackAnalyzer()
         analysis_data = ai_analyzer.analyze_track_performance(year, grand_prix, session, driver)
         
         if analysis_data is None:
@@ -2012,56 +2014,13 @@ def get_track_dominance():
         if session_data is None:
             return jsonify({'error': 'Session data not available'}), 404
 
-        # Get track dominance data
-        try:
-            from utils.track_dominance import create_track_dominance_map
-            dominance_data = create_track_dominance_map(year, grand_prix, session)
-            
-            if dominance_data and driver in dominance_data.get('sector_dominance', {}):
-                driver_dominance = dominance_data['sector_dominance'][driver]
-                overall_dominance = dominance_data.get('overall_dominance', {})
-                
-                formatted_dominance = {
-                    'sector_dominance': {
-                        'sector_1_performance': f"{driver_dominance.get('sector_1', 0):.3f}s" if driver_dominance.get('sector_1') else 'N/A',
-                        'sector_2_performance': f"{driver_dominance.get('sector_2', 0):.3f}s" if driver_dominance.get('sector_2') else 'N/A',
-                        'sector_3_performance': f"{driver_dominance.get('sector_3', 0):.3f}s" if driver_dominance.get('sector_3') else 'N/A'
-                    },
-                    'dominance_metrics': {
-                        'dominance_score': f"{overall_dominance.get(driver, 0):.1f}%" if driver in overall_dominance else 'N/A',
-                        'competitive_position': 'Strong' if overall_dominance.get(driver, 0) > 70 else 'Moderate',
-                        'performance_rating': 'Excellent' if overall_dominance.get(driver, 0) > 80 else 'Good'
-                    }
-                }
-            else:
-                # Fallback data if no dominance data available
-                formatted_dominance = {
-                    'sector_dominance': {
-                        'sector_1_performance': '26.821s',
-                        'sector_2_performance': '28.445s', 
-                        'sector_3_performance': '25.144s'
-                    },
-                    'dominance_metrics': {
-                        'dominance_score': '78.5%',
-                        'competitive_position': 'Strong',
-                        'performance_rating': 'Excellent'
-                    }
-                }
-                
-        except ImportError:
-            # Fallback dominance data
-            formatted_dominance = {
-                'sector_dominance': {
-                    'sector_1_performance': '26.821s',
-                    'sector_2_performance': '28.445s',
-                    'sector_3_performance': '25.144s'
-                },
-                'dominance_metrics': {
-                    'dominance_score': '78.5%',
-                    'competitive_position': 'Strong',
-                    'performance_rating': 'Excellent'
-                }
-            }
+        # Initialize Enhanced Track Dominance Analyzer with real FastF1 data
+        from utils.enhanced_track_dominance import EnhancedTrackDominanceAnalyzer
+        dominance_analyzer = EnhancedTrackDominanceAnalyzer()
+        formatted_dominance = dominance_analyzer.analyze_track_dominance(year, grand_prix, session, driver)
+        
+        if formatted_dominance is None:
+            return jsonify({'error': 'Unable to analyze track dominance - insufficient data'}), 404
 
         return jsonify({
             'track_dominance': formatted_dominance,

@@ -358,11 +358,14 @@
                 <div class="form-group">
                     <label for="year">Season Year</label>
                     <select id="year">
-                        <option value="2024">2024</option>
+                        <option value="2025">2025</option>
+                        <option value="2024" selected>2024</option>
                         <option value="2023">2023</option>
                         <option value="2022">2022</option>
                         <option value="2021">2021</option>
                         <option value="2020">2020</option>
+                        <option value="2019">2019</option>
+                        <option value="2018">2018</option>
                     </select>
                 </div>
 
@@ -565,16 +568,42 @@
             
             let html = '';
             
+            // Sector Dominance
             if (dominance.sector_dominance) {
-                html += '<div class="metric"><span class="metric-label">Sector 1 Performance</span><span class="metric-value">' + (dominance.sector_dominance.sector_1_performance || 'N/A') + '</span></div>';
-                html += '<div class="metric"><span class="metric-label">Sector 2 Performance</span><span class="metric-value">' + (dominance.sector_dominance.sector_2_performance || 'N/A') + '</span></div>';
-                html += '<div class="metric"><span class="metric-label">Sector 3 Performance</span><span class="metric-value">' + (dominance.sector_dominance.sector_3_performance || 'N/A') + '</span></div>';
+                const sd = dominance.sector_dominance;
+                html += '<div class="metric"><span class="metric-label">Sector 1 Performance</span><span class="metric-value">' + (sd.sector_1_performance || 'N/A') + '</span></div>';
+                html += '<div class="metric"><span class="metric-label">Sector 2 Performance</span><span class="metric-value">' + (sd.sector_2_performance || 'N/A') + '</span></div>';
+                html += '<div class="metric"><span class="metric-label">Sector 3 Performance</span><span class="metric-value">' + (sd.sector_3_performance || 'N/A') + '</span></div>';
             }
             
+            // Dominance Metrics  
             if (dominance.dominance_metrics) {
-                html += '<div class="metric"><span class="metric-label">Track Dominance Score</span><span class="metric-value">' + (dominance.dominance_metrics.dominance_score || 'N/A') + '</span></div>';
-                html += '<div class="metric"><span class="metric-label">Competitive Position</span><span class="metric-value">' + (dominance.dominance_metrics.competitive_position || 'N/A') + '</span></div>';
-                html += '<div class="metric"><span class="metric-label">Performance Rating</span><span class="metric-value">' + (dominance.dominance_metrics.performance_rating || 'N/A') + '</span></div>';
+                const dm = dominance.dominance_metrics;
+                html += '<div class="metric"><span class="metric-label">Dominance Score</span><span class="metric-value">' + (dm.dominance_score || 'N/A') + '</span></div>';
+                html += '<div class="metric"><span class="metric-label">Grid Position</span><span class="metric-value">' + (dm.grid_position || 'N/A') + '</span></div>';
+                html += '<div class="metric"><span class="metric-label">Competitive Position</span><span class="metric-value">' + (dm.competitive_position || 'N/A') + '</span></div>';
+                html += '<div class="metric"><span class="metric-label">Performance Rating</span><span class="metric-value">' + (dm.performance_rating || 'N/A') + '</span></div>';
+                html += '<div class="metric"><span class="metric-label">Gap to Fastest</span><span class="metric-value">' + (dm.gap_to_fastest || 'N/A') + '</span></div>';
+            }
+
+            // Speed Dominance
+            if (dominance.speed_dominance) {
+                const sp = dominance.speed_dominance;
+                html += '<div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">';
+                html += '<div style="font-weight: 600; margin-bottom: 0.5rem; color: var(--accent-blue);">🏎️ Speed Analysis</div>';
+                html += '<div class="metric"><span class="metric-label">Max Speed</span><span class="metric-value">' + (sp.max_speed_achieved || 'N/A') + '</span></div>';
+                html += '<div class="metric"><span class="metric-label">Speed Category</span><span class="metric-value">' + (sp.speed_category || 'N/A') + '</span></div>';
+                html += '</div>';
+            }
+
+            // Track Mastery
+            if (dominance.track_mastery) {
+                const tm = dominance.track_mastery;
+                html += '<div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">';
+                html += '<div style="font-weight: 600; margin-bottom: 0.5rem; color: var(--success-green);">🏆 Track Mastery</div>';
+                html += '<div class="metric"><span class="metric-label">Mastery Score</span><span class="metric-value">' + (tm.overall_mastery_score || 'N/A') + '</span></div>';
+                html += '<div class="metric"><span class="metric-label">Mastery Level</span><span class="metric-value">' + (tm.mastery_level || 'N/A') + '</span></div>';
+                html += '</div>';
             }
 
             content.innerHTML = html || '<p>No track dominance data available</p>';
