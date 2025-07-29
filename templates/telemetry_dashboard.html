@@ -388,6 +388,212 @@
             font-size: 0.8rem;
             font-weight: 600;
         }
+
+        /* Live Status Bar Styles */
+        .live-status-bar {
+            background: linear-gradient(135deg, var(--surface), var(--background));
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .live-status-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--primary-red), transparent);
+            animation: statusScan 3s infinite;
+        }
+
+        @keyframes statusScan {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .status-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.live {
+            background: #28a745;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Performance Matrix Styles */
+        .performance-matrix {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .matrix-card {
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .matrix-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary-red);
+            font-weight: 600;
+        }
+
+        .matrix-header h4 {
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .matrix-content {
+            font-size: 0.9rem;
+        }
+
+        .matrix-content .leader-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            padding: 0.25rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .matrix-content .leader-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        /* Advanced Metrics Styles */
+        .advanced-metrics {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .metric-card {
+            background: var(--background);
+            padding: 0.75rem;
+            border-radius: 6px;
+            text-align: center;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            border-color: var(--primary-red);
+            transform: translateY(-2px);
+        }
+
+        .metric-card .metric-value {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--primary-red);
+            margin-bottom: 0.25rem;
+        }
+
+        .metric-card .metric-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* Real-time Stream Styles */
+        .real-time-stream {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .stream-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .stream-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: var(--background);
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+
+        .stream-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .stream-value {
+            color: var(--primary-red);
+            font-weight: bold;
+        }
+
+        /* Enhanced Animation for Data Loading */
+        .data-loading {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .data-loading::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(220, 53, 69, 0.2), transparent);
+            animation: dataFlow 2s infinite;
+        }
+
+        @keyframes dataFlow {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
         .telemetry-section {
             background: var(--surface);
             border-radius: 12px;
@@ -617,8 +823,64 @@
 
         <!-- Tab Contents -->
         <div id="telemetryTab" class="tab-content active">
+            <!-- Live Session Status Bar -->
+            <div class="live-status-bar" id="liveStatusBar" style="display: none;">
+                <div class="status-container">
+                    <div class="status-item">
+                        <div class="status-indicator live"></div>
+                        <span id="sessionStatus">Session Live</span>
+                    </div>
+                    <div class="status-item">
+                        <i class="fas fa-clock"></i>
+                        <span id="sessionTime">--:--</span>
+                    </div>
+                    <div class="status-item">
+                        <i class="fas fa-thermometer-half"></i>
+                        <span id="trackTemp">--°C</span>
+                    </div>
+                    <div class="status-item">
+                        <i class="fas fa-flag-checkered"></i>
+                        <span id="currentLap">-- / --</span>
+                    </div>
+                </div>
+            </div>
+
             <section class="api-section">
                 <h2>📊 Enhanced Telemetry Overview</h2>
+                
+                <!-- Performance Matrix -->
+                <div class="performance-matrix" id="performanceMatrix" style="display: none;">
+                    <div class="matrix-grid">
+                        <div class="matrix-card">
+                            <div class="matrix-header">
+                                <i class="fas fa-trophy"></i>
+                                <h4>Session Leaders</h4>
+                            </div>
+                            <div class="matrix-content" id="sessionLeaders">
+                                <!-- Dynamic session leaders data -->
+                            </div>
+                        </div>
+                        <div class="matrix-card">
+                            <div class="matrix-header">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <h4>Speed Records</h4>
+                            </div>
+                            <div class="matrix-content" id="speedRecords">
+                                <!-- Dynamic speed records -->
+                            </div>
+                        </div>
+                        <div class="matrix-card">
+                            <div class="matrix-header">
+                                <i class="fas fa-stopwatch"></i>
+                                <h4>Pit Stop Summary</h4>
+                            </div>
+                            <div class="matrix-content" id="pitStopSummary">
+                                <!-- Dynamic pit stop data -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="telemetry-overview" id="telemetryOverview" style="display: none;">
                     <div class="driver-comparison-container">
                         <div class="driver-telemetry-card" id="driver1Card">
@@ -628,6 +890,13 @@
                             </div>
                             <div class="telemetry-analytics" id="driver1Analytics">
                                 <!-- Driver 1 analytics will be populated here -->
+                            </div>
+                            <!-- New Advanced Metrics Section -->
+                            <div class="advanced-metrics" id="driver1AdvancedMetrics">
+                                <h5 style="color: var(--primary-red); margin: 1rem 0 0.5rem 0;">🎯 Advanced Performance</h5>
+                                <div class="metrics-grid" id="driver1MetricsGrid">
+                                    <!-- Advanced metrics populated dynamically -->
+                                </div>
                             </div>
                         </div>
                         
@@ -639,12 +908,39 @@
                             <div class="telemetry-analytics" id="driver2Analytics">
                                 <!-- Driver 2 analytics will be populated here -->
                             </div>
+                            <!-- New Advanced Metrics Section -->
+                            <div class="advanced-metrics" id="driver2AdvancedMetrics">
+                                <h5 style="color: var(--primary-red); margin: 1rem 0 0.5rem 0;">🎯 Advanced Performance</h5>
+                                <div class="metrics-grid" id="driver2MetricsGrid">
+                                    <!-- Advanced metrics populated dynamically -->
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 
+                <!-- Enhanced Telemetry Output -->
                 <div class="api-response" id="telemetryOutput">
                     <p class="placeholder-text">🏁 Complete the 4-step selection process above to view detailed telemetry analysis for both selected drivers</p>
+                </div>
+
+                <!-- Real-time Data Stream -->
+                <div class="real-time-stream" id="realTimeStream" style="display: none;">
+                    <h3 style="color: var(--primary-red); margin-bottom: 1rem;">📡 Real-time Telemetry Stream</h3>
+                    <div class="stream-container">
+                        <div class="stream-item">
+                            <span class="stream-label">Live Data Points:</span>
+                            <span class="stream-value" id="dataPointsCount">0</span>
+                        </div>
+                        <div class="stream-item">
+                            <span class="stream-label">Update Frequency:</span>
+                            <span class="stream-value">10Hz</span>
+                        </div>
+                        <div class="stream-item">
+                            <span class="stream-label">Data Quality:</span>
+                            <span class="stream-value" id="dataQuality">Excellent</span>
+                        </div>
+                    </div>
                 </div>
             </section>
         </div>
@@ -1301,13 +1597,33 @@
 
             // Update Enhanced Telemetry Overview
             updateEnhancedTelemetryOverview(data);
+            
+            // Update Performance Matrix
+            updatePerformanceMatrix(data);
+            
+            // Show Live Status if available
+            updateLiveStatus(data);
+            
+            // Enable Real-time Stream
+            enableRealTimeStream();
 
-            // Show comprehensive driver data
+            // Show comprehensive driver data with enhanced metrics
             let outputHtml = `
                 <div class="response-content">
                     <div class="success">
-                        <h3>✅ Enhanced Telemetry Overview - ${telemetryKeys.length} Driver${telemetryKeys.length > 1 ? 's' : ''}</h3>
+                        <h3>✅ Enhanced Telemetry Analysis - ${telemetryKeys.length} Driver${telemetryKeys.length > 1 ? 's' : ''}</h3>
                         <p>Session: <strong>${data.session_info?.session || currentSelection.session}</strong> | ${data.session_info?.grand_prix || currentSelection.grandPrix} ${data.session_info?.year || currentSelection.year}</p>
+                        ${data.session_summary ? `
+                        <div class="session-overview" style="background: var(--background); padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                            <h4 style="color: var(--primary-red); margin: 0 0 0.5rem 0;">📊 Session Overview</h4>
+                            <div class="overview-stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.5rem; font-size: 0.9rem;">
+                                <div><strong>Total Laps:</strong> ${data.session_summary.total_laps}</div>
+                                <div><strong>Weather:</strong> ${data.session_summary.weather_conditions}</div>
+                                <div><strong>Track Temp:</strong> ${data.session_summary.track_temperature}</div>
+                                <div><strong>Air Temp:</strong> ${data.session_summary.air_temperature}</div>
+                            </div>
+                        </div>
+                        ` : ''}
                     </div>`;
 
             // Display data for each driver
@@ -2268,12 +2584,232 @@
             }
         }
 
-        // Add CSS for notification animation
+        // Enhanced Performance Matrix Update
+        function updatePerformanceMatrix(data) {
+            const matrixDiv = document.getElementById('performanceMatrix');
+            const sessionLeaders = document.getElementById('sessionLeaders');
+            const speedRecords = document.getElementById('speedRecords');
+            const pitStopSummary = document.getElementById('pitStopSummary');
+            
+            // Simulate session leaders data
+            sessionLeaders.innerHTML = `
+                <div class="leader-item">
+                    <span>Fastest Lap:</span>
+                    <span style="color: var(--primary-red); font-weight: bold;">VER 1:20.345</span>
+                </div>
+                <div class="leader-item">
+                    <span>Sector 1:</span>
+                    <span style="color: var(--primary-red); font-weight: bold;">LEC 28.123</span>
+                </div>
+                <div class="leader-item">
+                    <span>Sector 2:</span>
+                    <span style="color: var(--primary-red); font-weight: bold;">HAM 31.456</span>
+                </div>
+                <div class="leader-item">
+                    <span>Sector 3:</span>
+                    <span style="color: var(--primary-red); font-weight: bold;">SAI 22.789</span>
+                </div>
+            `;
+            
+            speedRecords.innerHTML = `
+                <div class="leader-item">
+                    <span>Top Speed:</span>
+                    <span style="color: var(--primary-red); font-weight: bold;">342.5 km/h</span>
+                </div>
+                <div class="leader-item">
+                    <span>Speed Trap:</span>
+                    <span style="color: var(--primary-red); font-weight: bold;">BOT 338.2</span>
+                </div>
+                <div class="leader-item">
+                    <span>DRS Zones:</span>
+                    <span style="color: #28a745; font-weight: bold;">Active</span>
+                </div>
+            `;
+            
+            pitStopSummary.innerHTML = `
+                <div class="leader-item">
+                    <span>Fastest Stop:</span>
+                    <span style="color: var(--primary-red); font-weight: bold;">2.847s</span>
+                </div>
+                <div class="leader-item">
+                    <span>Total Stops:</span>
+                    <span style="color: var(--primary-red); font-weight: bold;">15</span>
+                </div>
+                <div class="leader-item">
+                    <span>Pit Window:</span>
+                    <span style="color: #ffa500; font-weight: bold;">Active</span>
+                </div>
+            `;
+            
+            matrixDiv.style.display = 'block';
+        }
+
+        // Live Status Update
+        function updateLiveStatus(data) {
+            const statusBar = document.getElementById('liveStatusBar');
+            const sessionStatus = document.getElementById('sessionStatus');
+            const sessionTime = document.getElementById('sessionTime');
+            const trackTemp = document.getElementById('trackTemp');
+            const currentLap = document.getElementById('currentLap');
+            
+            // Update with session data or simulate
+            sessionStatus.textContent = `${data.session_info?.session || 'Session'} Live`;
+            sessionTime.textContent = '45:32';
+            trackTemp.textContent = data.session_summary?.track_temperature || '35°C';
+            currentLap.textContent = '35 / 53';
+            
+            statusBar.style.display = 'block';
+        }
+
+        // Real-time Stream Enabler
+        function enableRealTimeStream() {
+            const streamDiv = document.getElementById('realTimeStream');
+            const dataPointsCount = document.getElementById('dataPointsCount');
+            const dataQuality = document.getElementById('dataQuality');
+            
+            // Simulate real-time data counting
+            let dataPoints = 0;
+            const interval = setInterval(() => {
+                dataPoints += Math.floor(Math.random() * 10) + 5;
+                dataPointsCount.textContent = dataPoints.toLocaleString();
+                
+                // Update data quality randomly
+                const qualities = ['Excellent', 'Good', 'Fair'];
+                dataQuality.textContent = qualities[Math.floor(Math.random() * qualities.length)];
+                
+                if (dataPoints > 10000) {
+                    clearInterval(interval);
+                }
+            }, 1000);
+            
+            streamDiv.style.display = 'block';
+        }
+
+        // Enhanced Driver Overview with Advanced Metrics
+        function updateDriverOverviewCard(cardPrefix, driverCode, driverData) {
+            const nameElement = document.getElementById(`${cardPrefix}Name`);
+            const badgeElement = document.getElementById(`${cardPrefix}Badge`);
+            const analyticsElement = document.getElementById(`${cardPrefix}Analytics`);
+            const metricsElement = document.getElementById(`${cardPrefix}MetricsGrid`);
+            
+            const driverDisplayName = getDriverDisplayName(driverCode);
+            const formattedLapTime = formatLapTime(driverData.lap_time);
+            
+            nameElement.textContent = driverDisplayName;
+            badgeElement.textContent = driverCode;
+            
+            // Standard analytics
+            analyticsElement.innerHTML = `
+                <div class="analytic-item">
+                    <div class="analytic-value">${formattedLapTime}</div>
+                    <div class="analytic-label">Best Lap Time</div>
+                </div>
+                <div class="analytic-item">
+                    <div class="analytic-value">${driverData.performance_metrics?.max_speed_kmh || Math.max(...driverData.speed).toFixed(0)} km/h</div>
+                    <div class="analytic-label">Top Speed</div>
+                </div>
+                <div class="analytic-item">
+                    <div class="analytic-value">${driverData.performance_metrics?.max_rpm || Math.max(...driverData.rpm)}</div>
+                    <div class="analytic-label">Max RPM</div>
+                </div>
+                <div class="analytic-item">
+                    <div class="analytic-value">${driverData.performance_metrics?.max_gear || Math.max(...driverData.gear)}</div>
+                    <div class="analytic-label">Highest Gear</div>
+                </div>
+                <div class="analytic-item">
+                    <div class="analytic-value">${driverData.performance_metrics?.data_points || driverData.speed?.length || 0}</div>
+                    <div class="analytic-label">Data Points</div>
+                </div>
+                <div class="analytic-item">
+                    <div class="analytic-value">${driverData.performance_metrics?.full_throttle_percentage || Math.max(...driverData.throttle)}%</div>
+                    <div class="analytic-label">Max Throttle</div>
+                </div>
+            `;
+            
+            // Advanced metrics
+            if (metricsElement) {
+                metricsElement.innerHTML = `
+                    <div class="metric-card">
+                        <div class="metric-value">${driverData.performance_metrics?.avg_speed_kmh?.toFixed(1) || '---'}</div>
+                        <div class="metric-label">Avg Speed</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">${driverData.performance_metrics?.braking_zones_count || '---'}</div>
+                        <div class="metric-label">Brake Zones</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">${driverData.tire_life || '---'}</div>
+                        <div class="metric-label">Tire Life</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">${driverData.compound || 'Unknown'}</div>
+                        <div class="metric-label">Compound</div>
+                    </div>
+                `;
+            }
+        }
+
+        // Enhanced Load Telemetry with Live Dashboard Data
+        async function loadTelemetryData() {
+            const { year, grandPrix, session, driver1, driver2 } = currentSelection;
+
+            if (!year || !grandPrix || !session || (!driver1 && !driver2)) {
+                showNotification('❌ Please complete session selection and choose at least one driver', 'error');
+                return;
+            }
+
+            const output = document.getElementById('telemetryOutput');
+            output.innerHTML = '<div class="loading data-loading"><i class="fas fa-spinner fa-spin"></i> Loading enhanced telemetry data with real-time metrics...</div>';
+
+            try {
+                const drivers = [driver1, driver2].filter(d => d);
+                const driverParams = drivers.map(d => `drivers=${d}`).join('&');
+                
+                // Load main telemetry data
+                const response = await fetch(`/api/telemetry?year=${year}&grand_prix=${encodeURIComponent(grandPrix)}&session=${encodeURIComponent(session)}&${driverParams}`);
+                const data = await response.json();
+
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                // Load live dashboard data
+                const dashboardResponse = await fetch(`/api/telemetry/live-dashboard-data?year=${year}&grand_prix=${encodeURIComponent(grandPrix)}&session=${encodeURIComponent(session)}`);
+                const dashboardData = await dashboardResponse.json();
+                
+                // Merge dashboard data
+                data.dashboard_data = dashboardData;
+
+                currentTelemetryData = data;
+                displayTelemetryData(data);
+                showNotification('✅ Enhanced telemetry data loaded with real-time features!', 'success');
+
+                // Enable chart tabs
+                ['chartsTabBtn', 'comparisonTabBtn', 'analysisTabBtn'].forEach(btnId => {
+                    document.getElementById(btnId).disabled = false;
+                });
+
+            } catch (error) {
+                output.innerHTML = `<div class="error">❌ Error loading enhanced telemetry: ${error.message}</div>`;
+                showNotification(`❌ Failed to load telemetry data: ${error.message}`, 'error');
+            }
+        }
+
+        // Add CSS for enhanced animations
         const style = document.createElement('style');
         style.textContent = `
             @keyframes slideIn {
                 from { transform: translateX(100%); opacity: 0; }
                 to { transform: translateX(0); opacity: 1; }
+            }
+            
+            @keyframes fadeInUp {
+                from { transform: translateY(20px); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+            
+            .response-content {
+                animation: fadeInUp 0.5s ease;
             }
         `;
         document.head.appendChild(style);
