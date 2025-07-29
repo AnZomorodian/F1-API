@@ -17,6 +17,11 @@ class DriverComparisonAnalyzer:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         
+    def create_comprehensive_comparison(self, year: int, grand_prix: str, session: str, 
+                                      drivers: List[str]) -> Dict[str, Any]:
+        """Create comprehensive comparison between multiple drivers"""
+        return self.get_comprehensive_driver_comparison(year, grand_prix, session, drivers)
+    
     def get_comprehensive_driver_comparison(self, year: int, grand_prix: str, session: str, 
                                           drivers: List[str]) -> Dict[str, Any]:
         """Comprehensive comparison between multiple drivers"""

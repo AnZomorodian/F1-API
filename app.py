@@ -17,13 +17,13 @@ app.register_blueprint(api_bp, url_prefix='/api')
 
 @app.route('/')
 def home():
-    """Home route showing enhanced API documentation"""
-    return render_template('enhanced_documentation.html')
+    """Home route showing minimalist dashboard"""
+    return render_template('minimalist_dashboard.html')
 
 @app.route('/docs')
 def docs():
-    """Original documentation route"""
-    return render_template('documentation.html')
+    """Enhanced documentation route"""
+    return render_template('enhanced_documentation.html')
 
 @app.route('/telemetry')
 def telemetry_dashboard():
