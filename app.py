@@ -25,6 +25,11 @@ def docs():
     """Original documentation route"""
     return render_template('documentation.html')
 
+@app.route('/telemetry')
+def telemetry_dashboard():
+    """Telemetry visualization dashboard"""
+    return render_template('telemetry_dashboard.html')
+
 @app.errorhandler(404)
 def not_found(error):
     return jsonify({

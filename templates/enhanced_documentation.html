@@ -87,6 +87,9 @@
                 <button class="quick-access" onclick="showChampionshipStandings()">
                     <i class="fas fa-crown"></i> Championship
                 </button>
+                <button class="quick-access" onclick="window.location.href='/telemetry'">
+                    <i class="fas fa-chart-line"></i> Telemetry Dashboard
+                </button>
             </div>
         </div>
 
@@ -322,6 +325,76 @@
                                             <span class="endpoint-badge badge bg-warning text-dark">NEW</span>
                                         </div>
                                         <small class="text-muted">Race results and standings</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- New Telemetry Visualization -->
+                            <div class="col-md-6 mb-4">
+                                <h4 class="text-danger">Telemetry Visualization</h4>
+                                <div class="list-group">
+                                    <div class="list-group-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span><code>/api/telemetry-charts</code></span>
+                                            <span class="endpoint-badge badge bg-danger">NEW</span>
+                                        </div>
+                                        <small class="text-muted">Interactive telemetry charts</small>
+                                    </div>
+                                    <div class="list-group-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span><code>/api/sector-charts</code></span>
+                                            <span class="endpoint-badge badge bg-danger">NEW</span>
+                                        </div>
+                                        <small class="text-muted">Sector time visualization</small>
+                                    </div>
+                                    <div class="list-group-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span><code>/api/lap-evolution</code></span>
+                                            <span class="endpoint-badge badge bg-danger">NEW</span>
+                                        </div>
+                                        <small class="text-muted">Lap time progression charts</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Advanced Performance -->
+                            <div class="col-md-6 mb-4">
+                                <h4 class="text-secondary">Advanced Performance</h4>
+                                <div class="list-group">
+                                    <div class="list-group-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span><code>/api/overtaking-analysis</code></span>
+                                            <span class="endpoint-badge badge bg-secondary">NEW</span>
+                                        </div>
+                                        <small class="text-muted">Overtaking opportunities analysis</small>
+                                    </div>
+                                    <div class="list-group-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span><code>/api/cornering-analysis</code></span>
+                                            <span class="endpoint-badge badge bg-secondary">NEW</span>
+                                        </div>
+                                        <small class="text-muted">Cornering performance metrics</small>
+                                    </div>
+                                    <div class="list-group-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span><code>/api/fuel-effect-analysis</code></span>
+                                            <span class="endpoint-badge badge bg-secondary">NEW</span>
+                                        </div>
+                                        <small class="text-muted">Fuel weight impact analysis</small>
+                                    </div>
+                                    <div class="list-group-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span><code>/api/consistency-analysis</code></span>
+                                            <span class="endpoint-badge badge bg-secondary">NEW</span>
+                                        </div>
+                                        <small class="text-muted">Driver consistency metrics</small>
+                                    </div>
+                                    <div class="list-group-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span><code>/api/racecraft-analysis</code></span>
+                                            <span class="endpoint-badge badge bg-secondary">NEW</span>
+                                        </div>
+                                        <small class="text-muted">Racecraft skills analysis</small>
                                     </div>
                                 </div>
                             </div>

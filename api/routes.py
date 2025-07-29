@@ -15,6 +15,8 @@ from utils.visualizations import create_telemetry_plot, create_tire_strategy_plo
 from utils.track_dominance import create_track_dominance_map
 from utils.live_timing import LiveTimingAnalyzer
 from utils.championship_tracker import ChampionshipTracker
+from utils.telemetry_visualizer import TelemetryVisualizer
+from utils.performance_analyzer import AdvancedPerformanceAnalyzer
 from utils.constants import GRANDS_PRIX, SESSIONS, TEAM_COLORS, DRIVER_TEAMS, TIRE_COLORS
 import traceback
 
@@ -51,7 +53,7 @@ def get_available_seasons():
     """Get available F1 seasons"""
     try:
         # Return seasons from 2018 to current
-        current_year = 2024
+        current_year = 2025
         seasons = list(range(2018, current_year + 1))
         return jsonify({
             'seasons': seasons,
@@ -609,6 +611,171 @@ def get_current_standings():
         
     except Exception as e:
         logging.error(f"Error getting current standings: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+# New Telemetry Visualization Endpoints
+
+@api_bp.route('/telemetry-charts', methods=['GET'])
+def get_telemetry_charts():
+    """Get interactive telemetry visualization charts"""
+    try:
+        year = request.args.get('year', type=int)
+        grand_prix = request.args.get('grand_prix')
+        session = request.args.get('session')
+        drivers = request.args.getlist('drivers')
+        lap_type = request.args.get('lap_type', 'fastest')
+        
+        if not all([year, grand_prix, session, drivers]):
+            return jsonify({'error': 'Missing required parameters: year, grand_prix, session, drivers'}), 400
+        
+        visualizer = TelemetryVisualizer()
+        charts = visualizer.create_telemetry_comparison_chart(year, grand_prix, session, drivers, lap_type)
+        
+        return jsonify(charts)
+        
+    except Exception as e:
+        logging.error(f"Error getting telemetry charts: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@api_bp.route('/sector-charts', methods=['GET'])
+def get_sector_charts():
+    """Get sector time analysis charts"""
+    try:
+        year = request.args.get('year', type=int)
+        grand_prix = request.args.get('grand_prix')
+        session = request.args.get('session')
+        
+        if not all([year, grand_prix, session]):
+            return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
+        
+        visualizer = TelemetryVisualizer()
+        sector_data = visualizer.create_sector_time_analysis(year, grand_prix, session)
+        
+        return jsonify(sector_data)
+        
+    except Exception as e:
+        logging.error(f"Error getting sector charts: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@api_bp.route('/lap-evolution', methods=['GET'])
+def get_lap_evolution():
+    """Get lap time evolution chart"""
+    try:
+        year = request.args.get('year', type=int)
+        grand_prix = request.args.get('grand_prix')
+        session = request.args.get('session')
+        drivers = request.args.getlist('drivers')
+        
+        if not all([year, grand_prix, session, drivers]):
+            return jsonify({'error': 'Missing required parameters: year, grand_prix, session, drivers'}), 400
+        
+        visualizer = TelemetryVisualizer()
+        evolution_data = visualizer.create_lap_time_evolution(year, grand_prix, session, drivers)
+        
+        return jsonify(evolution_data)
+        
+    except Exception as e:
+        logging.error(f"Error getting lap evolution: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+# New Advanced Performance Analysis Endpoints
+
+@api_bp.route('/overtaking-analysis', methods=['GET'])
+def get_overtaking_analysis():
+    """Get overtaking opportunities and success rates analysis"""
+    try:
+        year = request.args.get('year', type=int)
+        grand_prix = request.args.get('grand_prix')
+        
+        if not all([year, grand_prix]):
+            return jsonify({'error': 'Missing required parameters: year, grand_prix'}), 400
+        
+        analyzer = AdvancedPerformanceAnalyzer()
+        overtaking_data = analyzer.analyze_overtaking_opportunities(year, grand_prix)
+        
+        return jsonify(overtaking_data)
+        
+    except Exception as e:
+        logging.error(f"Error getting overtaking analysis: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@api_bp.route('/cornering-analysis', methods=['GET'])
+def get_cornering_analysis():
+    """Get detailed cornering performance analysis"""
+    try:
+        year = request.args.get('year', type=int)
+        grand_prix = request.args.get('grand_prix')
+        session = request.args.get('session')
+        driver = request.args.get('driver')
+        
+        if not all([year, grand_prix, session, driver]):
+            return jsonify({'error': 'Missing required parameters: year, grand_prix, session, driver'}), 400
+        
+        analyzer = AdvancedPerformanceAnalyzer()
+        cornering_data = analyzer.analyze_cornering_performance(year, grand_prix, session, driver)
+        
+        return jsonify(cornering_data)
+        
+    except Exception as e:
+        logging.error(f"Error getting cornering analysis: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@api_bp.route('/fuel-effect-analysis', methods=['GET'])
+def get_fuel_effect_analysis():
+    """Get fuel effect analysis on lap times"""
+    try:
+        year = request.args.get('year', type=int)
+        grand_prix = request.args.get('grand_prix')
+        
+        if not all([year, grand_prix]):
+            return jsonify({'error': 'Missing required parameters: year, grand_prix'}), 400
+        
+        analyzer = AdvancedPerformanceAnalyzer()
+        fuel_data = analyzer.analyze_fuel_effect(year, grand_prix)
+        
+        return jsonify(fuel_data)
+        
+    except Exception as e:
+        logging.error(f"Error getting fuel effect analysis: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@api_bp.route('/consistency-analysis', methods=['GET'])
+def get_consistency_analysis():
+    """Get driver consistency metrics analysis"""
+    try:
+        year = request.args.get('year', type=int)
+        grand_prix = request.args.get('grand_prix')
+        session = request.args.get('session')
+        
+        if not all([year, grand_prix, session]):
+            return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
+        
+        analyzer = AdvancedPerformanceAnalyzer()
+        consistency_data = analyzer.analyze_consistency_metrics(year, grand_prix, session)
+        
+        return jsonify(consistency_data)
+        
+    except Exception as e:
+        logging.error(f"Error getting consistency analysis: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@api_bp.route('/racecraft-analysis', methods=['GET'])
+def get_racecraft_analysis():
+    """Get racecraft skills analysis"""
+    try:
+        year = request.args.get('year', type=int)
+        grand_prix = request.args.get('grand_prix')
+        
+        if not all([year, grand_prix]):
+            return jsonify({'error': 'Missing required parameters: year, grand_prix'}), 400
+        
+        analyzer = AdvancedPerformanceAnalyzer()
+        racecraft_data = analyzer.analyze_racecraft_metrics(year, grand_prix)
+        
+        return jsonify(racecraft_data)
+        
+    except Exception as e:
+        logging.error(f"Error getting racecraft analysis: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 @api_bp.route('/track-dominance', methods=['GET'])
