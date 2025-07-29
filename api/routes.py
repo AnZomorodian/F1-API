@@ -40,6 +40,59 @@ def health_check():
         'message': 'F1 Analytics API is running'
     })
 
+@api_bp.route('/sample-telemetry', methods=['GET'])
+def get_sample_telemetry():
+    """Get sample telemetry data for API testing"""
+    return jsonify({
+        'telemetry_data': {
+            'VER': {
+                'lap_time': '1:32.310',
+                'speed': [280, 285, 290, 295, 300, 305, 310, 315, 320],
+                'throttle': [0, 20, 40, 60, 80, 100, 100, 100, 80],
+                'brake': [0, 0, 0, 0, 20, 40, 0, 0, 0],
+                'rpm': [10000, 10500, 11000, 11500, 12000, 12500, 13000, 13500, 14000],
+                'gear': [6, 6, 7, 7, 8, 8, 8, 8, 7],
+                'distance': [0, 100, 200, 300, 400, 500, 600, 700, 800]
+            }
+        },
+        'session_info': {
+            'year': 2024,
+            'grand_prix': 'Monaco',
+            'session': 'Qualifying'
+        }
+    })
+
+@api_bp.route('/sample-comparison', methods=['GET'])
+def get_sample_comparison():
+    """Get sample driver comparison data for API testing"""
+    return jsonify({
+        'comparison': {
+            'driver_1': {
+                'code': 'VER',
+                'team': 'Red Bull Racing',
+                'stats': {
+                    'average_lap_time': 92.310,
+                    'fastest_lap': 91.856,
+                    'consistency_score': 0.245
+                }
+            },
+            'driver_2': {
+                'code': 'LEC',
+                'team': 'Ferrari',
+                'stats': {
+                    'average_lap_time': 92.445,
+                    'fastest_lap': 91.923,
+                    'consistency_score': 0.289
+                }
+            },
+            'head_to_head': {
+                'lap_time_advantage': 'VER',
+                'consistency_advantage': 'VER',
+                'qualifying_head_to_head': '12-10'
+            }
+        }
+    })
+
 @api_bp.route('/constants', methods=['GET'])
 def get_constants():
     """Get F1 constants (teams, drivers, circuits, etc.)"""
@@ -74,9 +127,9 @@ def get_available_seasons():
 def get_session_data():
     """Get session data for a specific year, grand prix, and session"""
     try:
-        year = request.args.get('year', type=int)
-        grand_prix = request.args.get('grand_prix')
-        session = request.args.get('session')
+        year = request.args.get('year', type=int, default=2024)
+        grand_prix = request.args.get('grand_prix', default='Saudi Arabia')
+        session = request.args.get('session', default='Race')
 
         if not all([year, grand_prix, session]):
             return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
@@ -107,10 +160,10 @@ def get_session_data():
 def get_telemetry_data():
     """Get telemetry data for specific drivers"""
     try:
-        year = request.args.get('year', type=int)
-        grand_prix = request.args.get('grand_prix')
-        session = request.args.get('session')
-        drivers = request.args.getlist('drivers')
+        year = request.args.get('year', type=int, default=2024)
+        grand_prix = request.args.get('grand_prix', default='Saudi Arabia')
+        session = request.args.get('session', default='Race')
+        drivers = request.args.getlist('drivers') or ['VER']
 
         if not all([year, grand_prix, session, drivers]):
             return jsonify({'error': 'Missing required parameters: year, grand_prix, session, drivers'}), 400

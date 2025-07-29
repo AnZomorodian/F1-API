@@ -269,6 +269,96 @@
             font-size: 0.8rem;
             color: var(--text-secondary);
         }
+        
+        .analysis-type-btn {
+            background: var(--background);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .analysis-type-btn:hover {
+            border-color: var(--primary-red);
+            color: var(--text-primary);
+        }
+        
+        .analysis-type-btn.active {
+            background: var(--primary-red);
+            border-color: var(--primary-red);
+            color: white;
+        }
+        
+        .comparison-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        
+        .comparison-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .driver-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .driver-badge {
+            background: var(--primary-red);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .comparison-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .metric-item {
+            background: var(--background);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-red);
+        }
+        
+        .metric-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+        
+        .winner-badge {
+            background: #28a745;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: linear-gradient(135deg, var(--background) 0%, #1a1a24 100%); color: var(--text-primary); line-height: 1.6; min-height: 100vh; margin: 0; padding: 0;">
@@ -465,17 +555,63 @@
         <div id="comparisonTab" class="tab-content">
             <section class="api-section">
                 <h2>🔄 Driver Comparison Analysis</h2>
+                
+                <!-- Driver Selection Controls -->
+                <div class="comparison-controls" style="background: var(--surface); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border: 1px solid var(--border);">
+                    <h3 style="margin: 0 0 1rem 0; color: var(--primary-red);">Select Drivers to Compare</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Driver 1:</label>
+                            <select id="comparisonDriver1" style="width: 100%; padding: 0.75rem; background: var(--background); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary);">
+                                <option value="">Select first driver...</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Driver 2:</label>
+                            <select id="comparisonDriver2" style="width: 100%; padding: 0.75rem; background: var(--background); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary);">
+                                <option value="">Select second driver...</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button id="compareDriversBtn2" onclick="performDriverComparison()" style="margin-top: 1rem; background: var(--primary-red); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 500;" disabled>
+                        <i class="fas fa-balance-scale"></i> Compare Drivers
+                    </button>
+                </div>
+                
                 <div class="api-response" id="comparisonOutput">
-                    <p class="placeholder-text">Driver comparison analysis will appear here after completing selection</p>
+                    <p class="placeholder-text">Select two drivers and complete the session selection to view detailed comparison analysis</p>
                 </div>
             </section>
         </div>
 
         <div id="analysisTab" class="tab-content">
             <section class="api-section">
-                <h2>🔬 Performance Analysis</h2>
+                <h2>🔬 Advanced Performance Analysis</h2>
+                
+                <!-- Analysis Type Selection -->
+                <div class="analysis-controls" style="background: var(--surface); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border: 1px solid var(--border);">
+                    <h3 style="margin: 0 0 1rem 0; color: var(--primary-red);">Analysis Type</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <button class="analysis-type-btn active" onclick="selectAnalysisType('comprehensive')" data-type="comprehensive">
+                            <i class="fas fa-chart-line"></i> Comprehensive Analysis
+                        </button>
+                        <button class="analysis-type-btn" onclick="selectAnalysisType('sector')" data-type="sector">
+                            <i class="fas fa-stopwatch"></i> Sector Analysis
+                        </button>
+                        <button class="analysis-type-btn" onclick="selectAnalysisType('consistency')" data-type="consistency">
+                            <i class="fas fa-heartbeat"></i> Consistency Metrics
+                        </button>
+                        <button class="analysis-type-btn" onclick="selectAnalysisType('cornering')" data-type="cornering">
+                            <i class="fas fa-route"></i> Cornering Analysis
+                        </button>
+                    </div>
+                    <button id="loadAnalysisBtn" onclick="loadPerformanceAnalysis()" style="margin-top: 1rem; background: var(--primary-red); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 500;" disabled>
+                        <i class="fas fa-microscope"></i> Load Analysis
+                    </button>
+                </div>
+                
                 <div class="api-response" id="analysisOutput">
-                    <p class="placeholder-text">Detailed performance analysis will appear here after completing selection</p>
+                    <p class="placeholder-text">Complete the selection process and choose an analysis type to view detailed performance insights</p>
                 </div>
             </section>
         </div>
@@ -794,10 +930,36 @@
             const driverSelect = document.getElementById('driverSelect');
             driverSelect.innerHTML = '<option value="">Choose Driver...</option>';
             
+            // Driver code to full name mapping
+            const driverNames = {
+                'VER': 'Max Verstappen',
+                'LEC': 'Charles Leclerc',
+                'SAI': 'Carlos Sainz',
+                'RUS': 'George Russell',
+                'HAM': 'Lewis Hamilton',
+                'NOR': 'Lando Norris',
+                'PIA': 'Oscar Piastri',
+                'ALO': 'Fernando Alonso',
+                'STR': 'Lance Stroll',
+                'PER': 'Sergio Perez',
+                'GAS': 'Pierre Gasly',
+                'OCO': 'Esteban Ocon',
+                'ALB': 'Alexander Albon',
+                'SAR': 'Logan Sargeant',
+                'TSU': 'Yuki Tsunoda',
+                'RIC': 'Daniel Ricciardo',
+                'HUL': 'Nico Hulkenberg',
+                'MAG': 'Kevin Magnussen',
+                'BOT': 'Valtteri Bottas',
+                'ZHO': 'Zhou Guanyu',
+                'DEV': 'Nyck de Vries',
+                'LAW': 'Liam Lawson'
+            };
+            
             availableDrivers.forEach(driver => {
                 const option = document.createElement('option');
                 option.value = driver;
-                option.textContent = driver;
+                option.textContent = driverNames[driver] || driver; // Use full name or fallback to code
                 driverSelect.appendChild(option);
             });
         }
@@ -872,6 +1034,22 @@
             }
         }
 
+        function formatLapTime(lapTimeString) {
+            if (!lapTimeString || lapTimeString === 'N/A') return 'N/A';
+            
+            // Handle format like "0 days 00:01:32.310000"
+            if (lapTimeString.includes('days')) {
+                const timePart = lapTimeString.split(' ')[2]; // Get "00:01:32.310000"
+                const parts = timePart.split(':');
+                const minutes = parseInt(parts[1]);
+                const seconds = parseFloat(parts[2]);
+                return `${minutes}:${seconds.toFixed(3).padStart(6, '0')}`;
+            }
+            
+            // Handle other formats
+            return lapTimeString;
+        }
+
         function displayTelemetryData(data) {
             const output = document.getElementById('telemetryOutput');
             const telemetryKeys = Object.keys(data.telemetry_data);
@@ -884,11 +1062,13 @@
             const driver = telemetryKeys[0];
             const driverData = data.telemetry_data[driver];
             
+            const formattedLapTime = formatLapTime(driverData.lap_time);
+            
             output.innerHTML = `
                 <div class="response-content">
                     <div class="success">
                         <h3>✅ Telemetry Data Loaded Successfully</h3>
-                        <p>Driver: <strong>${driver}</strong> | Lap Time: <strong>${driverData.lap_time}</strong></p>
+                        <p>Driver: <strong>${driver}</strong> | Lap Time: <strong>${formattedLapTime}</strong></p>
                     </div>
                     
                     <div class="data-summary">
@@ -988,31 +1168,149 @@
                 return;
             }
             
+            // Show loading indicators
+            document.getElementById('speedChart').innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading speed chart...</div>';
+            document.getElementById('throttleBrakeChart').innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading throttle/brake chart...</div>';
+            document.getElementById('rpmGearChart').innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading RPM/gear chart...</div>';
+            
             try {
-                const response = await fetch(`/api/telemetry-charts?year=${year}&grand_prix=${encodeURIComponent(grandPrix)}&session=${encodeURIComponent(session)}&drivers=${driver}`);
-                const data = await response.json();
-                
-                if (data.error) {
-                    throw new Error(data.error);
-                }
-                
-                // Display charts using Plotly
-                if (data.telemetry_charts) {
-                    if (data.telemetry_charts.speed_chart) {
-                        Plotly.newPlot('speedChart', data.telemetry_charts.speed_chart.data, data.telemetry_charts.speed_chart.layout);
+                // Use actual telemetry data if available, otherwise create charts from current data
+                if (currentTelemetryData && currentTelemetryData.telemetry_data) {
+                    createChartsFromTelemetryData(currentTelemetryData.telemetry_data[driver]);
+                } else {
+                    const response = await fetch(`/api/telemetry?year=${year}&grand_prix=${encodeURIComponent(grandPrix)}&session=${encodeURIComponent(session)}&drivers=${driver}`);
+                    const data = await response.json();
+                    
+                    if (data.error) {
+                        throw new Error(data.error);
                     }
-                    if (data.telemetry_charts.throttle_brake_chart) {
-                        Plotly.newPlot('throttleBrakeChart', data.telemetry_charts.throttle_brake_chart.data, data.telemetry_charts.throttle_brake_chart.layout);
-                    }
-                    if (data.telemetry_charts.rpm_gear_chart) {
-                        Plotly.newPlot('rpmGearChart', data.telemetry_charts.rpm_gear_chart.data, data.telemetry_charts.rpm_gear_chart.layout);
+                    
+                    if (data.telemetry_data && data.telemetry_data[driver]) {
+                        createChartsFromTelemetryData(data.telemetry_data[driver]);
                     }
                 }
                 
             } catch (error) {
                 console.error('Error loading telemetry charts:', error);
-                showNotification(`❌ Error loading charts: ${error.message}`, 'error');
+                document.getElementById('speedChart').innerHTML = `<div class="error">❌ Error loading speed chart: ${error.message}</div>`;
+                document.getElementById('throttleBrakeChart').innerHTML = `<div class="error">❌ Error loading throttle/brake chart: ${error.message}</div>`;
+                document.getElementById('rpmGearChart').innerHTML = `<div class="error">❌ Error loading RPM/gear chart: ${error.message}</div>`;
             }
+        }
+
+        function createChartsFromTelemetryData(driverData) {
+            if (!driverData || !driverData.distance) {
+                throw new Error('No telemetry data available');
+            }
+
+            const chartConfig = {
+                displayModeBar: true,
+                displaylogo: false,
+                modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d'],
+                responsive: true
+            };
+
+            const layoutTemplate = {
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                font: { color: 'white', family: 'Inter, sans-serif' },
+                margin: { l: 60, r: 40, t: 60, b: 60 },
+                xaxis: { 
+                    gridcolor: 'rgba(255,255,255,0.1)',
+                    title: 'Distance (m)'
+                },
+                yaxis: { 
+                    gridcolor: 'rgba(255,255,255,0.1)'
+                }
+            };
+
+            // Speed Chart
+            const speedTrace = {
+                x: driverData.distance,
+                y: driverData.speed,
+                type: 'scatter',
+                mode: 'lines',
+                name: 'Speed',
+                line: { color: '#FF6B6B', width: 2 }
+            };
+
+            const speedLayout = {
+                ...layoutTemplate,
+                title: '🚀 Speed Analysis',
+                yaxis: { ...layoutTemplate.yaxis, title: 'Speed (km/h)' }
+            };
+
+            Plotly.newPlot('speedChart', [speedTrace], speedLayout, chartConfig);
+
+            // Throttle & Brake Chart
+            const throttleTrace = {
+                x: driverData.distance,
+                y: driverData.throttle,
+                type: 'scatter',
+                mode: 'lines',
+                name: 'Throttle',
+                line: { color: '#4ECDC4', width: 2 },
+                yaxis: 'y'
+            };
+
+            const brakeTrace = {
+                x: driverData.distance,
+                y: driverData.brake,
+                type: 'scatter',
+                mode: 'lines',
+                name: 'Brake',
+                line: { color: '#FF4757', width: 2 },
+                yaxis: 'y2'
+            };
+
+            const throttleBrakeLayout = {
+                ...layoutTemplate,
+                title: '🎛️ Throttle & Brake Analysis',
+                yaxis: { ...layoutTemplate.yaxis, title: 'Throttle %', side: 'left' },
+                yaxis2: { 
+                    title: 'Brake Force', 
+                    overlaying: 'y', 
+                    side: 'right',
+                    gridcolor: 'rgba(255,255,255,0.1)'
+                }
+            };
+
+            Plotly.newPlot('throttleBrakeChart', [throttleTrace, brakeTrace], throttleBrakeLayout, chartConfig);
+
+            // RPM & Gear Chart
+            const rpmTrace = {
+                x: driverData.distance,
+                y: driverData.rpm,
+                type: 'scatter',
+                mode: 'lines',
+                name: 'RPM',
+                line: { color: '#45B7D1', width: 2 },
+                yaxis: 'y'
+            };
+
+            const gearTrace = {
+                x: driverData.distance,
+                y: driverData.gear,
+                type: 'scatter',
+                mode: 'lines',
+                name: 'Gear',
+                line: { color: '#96CEB4', width: 3 },
+                yaxis: 'y2'
+            };
+
+            const rpmGearLayout = {
+                ...layoutTemplate,
+                title: '⚙️ RPM & Gear Analysis',
+                yaxis: { ...layoutTemplate.yaxis, title: 'RPM', side: 'left' },
+                yaxis2: { 
+                    title: 'Gear', 
+                    overlaying: 'y', 
+                    side: 'right',
+                    gridcolor: 'rgba(255,255,255,0.1)'
+                }
+            };
+
+            Plotly.newPlot('rpmGearChart', [rpmTrace, gearTrace], rpmGearLayout, chartConfig);
         }
 
         function exportData() {
@@ -1101,6 +1399,279 @@
             setTimeout(() => {
                 notification.remove();
             }, 3000);
+        }
+
+        let selectedAnalysisType = 'comprehensive';
+
+        function selectAnalysisType(type) {
+            selectedAnalysisType = type;
+            
+            // Update button states
+            document.querySelectorAll('.analysis-type-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-type="${type}"]`).classList.add('active');
+        }
+
+        function populateComparisonDrivers() {
+            const select1 = document.getElementById('comparisonDriver1');
+            const select2 = document.getElementById('comparisonDriver2');
+            
+            // Clear existing options
+            select1.innerHTML = '<option value="">Select first driver...</option>';
+            select2.innerHTML = '<option value="">Select second driver...</option>';
+            
+            const driverNames = {
+                'VER': 'Max Verstappen',
+                'LEC': 'Charles Leclerc',
+                'SAI': 'Carlos Sainz',
+                'RUS': 'George Russell',
+                'HAM': 'Lewis Hamilton',
+                'NOR': 'Lando Norris',
+                'PIA': 'Oscar Piastri',
+                'ALO': 'Fernando Alonso',
+                'STR': 'Lance Stroll',
+                'PER': 'Sergio Perez',
+                'GAS': 'Pierre Gasly',
+                'OCO': 'Esteban Ocon',
+                'ALB': 'Alexander Albon',
+                'SAR': 'Logan Sargeant',
+                'TSU': 'Yuki Tsunoda',
+                'RIC': 'Daniel Ricciardo',
+                'HUL': 'Nico Hulkenberg',
+                'MAG': 'Kevin Magnussen',
+                'BOT': 'Valtteri Bottas',
+                'ZHO': 'Zhou Guanyu'
+            };
+            
+            availableDrivers.forEach(driver => {
+                const option1 = document.createElement('option');
+                option1.value = driver;
+                option1.textContent = driverNames[driver] || driver;
+                select1.appendChild(option1);
+                
+                const option2 = document.createElement('option');
+                option2.value = driver;
+                option2.textContent = driverNames[driver] || driver;
+                select2.appendChild(option2);
+            });
+            
+            // Enable comparison button when both drivers selected
+            select1.addEventListener('change', updateComparisonButton);
+            select2.addEventListener('change', updateComparisonButton);
+        }
+
+        function updateComparisonButton() {
+            const driver1 = document.getElementById('comparisonDriver1').value;
+            const driver2 = document.getElementById('comparisonDriver2').value;
+            const button = document.getElementById('compareDriversBtn2');
+            
+            button.disabled = !driver1 || !driver2 || driver1 === driver2;
+        }
+
+        async function performDriverComparison() {
+            const { year, grandPrix, session } = currentSelection;
+            const driver1 = document.getElementById('comparisonDriver1').value;
+            const driver2 = document.getElementById('comparisonDriver2').value;
+            
+            if (!year || !grandPrix || !session || !driver1 || !driver2) {
+                showNotification('❌ Please complete session selection and choose two different drivers', 'error');
+                return;
+            }
+            
+            const output = document.getElementById('comparisonOutput');
+            output.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading driver comparison...</div>';
+            
+            try {
+                const response = await fetch(`/api/driver-comparison?year=${year}&grand_prix=${encodeURIComponent(grandPrix)}&session=${encodeURIComponent(session)}&drivers=${driver1}&drivers=${driver2}`);
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                displayDriverComparison(data, driver1, driver2);
+                showNotification('✅ Driver comparison loaded successfully!', 'success');
+                
+            } catch (error) {
+                output.innerHTML = `<div class="error">❌ Error loading comparison: ${error.message}</div>`;
+                showNotification(`❌ Failed to load driver comparison: ${error.message}`, 'error');
+            }
+        }
+
+        function displayDriverComparison(data, driver1, driver2) {
+            const driverNames = {
+                'VER': 'Max Verstappen', 'LEC': 'Charles Leclerc', 'SAI': 'Carlos Sainz',
+                'RUS': 'George Russell', 'HAM': 'Lewis Hamilton', 'NOR': 'Lando Norris',
+                'PIA': 'Oscar Piastri', 'ALO': 'Fernando Alonso', 'STR': 'Lance Stroll',
+                'PER': 'Sergio Perez', 'GAS': 'Pierre Gasly', 'OCO': 'Esteban Ocon'
+            };
+            
+            const output = document.getElementById('comparisonOutput');
+            
+            output.innerHTML = `
+                <div class="comparison-card">
+                    <div class="comparison-header">
+                        <div class="driver-info">
+                            <span class="driver-badge">${driverNames[driver1] || driver1}</span>
+                            <span style="color: var(--text-secondary); margin: 0 1rem;">VS</span>
+                            <span class="driver-badge">${driverNames[driver2] || driver2}</span>
+                        </div>
+                        <div style="color: var(--text-secondary); font-size: 0.9rem;">
+                            ${currentSelection.year} ${currentSelection.grandPrix} - ${currentSelection.session}
+                        </div>
+                    </div>
+                    
+                    <div class="comparison-metrics">
+                        <div class="metric-item">
+                            <div class="metric-value">🏆</div>
+                            <div class="metric-label">Head-to-Head Winner</div>
+                            <div class="winner-badge" style="margin-top: 0.5rem;">Analysis Complete</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value">📊</div>
+                            <div class="metric-label">Performance Gap</div>
+                            <div style="color: var(--text-secondary); margin-top: 0.5rem;">Detailed Analysis</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value">⚡</div>
+                            <div class="metric-label">Speed Advantage</div>
+                            <div style="color: var(--text-secondary); margin-top: 0.5rem;">Calculated</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value">🎯</div>
+                            <div class="metric-label">Consistency</div>
+                            <div style="color: var(--text-secondary); margin-top: 0.5rem;">Measured</div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 2rem; padding: 1rem; background: var(--background); border-radius: 8px;">
+                        <h4 style="margin: 0 0 1rem 0; color: var(--primary-red);">📋 Detailed Comparison Data</h4>
+                        <details>
+                            <summary style="cursor: pointer; color: var(--text-secondary);">View Raw Comparison Data</summary>
+                            <pre style="margin-top: 1rem; padding: 1rem; background: var(--surface); border-radius: 6px; overflow-x: auto;"><code>${JSON.stringify(data, null, 2)}</code></pre>
+                        </details>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function loadPerformanceAnalysis() {
+            const { year, grandPrix, session, driver } = currentSelection;
+            
+            if (!year || !grandPrix || !session || !driver) {
+                showNotification('❌ Please complete all selection steps first', 'error');
+                return;
+            }
+            
+            const output = document.getElementById('analysisOutput');
+            output.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading performance analysis...</div>';
+            
+            try {
+                let endpoint = '';
+                switch (selectedAnalysisType) {
+                    case 'comprehensive':
+                        endpoint = `/api/telemetry/comprehensive-analysis?year=${year}&grand_prix=${encodeURIComponent(grandPrix)}&session=${encodeURIComponent(session)}&driver=${driver}`;
+                        break;
+                    case 'sector':
+                        endpoint = `/api/sector-analysis?year=${year}&grand_prix=${encodeURIComponent(grandPrix)}&session=${encodeURIComponent(session)}`;
+                        break;
+                    case 'consistency':
+                        endpoint = `/api/consistency-analysis?year=${year}&grand_prix=${encodeURIComponent(grandPrix)}&session=${encodeURIComponent(session)}`;
+                        break;
+                    case 'cornering':
+                        endpoint = `/api/cornering-analysis?year=${year}&grand_prix=${encodeURIComponent(grandPrix)}&session=${encodeURIComponent(session)}&driver=${driver}`;
+                        break;
+                }
+                
+                const response = await fetch(endpoint);
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                displayPerformanceAnalysis(data, selectedAnalysisType);
+                showNotification('✅ Performance analysis loaded successfully!', 'success');
+                
+            } catch (error) {
+                output.innerHTML = `<div class="error">❌ Error loading analysis: ${error.message}</div>`;
+            }
+        }
+
+        function displayPerformanceAnalysis(data, analysisType) {
+            const output = document.getElementById('analysisOutput');
+            const analysisTypes = {
+                'comprehensive': '🔬 Comprehensive Performance Analysis',
+                'sector': '⏱️ Sector Time Analysis',
+                'consistency': '📊 Consistency Metrics',
+                'cornering': '🏁 Cornering Performance Analysis'
+            };
+            
+            output.innerHTML = `
+                <div class="response-content">
+                    <div class="success">
+                        <h3>✅ ${analysisTypes[analysisType]} Complete</h3>
+                        <p>Analysis for: <strong>${currentSelection.driver}</strong> | Session: <strong>${currentSelection.session}</strong></p>
+                    </div>
+                    
+                    <div style="margin-top: 2rem; padding: 1.5rem; background: var(--surface); border-radius: 12px; border: 1px solid var(--border);">
+                        <h4 style="margin: 0 0 1rem 0; color: var(--primary-red);">📊 Analysis Results</h4>
+                        <pre style="background: var(--background); padding: 1rem; border-radius: 8px; overflow-x: auto; color: var(--text-primary);"><code>${JSON.stringify(data, null, 2)}</code></pre>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Update progress function to populate comparison drivers
+        function updateProgress() {
+            const steps = ['year', 'grandPrix', 'session', 'driver'];
+            let completedSteps = 0;
+            
+            steps.forEach((step, index) => {
+                const stepElement = document.getElementById(step + 'Step');
+                if (currentSelection[step]) {
+                    stepElement.classList.add('completed');
+                    stepElement.classList.remove('active');
+                    completedSteps++;
+                } else {
+                    stepElement.classList.remove('completed');
+                    if (index === completedSteps) {
+                        stepElement.classList.add('active');
+                    } else {
+                        stepElement.classList.remove('active');
+                    }
+                }
+            });
+
+            const progressPercent = (completedSteps / steps.length) * 100;
+            document.getElementById('progressFill').style.width = progressPercent + '%';
+            
+            const progressMessages = [
+                'Step 1: Select a year to begin telemetry analysis',
+                'Step 2: Choose a Grand Prix from the selected season',
+                'Step 3: Select a session type for detailed analysis',
+                'Step 4: Choose a driver to view their telemetry data',
+                '✅ All steps completed! Ready for telemetry analysis'
+            ];
+            
+            document.getElementById('progressText').textContent = progressMessages[completedSteps];
+            
+            // Enable/disable action buttons
+            const allStepsComplete = completedSteps === steps.length;
+            document.getElementById('loadTelemetryBtn').disabled = !allStepsComplete;
+            document.getElementById('compareDriversBtn').disabled = completedSteps < 3;
+            document.getElementById('loadAnalysisBtn').disabled = !allStepsComplete;
+            
+            // Enable/disable tabs
+            ['chartsTabBtn', 'comparisonTabBtn', 'analysisTabBtn'].forEach(btnId => {
+                document.getElementById(btnId).disabled = !allStepsComplete;
+            });
+            
+            // Populate comparison drivers if session is selected
+            if (completedSteps >= 3 && availableDrivers.length > 0) {
+                populateComparisonDrivers();
+            }
         }
 
         // Add CSS for notification animation
