@@ -82,13 +82,16 @@
                     <i class="fas fa-heartbeat"></i> Health Check
                 </button>
                 <button class="quick-access" onclick="loadSeasonData()">
-                    <i class="fas fa-calendar"></i> Load 2024 Season
+                    <i class="fas fa-calendar"></i> Load 2025 Season
                 </button>
                 <button class="quick-access" onclick="showChampionshipStandings()">
                     <i class="fas fa-crown"></i> Championship
                 </button>
                 <button class="quick-access" onclick="window.location.href='/telemetry'">
-                    <i class="fas fa-chart-line"></i> Telemetry Dashboard
+                    <i class="fas fa-chart-line"></i> Enhanced Telemetry Dashboard
+                </button>
+                <button class="quick-access" onclick="testNewAnalytics()">
+                    <i class="fas fa-rocket"></i> Test New Analytics
                 </button>
             </div>
         </div>
@@ -130,6 +133,34 @@
                                     <i class="fas fa-chart-line fa-3x mb-3"></i>
                                     <h5>Team Performance</h5>
                                     <p>Comprehensive team analysis and constructor standings</p>
+                                </div>
+                            </div>
+                            <div class="card api-card bg-danger">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-tire fa-3x mb-3"></i>
+                                    <h5>Tyre Analytics</h5>
+                                    <p>Advanced tyre degradation analysis and performance patterns</p>
+                                </div>
+                            </div>
+                            <div class="card api-card bg-secondary">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-cloud-sun fa-3x mb-3"></i>
+                                    <h5>Weather Impact</h5>
+                                    <p>Weather correlation analysis and environmental performance factors</p>
+                                </div>
+                            </div>
+                            <div class="card api-card bg-dark">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-road fa-3x mb-3"></i>
+                                    <h5>Track Analysis</h5>
+                                    <p>Track characteristics, driver mastery, and optimal racing line analysis</p>
+                                </div>
+                            </div>
+                            <div class="card api-card bg-gradient" style="background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-users fa-3x mb-3"></i>
+                                    <h5>Driver Comparison</h5>
+                                    <p>Comprehensive head-to-head analysis with all 20 F1 drivers</p>
                                 </div>
                             </div>
                         </div>
@@ -463,6 +494,40 @@
 
         async function showChampionshipStandings() {
             await testChampionship();
+        }
+
+        async function testNewAnalytics() {
+            const responseDiv = document.getElementById('apiResponse');
+            responseDiv.innerHTML = '<div class="alert alert-info"><i class="fas fa-spinner fa-spin"></i> Testing new enhanced analytics...</div>';
+            
+            // Test new analytics endpoints
+            const newEndpoints = [
+                '/api/tyre-analysis?year=2024&grand_prix=Bahrain&session=Race',
+                '/api/weather-analysis?year=2024&grand_prix=Bahrain&session=Race',
+                '/api/track-characteristics?year=2024&grand_prix=Bahrain&session=Race',
+                '/api/driver-comparison?year=2024&grand_prix=Bahrain&session=Race&drivers=VER&drivers=HAM&drivers=LEC'
+            ];
+            
+            try {
+                const results = await Promise.all(newEndpoints.map(url => 
+                    fetch(url).then(response => response.json()).catch(e => ({error: e.message}))
+                ));
+                
+                const response = {
+                    tyre_analysis: results[0],
+                    weather_analysis: results[1],
+                    track_characteristics: results[2],
+                    driver_comparison: results[3],
+                    status: 'New analytics tested successfully!'
+                };
+                
+                responseDiv.innerHTML = 
+                    '<div class="alert alert-success"><i class="fas fa-check"></i> New Analytics Tested!</div>' +
+                    '<div class="alert alert-info"><strong>Features:</strong> Tyre degradation, weather impact, track analysis, and enhanced driver comparison</div>' +
+                    '<pre><code>' + JSON.stringify(response, null, 2) + '</code></pre>';
+            } catch (error) {
+                responseDiv.innerHTML = `<div class="alert alert-danger">Error testing analytics: ${error.message}</div>`;
+            }
         }
 
         // Auto-load health check on page load

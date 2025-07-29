@@ -17,6 +17,9 @@ from utils.live_timing import LiveTimingAnalyzer
 from utils.championship_tracker import ChampionshipTracker
 from utils.telemetry_visualizer import TelemetryVisualizer
 from utils.performance_analyzer import AdvancedPerformanceAnalyzer
+from utils.enhanced_analytics import EnhancedF1Analytics
+from utils.track_analysis import TrackAnalyzer
+from utils.driver_comparison import DriverComparisonAnalyzer
 from utils.constants import GRANDS_PRIX, SESSIONS, TEAM_COLORS, DRIVER_TEAMS, TIRE_COLORS
 import traceback
 
@@ -218,8 +221,8 @@ def get_tire_strategy():
         logging.error(f"Error getting tire strategy: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
-@api_bp.route('/weather-analysis', methods=['GET'])
-def get_weather_analysis():
+@api_bp.route('/weather-analytics', methods=['GET'])
+def get_weather_analytics():
     """Get weather analysis for a session"""
     try:
         year = request.args.get('year', type=int)
@@ -242,7 +245,7 @@ def get_weather_analysis():
         })
         
     except Exception as e:
-        logging.error(f"Error getting weather analysis: {str(e)}")
+        logging.error(f"Error getting weather analytics: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 @api_bp.route('/race-strategy', methods=['GET'])
@@ -555,8 +558,8 @@ def get_championship_predictions():
         logging.error(f"Error getting championship predictions: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
-@api_bp.route('/head-to-head', methods=['GET'])
-def get_head_to_head():
+@api_bp.route('/championship-head-to-head', methods=['GET'])
+def get_championship_head_to_head():
     """Get head-to-head driver comparison"""
     try:
         year = request.args.get('year', type=int)
@@ -572,7 +575,7 @@ def get_head_to_head():
         return jsonify(comparison)
         
     except Exception as e:
-        logging.error(f"Error getting head-to-head comparison: {str(e)}")
+        logging.error(f"Error getting championship head-to-head comparison: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 @api_bp.route('/team-performance', methods=['GET'])
@@ -776,6 +779,172 @@ def get_racecraft_analysis():
         
     except Exception as e:
         logging.error(f"Error getting racecraft analysis: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+# New Enhanced Analytics Endpoints
+
+@api_bp.route('/tyre-analysis', methods=['GET'])
+def get_tyre_analysis():
+    """Get tyre performance degradation analysis"""
+    try:
+        year = request.args.get('year', type=int)
+        grand_prix = request.args.get('grand_prix')
+        session = request.args.get('session')
+        
+        if not all([year, grand_prix, session]):
+            return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
+        
+        analyzer = EnhancedF1Analytics()
+        tyre_data = analyzer.get_tyre_performance_degradation(year, grand_prix, session)
+        
+        return jsonify(tyre_data)
+        
+    except Exception as e:
+        logging.error(f"Error getting tyre analysis: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@api_bp.route('/weather-analysis', methods=['GET'])
+def get_weather_analysis():
+    """Get weather impact analysis"""
+    try:
+        year = request.args.get('year', type=int)
+        grand_prix = request.args.get('grand_prix')
+        session = request.args.get('session')
+        
+        if not all([year, grand_prix, session]):
+            return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
+        
+        analyzer = EnhancedF1Analytics()
+        weather_data = analyzer.get_weather_impact_analysis(year, grand_prix, session)
+        
+        return jsonify(weather_data)
+        
+    except Exception as e:
+        logging.error(f"Error getting weather analysis: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@api_bp.route('/session-progression', methods=['GET'])
+def get_session_progression():
+    """Get session progression analysis"""
+    try:
+        year = request.args.get('year', type=int)
+        grand_prix = request.args.get('grand_prix')
+        session = request.args.get('session')
+        
+        if not all([year, grand_prix, session]):
+            return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
+        
+        analyzer = EnhancedF1Analytics()
+        progression_data = analyzer.get_session_progression_analysis(year, grand_prix, session)
+        
+        return jsonify(progression_data)
+        
+    except Exception as e:
+        logging.error(f"Error getting session progression: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@api_bp.route('/track-characteristics', methods=['GET'])
+def get_track_characteristics():
+    """Get track characteristics analysis"""
+    try:
+        year = request.args.get('year', type=int)
+        grand_prix = request.args.get('grand_prix')
+        session = request.args.get('session')
+        
+        if not all([year, grand_prix, session]):
+            return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
+        
+        analyzer = TrackAnalyzer()
+        track_data = analyzer.get_track_characteristics(year, grand_prix, session)
+        
+        return jsonify(track_data)
+        
+    except Exception as e:
+        logging.error(f"Error getting track characteristics: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@api_bp.route('/driver-mastery', methods=['GET'])
+def get_driver_mastery():
+    """Get driver track mastery analysis"""
+    try:
+        year = request.args.get('year', type=int)
+        grand_prix = request.args.get('grand_prix')
+        session = request.args.get('session')
+        
+        if not all([year, grand_prix, session]):
+            return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
+        
+        analyzer = TrackAnalyzer()
+        mastery_data = analyzer.get_driver_track_mastery(year, grand_prix, session)
+        
+        return jsonify(mastery_data)
+        
+    except Exception as e:
+        logging.error(f"Error getting driver mastery: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@api_bp.route('/racing-line-analysis', methods=['GET'])
+def get_racing_line_analysis():
+    """Get optimal racing line analysis"""
+    try:
+        year = request.args.get('year', type=int)
+        grand_prix = request.args.get('grand_prix')
+        session = request.args.get('session')
+        driver = request.args.get('driver')
+        
+        if not all([year, grand_prix, session, driver]):
+            return jsonify({'error': 'Missing required parameters: year, grand_prix, session, driver'}), 400
+        
+        analyzer = TrackAnalyzer()
+        racing_line_data = analyzer.get_optimal_racing_line_analysis(year, grand_prix, session, driver)
+        
+        return jsonify(racing_line_data)
+        
+    except Exception as e:
+        logging.error(f"Error getting racing line analysis: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@api_bp.route('/driver-comparison', methods=['GET'])
+def get_driver_comparison():
+    """Get comprehensive driver comparison"""
+    try:
+        year = request.args.get('year', type=int)
+        grand_prix = request.args.get('grand_prix')
+        session = request.args.get('session')
+        drivers = request.args.getlist('drivers')
+        
+        if not all([year, grand_prix, session, drivers]):
+            return jsonify({'error': 'Missing required parameters: year, grand_prix, session, drivers'}), 400
+        
+        analyzer = DriverComparisonAnalyzer()
+        comparison_data = analyzer.get_comprehensive_driver_comparison(year, grand_prix, session, drivers)
+        
+        return jsonify(comparison_data)
+        
+    except Exception as e:
+        logging.error(f"Error getting driver comparison: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@api_bp.route('/head-to-head', methods=['GET'])
+def get_head_to_head():
+    """Get detailed head-to-head driver analysis"""
+    try:
+        year = request.args.get('year', type=int)
+        grand_prix = request.args.get('grand_prix')
+        session = request.args.get('session')
+        driver1 = request.args.get('driver1')
+        driver2 = request.args.get('driver2')
+        
+        if not all([year, grand_prix, session, driver1, driver2]):
+            return jsonify({'error': 'Missing required parameters: year, grand_prix, session, driver1, driver2'}), 400
+        
+        analyzer = DriverComparisonAnalyzer()
+        head_to_head_data = analyzer.get_head_to_head_detailed_analysis(year, grand_prix, session, driver1, driver2)
+        
+        return jsonify(head_to_head_data)
+        
+    except Exception as e:
+        logging.error(f"Error getting head-to-head analysis: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 @api_bp.route('/track-dominance', methods=['GET'])
