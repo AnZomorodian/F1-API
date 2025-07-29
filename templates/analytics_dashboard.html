@@ -19,6 +19,68 @@
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
             position: relative;
             overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .analytics-container.fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 9999;
+            margin: 0;
+            border-radius: 0;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 100%);
+            animation: analyticsFullscreen 0.3s ease-out;
+        }
+        
+        @keyframes analyticsFullscreen {
+            from { transform: scale(0.95); opacity: 0.9; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        .analytics-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .analytics-controls {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        
+        .analytics-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.75rem 1.25rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+        
+        .analytics-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.1);
+        }
+        
+        .analytics-btn.fullscreen-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+        }
+        
+        .analytics-btn.fullscreen-btn:hover {
+            background: linear-gradient(45deg, #5a6fd8, #6a4190);
+            box-shadow: 0 5px 25px rgba(102, 126, 234, 0.4);
         }
         .analytics-container::before {
             content: '';
@@ -268,8 +330,18 @@
         <div id="overview-tab" class="analytics-section">
             <div class="row">
                 <div class="col-lg-8">
-                    <div class="analytics-container">
-                        <h4><i class="fas fa-chart-area"></i> Real-Time Performance Matrix</h4>
+                    <div class="analytics-container" id="performanceMatrixContainer">
+                        <div class="analytics-header">
+                            <h4><i class="fas fa-chart-area"></i> Real-Time Performance Matrix</h4>
+                            <div class="analytics-controls">
+                                <button class="analytics-btn" onclick="refreshMatrix()">
+                                    <i class="fas fa-sync"></i> Refresh
+                                </button>
+                                <button class="analytics-btn fullscreen-btn" onclick="toggleAnalyticsFullscreen('performanceMatrixContainer')">
+                                    <i class="fas fa-expand"></i> Fullscreen
+                                </button>
+                            </div>
+                        </div>
                         <div id="performanceMatrix" style="height: 500px;"></div>
                     </div>
                 </div>
@@ -518,6 +590,68 @@
         // Enhanced Analytics JavaScript
         let currentTab = 'overview';
         let performanceData = {};
+        let analyticsFullscreenChart = null;
+        let analyticsChartInstances = {};
+        
+        // Full-screen functionality for analytics
+        function toggleAnalyticsFullscreen(containerId) {
+            const container = document.getElementById(containerId);
+            const isFullscreen = container.classList.contains('fullscreen');
+            
+            if (isFullscreen) {
+                exitAnalyticsFullscreen(container);
+            } else {
+                enterAnalyticsFullscreen(container);
+            }
+        }
+        
+        function enterAnalyticsFullscreen(container) {
+            document.querySelectorAll('.analytics-container.fullscreen').forEach(c => {
+                if (c !== container) exitAnalyticsFullscreen(c);
+            });
+            
+            container.classList.add('fullscreen');
+            analyticsFullscreenChart = container;
+            
+            const btn = container.querySelector('.fullscreen-btn i');
+            if (btn) btn.className = 'fas fa-compress';
+            
+            setTimeout(() => {
+                const chartId = container.querySelector('[id$="Matrix"], [id$="Chart"]').id;
+                if (analyticsChartInstances[chartId]) {
+                    Plotly.Plots.resize(chartId);
+                }
+            }, 350);
+            
+            document.addEventListener('keydown', handleAnalyticsEscapeKey);
+        }
+        
+        function exitAnalyticsFullscreen(container) {
+            container.classList.remove('fullscreen');
+            analyticsFullscreenChart = null;
+            
+            const btn = container.querySelector('.fullscreen-btn i');
+            if (btn) btn.className = 'fas fa-expand';
+            
+            setTimeout(() => {
+                const chartId = container.querySelector('[id$="Matrix"], [id$="Chart"]').id;
+                if (analyticsChartInstances[chartId]) {
+                    Plotly.Plots.resize(chartId);
+                }
+            }, 350);
+            
+            document.removeEventListener('keydown', handleAnalyticsEscapeKey);
+        }
+        
+        function handleAnalyticsEscapeKey(e) {
+            if (e.key === 'Escape' && analyticsFullscreenChart) {
+                exitAnalyticsFullscreen(analyticsFullscreenChart);
+            }
+        }
+        
+        function refreshMatrix() {
+            loadPerformanceOverview();
+        }
         
         function showAnalyticsTab(tabName) {
             // Hide all tabs
@@ -569,26 +703,74 @@
                 type: 'bar',
                 marker: {
                     color: ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7', '#dda0dd'],
-                    line: { width: 2, color: 'rgba(255,255,255,0.3)' }
+                    line: { width: 2, color: 'rgba(255,255,255,0.3)' },
+                    pattern: {
+                        shape: ['/', '\\', '|', '-', '+', 'x'],
+                        bgcolor: 'rgba(255,255,255,0.1)',
+                        fgcolor: 'rgba(255,255,255,0.3)',
+                        size: 8,
+                        solidity: 0.3
+                    }
                 },
-                hovertemplate: '<b>%{x}</b><br>Score: %{y}/100<extra></extra>'
+                hovertemplate: '<b>%{x}</b><br>Score: %{y}/100<br>Rank: Top %{customdata}%<extra></extra>',
+                customdata: [5, 12, 8, 25, 15, 35],
+                text: [98, 94, 97, 91, 95, 88],
+                textposition: 'outside',
+                textfont: { size: 14, color: 'white' }
             }];
             
             const layout = {
                 title: {
                     text: 'Multi-Dimensional Performance Analysis',
-                    font: { color: 'white', size: 20 }
+                    font: { color: 'white', size: 20, family: 'Inter, sans-serif' },
+                    x: 0.5,
+                    xanchor: 'center'
                 },
                 template: 'plotly_dark',
                 height: 500,
                 plot_bgcolor: 'rgba(0,0,0,0)',
                 paper_bgcolor: 'rgba(0,0,0,0)',
-                font: { color: 'white', family: 'Inter, sans-serif' },
-                xaxis: { gridcolor: 'rgba(255,255,255,0.1)' },
-                yaxis: { gridcolor: 'rgba(255,255,255,0.1)', range: [0, 100] }
+                font: { color: 'white', family: 'Inter, sans-serif', size: 12 },
+                xaxis: { 
+                    gridcolor: 'rgba(255,255,255,0.1)',
+                    tickfont: { size: 12 },
+                    title: { text: 'Performance Categories', font: { size: 14 } }
+                },
+                yaxis: { 
+                    gridcolor: 'rgba(255,255,255,0.1)', 
+                    range: [0, 100],
+                    tickfont: { size: 12 },
+                    title: { text: 'Performance Score', font: { size: 14 } }
+                },
+                margin: { t: 80, r: 60, b: 80, l: 80 },
+                showlegend: false,
+                annotations: [{
+                    text: 'Higher scores indicate better performance',
+                    x: 0.5,
+                    y: -0.15,
+                    xref: 'paper',
+                    yref: 'paper',
+                    showarrow: false,
+                    font: { size: 10, color: 'rgba(255,255,255,0.7)' }
+                }]
             };
             
-            Plotly.newPlot('performanceMatrix', data, layout, {responsive: true});
+            const config = {
+                responsive: true,
+                displayModeBar: true,
+                displaylogo: false,
+                modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d'],
+                toImageButtonOptions: {
+                    format: 'png',
+                    filename: 'f1_performance_matrix',
+                    height: 900,
+                    width: 1400,
+                    scale: 2
+                }
+            };
+            
+            Plotly.newPlot('performanceMatrix', data, layout, config);
+            analyticsChartInstances['performanceMatrix'] = true;
             
             // Load additional performance data
             loadChampionshipLeaders();

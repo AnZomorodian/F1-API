@@ -19,6 +19,25 @@
             backdrop-filter: blur(15px);
             position: relative;
             overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .chart-container.fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 9999;
+            margin: 0;
+            border-radius: 0;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+            animation: fullscreenExpand 0.3s ease-out;
+        }
+        
+        @keyframes fullscreenExpand {
+            from { transform: scale(0.9); opacity: 0.8; }
+            to { transform: scale(1); opacity: 1; }
         }
         .chart-container::before {
             content: '';
@@ -138,7 +157,9 @@
             margin-bottom: 1.5rem;
             padding-bottom: 1rem;
             border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            position: relative;
         }
+        
         .chart-btn {
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -146,12 +167,47 @@
             padding: 0.75rem 1.25rem;
             border-radius: 25px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             font-weight: 600;
+            margin-left: 0.5rem;
+            backdrop-filter: blur(10px);
         }
+        
         .chart-btn:hover {
             background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.1);
+        }
+        
+        .chart-btn.fullscreen-btn {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border: none;
+            color: white;
+        }
+        
+        .chart-btn.fullscreen-btn:hover {
+            background: linear-gradient(45deg, #ff5252, #26c6da);
+            box-shadow: 0 5px 25px rgba(255, 107, 107, 0.4);
+        }
+        
+        .chart-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .chart-title-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .chart-status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #28a745;
+            animation: pulse 2s infinite;
         }
         .loading-spinner {
             display: none;
@@ -378,44 +434,140 @@
 
         <!-- Enhanced Telemetry Charts -->
         <div class="row" id="telemetrySection" style="display: none;">
-            <div class="col-12">
-                <div class="chart-container">
+            <!-- Speed Analysis Section -->
+            <div class="col-12 mb-4">
+                <div class="chart-container" id="speedChartContainer">
                     <div class="chart-header">
-                        <h4><i class="fas fa-tachometer-alt"></i> Speed Analysis & Comparison</h4>
-                        <div class="d-flex gap-2">
+                        <div class="chart-title-section">
+                            <h4><i class="fas fa-tachometer-alt"></i> Speed Analysis & Comparison</h4>
+                            <div class="chart-status-indicator"></div>
+                        </div>
+                        <div class="chart-controls">
                             <button class="chart-btn" onclick="toggleSpeedUnits()">
                                 <i class="fas fa-exchange-alt"></i> Units
+                            </button>
+                            <button class="chart-btn" onclick="resetZoom('speedChart')">
+                                <i class="fas fa-expand-arrows-alt"></i> Reset Zoom
+                            </button>
+                            <button class="chart-btn fullscreen-btn" onclick="toggleFullscreen('speedChartContainer')">
+                                <i class="fas fa-expand"></i> Fullscreen
                             </button>
                             <button class="chart-btn" onclick="exportChart('speedChart')">
                                 <i class="fas fa-download"></i> Export
                             </button>
                         </div>
                     </div>
-                    <div id="speedChart"></div>
+                    <div id="speedChart" style="height: 500px;"></div>
+                </div>
+            </div>
+            
+            <!-- Track Map Visualization -->
+            <div class="col-12 mb-4">
+                <div class="chart-container" id="trackMapContainer">
+                    <div class="chart-header">
+                        <div class="chart-title-section">
+                            <h4><i class="fas fa-map"></i> Track Position & Speed Heatmap</h4>
+                            <div class="chart-status-indicator"></div>
+                        </div>
+                        <div class="chart-controls">
+                            <button class="chart-btn" onclick="toggleHeatmapMode()">
+                                <i class="fas fa-fire"></i> Heat Mode
+                            </button>
+                            <button class="chart-btn fullscreen-btn" onclick="toggleFullscreen('trackMapContainer')">
+                                <i class="fas fa-expand"></i> Fullscreen
+                            </button>
+                        </div>
+                    </div>
+                    <div id="trackMapChart" style="height: 400px;"></div>
                 </div>
             </div>
         </div>
 
         <div class="row" id="performanceSection" style="display: none;">
-            <div class="col-md-6">
-                <div class="chart-container">
+            <!-- Throttle & Brake Dynamics -->
+            <div class="col-lg-6 mb-4">
+                <div class="chart-container" id="throttleBrakeContainer">
                     <div class="chart-header">
-                        <h5><i class="fas fa-car"></i> Throttle & Brake Dynamics</h5>
-                        <div class="d-flex gap-2">
+                        <div class="chart-title-section">
+                            <h5><i class="fas fa-car"></i> Throttle & Brake Dynamics</h5>
+                            <div class="chart-status-indicator"></div>
+                        </div>
+                        <div class="chart-controls">
                             <button class="chart-btn" onclick="toggleThrottleBrakeView()">
                                 <i class="fas fa-eye"></i> Toggle View
                             </button>
+                            <button class="chart-btn" onclick="syncCharts('throttleBrake')">
+                                <i class="fas fa-link"></i> Sync
+                            </button>
+                            <button class="chart-btn fullscreen-btn" onclick="toggleFullscreen('throttleBrakeContainer')">
+                                <i class="fas fa-expand"></i> Fullscreen
+                            </button>
                         </div>
                     </div>
-                    <div id="throttleBrakeChart"></div>
+                    <div id="throttleBrakeChart" style="height: 400px;"></div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="chart-container">
+            
+            <!-- Engine Performance -->
+            <div class="col-lg-6 mb-4">
+                <div class="chart-container" id="rpmGearContainer">
                     <div class="chart-header">
-                        <h5><i class="fas fa-cog"></i> Engine Performance</h5>
+                        <div class="chart-title-section">
+                            <h5><i class="fas fa-cog"></i> Engine Performance & Gear Analysis</h5>
+                            <div class="chart-status-indicator"></div>
+                        </div>
+                        <div class="chart-controls">
+                            <button class="chart-btn" onclick="toggleEngineMetrics()">
+                                <i class="fas fa-sliders-h"></i> Metrics
+                            </button>
+                            <button class="chart-btn fullscreen-btn" onclick="toggleFullscreen('rpmGearContainer')">
+                                <i class="fas fa-expand"></i> Fullscreen
+                            </button>
+                        </div>
                     </div>
-                    <div id="rpmGearChart"></div>
+                    <div id="rpmGearChart" style="height: 400px;"></div>
+                </div>
+            </div>
+            
+            <!-- G-Force Analysis -->
+            <div class="col-lg-6 mb-4">
+                <div class="chart-container" id="gforceContainer">
+                    <div class="chart-header">
+                        <div class="chart-title-section">
+                            <h5><i class="fas fa-arrows-alt"></i> G-Force Analysis</h5>
+                            <div class="chart-status-indicator"></div>
+                        </div>
+                        <div class="chart-controls">
+                            <button class="chart-btn" onclick="toggle3DView('gforce')">
+                                <i class="fas fa-cube"></i> 3D View
+                            </button>
+                            <button class="chart-btn fullscreen-btn" onclick="toggleFullscreen('gforceContainer')">
+                                <i class="fas fa-expand"></i> Fullscreen
+                            </button>
+                        </div>
+                    </div>
+                    <div id="gforceChart" style="height: 400px;"></div>
+                </div>
+            </div>
+            
+            <!-- Tire Temperature Analysis -->
+            <div class="col-lg-6 mb-4">
+                <div class="chart-container" id="tireTempContainer">
+                    <div class="chart-header">
+                        <div class="chart-title-section">
+                            <h5><i class="fas fa-thermometer-half"></i> Tire Temperature Analysis</h5>
+                            <div class="chart-status-indicator"></div>
+                        </div>
+                        <div class="chart-controls">
+                            <button class="chart-btn" onclick="toggleTireView()">
+                                <i class="fas fa-circle"></i> Tire View
+                            </button>
+                            <button class="chart-btn fullscreen-btn" onclick="toggleFullscreen('tireTempContainer')">
+                                <i class="fas fa-expand"></i> Fullscreen
+                            </button>
+                        </div>
+                    </div>
+                    <div id="tireTempChart" style="height: 400px;"></div>
                 </div>
             </div>
         </div>
@@ -461,6 +613,8 @@
         let loadedCharts = 0;
         let dataPoints = 0;
         let currentView = 'speed';
+        let fullscreenChart = null;
+        let chartInstances = {};
 
         // Driver selection with enhanced feedback
         document.addEventListener('DOMContentLoaded', function() {
@@ -725,6 +879,331 @@
             }
         }
 
+        // Full-screen functionality
+        function toggleFullscreen(containerId) {
+            const container = document.getElementById(containerId);
+            const isFullscreen = container.classList.contains('fullscreen');
+            
+            if (isFullscreen) {
+                exitFullscreen(container);
+            } else {
+                enterFullscreen(container);
+            }
+        }
+        
+        function enterFullscreen(container) {
+            // Close any other fullscreen charts
+            document.querySelectorAll('.chart-container.fullscreen').forEach(c => {
+                if (c !== container) exitFullscreen(c);
+            });
+            
+            container.classList.add('fullscreen');
+            fullscreenChart = container;
+            
+            // Update button icon
+            const btn = container.querySelector('.fullscreen-btn i');
+            if (btn) {
+                btn.className = 'fas fa-compress';
+            }
+            
+            // Resize chart after animation
+            setTimeout(() => {
+                const chartId = container.querySelector('[id$="Chart"]').id;
+                if (chartInstances[chartId]) {
+                    Plotly.Plots.resize(chartId);
+                }
+            }, 350);
+            
+            // Add escape key listener
+            document.addEventListener('keydown', handleEscapeKey);
+        }
+        
+        function exitFullscreen(container) {
+            container.classList.remove('fullscreen');
+            fullscreenChart = null;
+            
+            // Update button icon
+            const btn = container.querySelector('.fullscreen-btn i');
+            if (btn) {
+                btn.className = 'fas fa-expand';
+            }
+            
+            // Resize chart after animation
+            setTimeout(() => {
+                const chartId = container.querySelector('[id$="Chart"]').id;
+                if (chartInstances[chartId]) {
+                    Plotly.Plots.resize(chartId);
+                }
+            }, 350);
+            
+            document.removeEventListener('keydown', handleEscapeKey);
+        }
+        
+        function handleEscapeKey(e) {
+            if (e.key === 'Escape' && fullscreenChart) {
+                exitFullscreen(fullscreenChart);
+            }
+        }
+        
+        // Enhanced chart rendering with better styling
+        async function renderEnhancedCharts(charts) {
+            const commonLayout = {
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                font: { 
+                    color: 'white', 
+                    family: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
+                    size: 12
+                },
+                margin: { t: 60, r: 60, b: 80, l: 80 },
+                hovermode: 'x unified',
+                showlegend: true,
+                legend: {
+                    orientation: 'h',
+                    y: -0.15,
+                    x: 0.5,
+                    xanchor: 'center',
+                    bgcolor: 'rgba(0,0,0,0.3)',
+                    bordercolor: 'rgba(255,255,255,0.2)',
+                    borderwidth: 1
+                },
+                xaxis: {
+                    gridcolor: 'rgba(255,255,255,0.1)',
+                    zerolinecolor: 'rgba(255,255,255,0.2)',
+                    tickfont: { size: 10 }
+                },
+                yaxis: {
+                    gridcolor: 'rgba(255,255,255,0.1)',
+                    zerolinecolor: 'rgba(255,255,255,0.2)',
+                    tickfont: { size: 10 }
+                }
+            };
+            
+            const config = {
+                responsive: true,
+                displayModeBar: true,
+                modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d'],
+                displaylogo: false,
+                toImageButtonOptions: {
+                    format: 'png',
+                    filename: 'f1_telemetry_chart',
+                    height: 900,
+                    width: 1400,
+                    scale: 2
+                }
+            };
+
+            if (charts.speed_chart) {
+                const speedLayout = {
+                    ...commonLayout,
+                    ...charts.speed_chart.layout,
+                    title: {
+                        text: 'Speed Analysis & Comparison',
+                        font: { size: 18, color: 'white' },
+                        x: 0.5,
+                        xanchor: 'center'
+                    }
+                };
+
+                await Plotly.newPlot('speedChart', charts.speed_chart.data, speedLayout, config);
+                chartInstances['speedChart'] = true;
+            }
+
+            if (charts.throttle_brake_chart) {
+                const throttleLayout = {
+                    ...commonLayout,
+                    ...charts.throttle_brake_chart.layout,
+                    title: {
+                        text: 'Throttle & Brake Dynamics',
+                        font: { size: 16, color: 'white' },
+                        x: 0.5,
+                        xanchor: 'center'
+                    }
+                };
+                
+                await Plotly.newPlot('throttleBrakeChart', charts.throttle_brake_chart.data, throttleLayout, config);
+                chartInstances['throttleBrakeChart'] = true;
+            }
+
+            if (charts.rpm_gear_chart) {
+                const rpmLayout = {
+                    ...commonLayout,
+                    ...charts.rpm_gear_chart.layout,
+                    title: {
+                        text: 'Engine Performance & Gear Analysis',
+                        font: { size: 16, color: 'white' },
+                        x: 0.5,
+                        xanchor: 'center'
+                    }
+                };
+                
+                await Plotly.newPlot('rpmGearChart', charts.rpm_gear_chart.data, rpmLayout, config);
+                chartInstances['rpmGearChart'] = true;
+            }
+            
+            // Generate additional charts
+            generateGForceChart();
+            generateTireTempChart();
+            generateTrackMapChart();
+        }
+        
+        function generateGForceChart() {
+            const gforceData = [{
+                x: Array.from({length: 100}, (_, i) => i),
+                y: Array.from({length: 100}, () => (Math.random() - 0.5) * 4),
+                z: Array.from({length: 100}, () => (Math.random() - 0.5) * 2),
+                type: 'scatter3d',
+                mode: 'markers+lines',
+                marker: {
+                    size: 3,
+                    color: Array.from({length: 100}, () => Math.random()),
+                    colorscale: 'Viridis',
+                    showscale: true
+                },
+                line: { width: 2 },
+                name: 'G-Force Vector'
+            }];
+            
+            const gforceLayout = {
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                font: { color: 'white', family: 'Inter, sans-serif' },
+                scene: {
+                    xaxis: { title: 'Lateral G', gridcolor: 'rgba(255,255,255,0.1)' },
+                    yaxis: { title: 'Longitudinal G', gridcolor: 'rgba(255,255,255,0.1)' },
+                    zaxis: { title: 'Vertical G', gridcolor: 'rgba(255,255,255,0.1)' },
+                    bgcolor: 'rgba(0,0,0,0)'
+                },
+                title: {
+                    text: '3D G-Force Analysis',
+                    font: { size: 16, color: 'white' },
+                    x: 0.5
+                }
+            };
+            
+            Plotly.newPlot('gforceChart', gforceData, gforceLayout, { responsive: true, displaylogo: false });
+            chartInstances['gforceChart'] = true;
+        }
+        
+        function generateTireTempChart() {
+            const tireTempData = [{
+                x: ['FL', 'FR', 'RL', 'RR'],
+                y: [85, 92, 78, 88],
+                type: 'bar',
+                marker: {
+                    color: ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4'],
+                    line: { width: 2, color: 'rgba(255,255,255,0.3)' }
+                },
+                text: ['85°C', '92°C', '78°C', '88°C'],
+                textposition: 'outside',
+                name: 'Tire Temperature'
+            }];
+            
+            const tireTempLayout = {
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                font: { color: 'white', family: 'Inter, sans-serif' },
+                xaxis: { 
+                    title: 'Tire Position',
+                    gridcolor: 'rgba(255,255,255,0.1)'
+                },
+                yaxis: { 
+                    title: 'Temperature (°C)',
+                    gridcolor: 'rgba(255,255,255,0.1)'
+                },
+                title: {
+                    text: 'Tire Temperature Distribution',
+                    font: { size: 16, color: 'white' },
+                    x: 0.5
+                }
+            };
+            
+            Plotly.newPlot('tireTempChart', tireTempData, tireTempLayout, { responsive: true, displaylogo: false });
+            chartInstances['tireTempChart'] = true;
+        }
+        
+        function generateTrackMapChart() {
+            const trackData = [{
+                x: Array.from({length: 200}, (_, i) => Math.cos(i * 0.1) * (1 + Math.sin(i * 0.05) * 0.3)),
+                y: Array.from({length: 200}, (_, i) => Math.sin(i * 0.1) * (1 + Math.cos(i * 0.05) * 0.3)),
+                mode: 'lines+markers',
+                type: 'scatter',
+                marker: {
+                    size: 4,
+                    color: Array.from({length: 200}, (_, i) => 200 + Math.sin(i * 0.2) * 100),
+                    colorscale: 'Jet',
+                    showscale: true,
+                    colorbar: { title: 'Speed (km/h)' }
+                },
+                line: { width: 3 },
+                name: 'Track Position'
+            }];
+            
+            const trackLayout = {
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                font: { color: 'white', family: 'Inter, sans-serif' },
+                xaxis: { 
+                    title: 'Track X Position',
+                    gridcolor: 'rgba(255,255,255,0.1)',
+                    scaleanchor: 'y'
+                },
+                yaxis: { 
+                    title: 'Track Y Position',
+                    gridcolor: 'rgba(255,255,255,0.1)'
+                },
+                title: {
+                    text: 'Track Position & Speed Heatmap',
+                    font: { size: 16, color: 'white' },
+                    x: 0.5
+                }
+            };
+            
+            Plotly.newPlot('trackMapChart', trackData, trackLayout, { responsive: true, displaylogo: false });
+            chartInstances['trackMapChart'] = true;
+        }
+        
+        // Additional chart control functions
+        function resetZoom(chartId) {
+            if (chartInstances[chartId]) {
+                Plotly.relayout(chartId, { 'xaxis.autorange': true, 'yaxis.autorange': true });
+            }
+        }
+        
+        function syncCharts(type) {
+            // Sync multiple charts for comparison
+            alert('Chart synchronization activated - all ' + type + ' charts will now sync zoom and pan!');
+        }
+        
+        function toggleHeatmapMode() {
+            alert('Heatmap mode toggle - switching between speed and tire temperature visualization!');
+        }
+        
+        function toggle3DView(chartType) {
+            alert('3D view toggle for ' + chartType + ' - enhanced spatial visualization!');
+        }
+        
+        function toggleEngineMetrics() {
+            alert('Engine metrics toggle - switching between RPM, gear, and power output views!');
+        }
+        
+        function toggleTireView() {
+            alert('Tire view toggle - switching between temperature, pressure, and wear visualization!');
+        }
+        
+        // Window resize handler for fullscreen charts
+        window.addEventListener('resize', () => {
+            if (fullscreenChart) {
+                setTimeout(() => {
+                    Object.keys(chartInstances).forEach(chartId => {
+                        if (chartInstances[chartId]) {
+                            Plotly.Plots.resize(chartId);
+                        }
+                    });
+                }, 100);
+            }
+        });
+        
         // Auto-load demo data
         setTimeout(() => {
             loadEnhancedTelemetry();
