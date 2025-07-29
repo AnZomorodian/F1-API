@@ -17,7 +17,12 @@ app.register_blueprint(api_bp, url_prefix='/api')
 
 @app.route('/')
 def home():
-    """Home route showing API documentation"""
+    """Home route showing enhanced API documentation"""
+    return render_template('enhanced_documentation.html')
+
+@app.route('/docs')
+def docs():
+    """Original documentation route"""
     return render_template('documentation.html')
 
 @app.errorhandler(404)

@@ -13,6 +13,8 @@ from utils.enhanced_analytics import EnhancedF1Analytics
 from utils.driver_manager import DynamicDriverManager
 from utils.visualizations import create_telemetry_plot, create_tire_strategy_plot, create_race_progression_plot
 from utils.track_dominance import create_track_dominance_map
+from utils.live_timing import LiveTimingAnalyzer
+from utils.championship_tracker import ChampionshipTracker
 from utils.constants import GRANDS_PRIX, SESSIONS, TEAM_COLORS, DRIVER_TEAMS, TIRE_COLORS
 import traceback
 
@@ -83,7 +85,7 @@ def get_session_data():
                 'date': str(session_data.date) if hasattr(session_data, 'date') else None,
                 'circuit': session_data.event.Location if hasattr(session_data, 'event') else None
             },
-            'drivers': session_data.drivers.tolist() if hasattr(session_data, 'drivers') else [],
+            'drivers': list(session_data.drivers) if hasattr(session_data, 'drivers') and session_data.drivers is not None else [],
             'laps_count': len(session_data.laps) if hasattr(session_data, 'laps') else 0
         })
         
@@ -114,10 +116,11 @@ def get_telemetry_data():
                 driver_laps = session_data.laps.pick_driver(driver)
                 if not driver_laps.empty:
                     fastest_lap = driver_laps.pick_fastest()
-                    telemetry = fastest_lap.get_telemetry()
-                    
-                    telemetry_data[driver] = {
-                        'lap_time': str(fastest_lap.LapTime),
+                    if fastest_lap is not None:
+                        telemetry = fastest_lap.get_telemetry()
+                        
+                        telemetry_data[driver] = {
+                            'lap_time': str(fastest_lap['LapTime']),
                         'speed': telemetry['Speed'].tolist(),
                         'throttle': telemetry['Throttle'].tolist(),
                         'brake': telemetry['Brake'].tolist(),
@@ -162,13 +165,15 @@ def get_lap_times():
             try:
                 driver_laps = session_data.laps.pick_driver(driver)
                 if not driver_laps.empty:
-                    lap_times[driver] = {
-                        'lap_numbers': driver_laps['LapNumber'].tolist(),
-                        'lap_times': [str(lap_time) for lap_time in driver_laps['LapTime']],
-                        'fastest_lap': str(driver_laps.pick_fastest()['LapTime']),
-                        'compound': driver_laps['Compound'].tolist(),
-                        'tire_life': driver_laps['TyreLife'].tolist()
-                    }
+                    fastest_lap_data = driver_laps.pick_fastest()
+                    if fastest_lap_data is not None:
+                        lap_times[driver] = {
+                            'lap_numbers': driver_laps['LapNumber'].tolist(),
+                            'lap_times': [str(lap_time) for lap_time in driver_laps['LapTime']],
+                            'fastest_lap': str(fastest_lap_data['LapTime']),
+                            'compound': driver_laps['Compound'].tolist(),
+                            'tire_life': driver_laps['TyreLife'].tolist()
+                        }
             except Exception as driver_error:
                 logging.warning(f"Error processing driver {driver}: {str(driver_error)}")
                 continue
@@ -427,6 +432,183 @@ def get_enhanced_analytics():
         
     except Exception as e:
         logging.error(f"Error getting enhanced analytics: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+# New Enhanced API Endpoints
+
+@api_bp.route('/live-timing', methods=['GET'])
+def get_live_timing():
+    """Get live timing and session status"""
+    try:
+        year = request.args.get('year', type=int)
+        grand_prix = request.args.get('grand_prix')
+        session = request.args.get('session')
+        
+        if not all([year, grand_prix, session]):
+            return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
+        
+        analyzer = LiveTimingAnalyzer()
+        live_data = analyzer.get_live_session_status(year, grand_prix, session)
+        
+        return jsonify(live_data)
+        
+    except Exception as e:
+        logging.error(f"Error getting live timing: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@api_bp.route('/sector-analysis', methods=['GET'])
+def get_sector_analysis():
+    """Get detailed sector time analysis"""
+    try:
+        year = request.args.get('year', type=int)
+        grand_prix = request.args.get('grand_prix')
+        session = request.args.get('session')
+        
+        if not all([year, grand_prix, session]):
+            return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
+        
+        analyzer = LiveTimingAnalyzer()
+        sector_data = analyzer.get_sector_analysis(year, grand_prix, session)
+        
+        return jsonify(sector_data)
+        
+    except Exception as e:
+        logging.error(f"Error getting sector analysis: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@api_bp.route('/pit-stop-analysis', methods=['GET'])
+def get_pit_stop_analysis():
+    """Get enhanced pit stop analysis"""
+    try:
+        year = request.args.get('year', type=int)
+        grand_prix = request.args.get('grand_prix')
+        
+        if not all([year, grand_prix]):
+            return jsonify({'error': 'Missing required parameters: year, grand_prix'}), 400
+        
+        analyzer = LiveTimingAnalyzer()
+        pit_data = analyzer.get_pit_stop_analysis(year, grand_prix)
+        
+        return jsonify(pit_data)
+        
+    except Exception as e:
+        logging.error(f"Error getting pit stop analysis: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@api_bp.route('/drs-analysis', methods=['GET'])
+def get_drs_analysis():
+    """Get DRS usage analysis"""
+    try:
+        year = request.args.get('year', type=int)
+        grand_prix = request.args.get('grand_prix')
+        session = request.args.get('session')
+        
+        if not all([year, grand_prix, session]):
+            return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
+        
+        analyzer = LiveTimingAnalyzer()
+        drs_data = analyzer.get_drs_usage_analysis(year, grand_prix, session)
+        
+        return jsonify(drs_data)
+        
+    except Exception as e:
+        logging.error(f"Error getting DRS analysis: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@api_bp.route('/championship-standings', methods=['GET'])
+def get_championship_standings():
+    """Get current championship standings"""
+    try:
+        year = request.args.get('year', type=int)
+        up_to_race = request.args.get('up_to_race')
+        
+        if not year:
+            return jsonify({'error': 'Missing required parameter: year'}), 400
+        
+        tracker = ChampionshipTracker()
+        standings = tracker.get_season_standings(year, up_to_race)
+        
+        return jsonify(standings)
+        
+    except Exception as e:
+        logging.error(f"Error getting championship standings: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@api_bp.route('/championship-predictions', methods=['GET'])
+def get_championship_predictions():
+    """Get championship outcome predictions"""
+    try:
+        year = request.args.get('year', type=int)
+        
+        if not year:
+            return jsonify({'error': 'Missing required parameter: year'}), 400
+        
+        tracker = ChampionshipTracker()
+        standings = tracker.get_season_standings(year)
+        predictions = tracker.predict_championship_outcome(year, standings)
+        
+        return jsonify(predictions)
+        
+    except Exception as e:
+        logging.error(f"Error getting championship predictions: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@api_bp.route('/head-to-head', methods=['GET'])
+def get_head_to_head():
+    """Get head-to-head driver comparison"""
+    try:
+        year = request.args.get('year', type=int)
+        driver1 = request.args.get('driver1')
+        driver2 = request.args.get('driver2')
+        
+        if not all([year, driver1, driver2]):
+            return jsonify({'error': 'Missing required parameters: year, driver1, driver2'}), 400
+        
+        tracker = ChampionshipTracker()
+        comparison = tracker.get_head_to_head_comparison(year, driver1, driver2)
+        
+        return jsonify(comparison)
+        
+    except Exception as e:
+        logging.error(f"Error getting head-to-head comparison: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@api_bp.route('/team-performance', methods=['GET'])
+def get_team_performance():
+    """Get comprehensive team performance analysis"""
+    try:
+        year = request.args.get('year', type=int)
+        team = request.args.get('team')
+        
+        if not all([year, team]):
+            return jsonify({'error': 'Missing required parameters: year, team'}), 400
+        
+        tracker = ChampionshipTracker()
+        team_data = tracker.get_team_performance_analysis(year, team)
+        
+        return jsonify(team_data)
+        
+    except Exception as e:
+        logging.error(f"Error getting team performance: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@api_bp.route('/current-standings', methods=['GET'])
+def get_current_standings():
+    """Get current race standings and results"""
+    try:
+        year = request.args.get('year', type=int)
+        grand_prix = request.args.get('grand_prix')
+        
+        if not all([year, grand_prix]):
+            return jsonify({'error': 'Missing required parameters: year, grand_prix'}), 400
+        
+        analyzer = LiveTimingAnalyzer()
+        standings = analyzer.get_current_standings(year, grand_prix)
+        
+        return jsonify(standings)
+        
+    except Exception as e:
+        logging.error(f"Error getting current standings: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 @api_bp.route('/track-dominance', methods=['GET'])

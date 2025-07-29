@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1 Analytics API - Enhanced Dashboard</title>
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+    <style>
+        .api-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid #444;
+        }
+        .api-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,123,255,0.3);
+        }
+        .endpoint-badge {
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        .live-indicator {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        .data-visualization {
+            background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        .quick-access {
+            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 0.75rem 1.5rem;
+            margin: 0.5rem;
+            transition: all 0.3s;
+        }
+        .quick-access:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(220,53,69,0.4);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-racing-car text-danger"></i> F1 Analytics API
+            </a>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text">
+                    <span class="live-indicator">●</span> Live Data Available
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <!-- Hero Section -->
+        <div class="text-center mb-5">
+            <h1 class="display-4 text-primary mb-3">
+                <i class="fas fa-trophy"></i> Enhanced F1 Analytics Platform
+            </h1>
+            <p class="lead text-muted">Real-time Formula 1 data analysis with championship tracking, live timing, and advanced performance metrics</p>
+            <div class="mt-4">
+                <button class="quick-access" onclick="testAPI('/api/health')">
+                    <i class="fas fa-heartbeat"></i> Health Check
+                </button>
+                <button class="quick-access" onclick="loadSeasonData()">
+                    <i class="fas fa-calendar"></i> Load 2024 Season
+                </button>
+                <button class="quick-access" onclick="showChampionshipStandings()">
+                    <i class="fas fa-crown"></i> Championship
+                </button>
+            </div>
+        </div>
+
+        <!-- New Features Showcase -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card border-warning">
+                    <div class="card-header bg-warning text-dark">
+                        <h3 class="card-title mb-0">
+                            <i class="fas fa-star"></i> New Enhanced Features
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="feature-grid">
+                            <div class="card api-card bg-primary">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-stopwatch fa-3x mb-3"></i>
+                                    <h5>Live Timing Analysis</h5>
+                                    <p>Real-time session status, sector analysis, and track conditions</p>
+                                </div>
+                            </div>
+                            <div class="card api-card bg-success">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-trophy fa-3x mb-3"></i>
+                                    <h5>Championship Tracking</h5>
+                                    <p>Current standings, predictions, and head-to-head comparisons</p>
+                                </div>
+                            </div>
+                            <div class="card api-card bg-info">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-car fa-3x mb-3"></i>
+                                    <h5>Enhanced Pit Analysis</h5>
+                                    <p>Strategy insights, pit stop timing, and DRS usage patterns</p>
+                                </div>
+                            </div>
+                            <div class="card api-card bg-warning text-dark">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-chart-line fa-3x mb-3"></i>
+                                    <h5>Team Performance</h5>
+                                    <p>Comprehensive team analysis and constructor standings</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive API Tester -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-play"></i> Interactive API Tester
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Quick Tests</h5>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-outline-primary" onclick="testAPI('/api/seasons')">
+                                        <i class="fas fa-calendar"></i> Available Seasons
+                                    </button>
+                                    <button class="btn btn-outline-success" onclick="testAPI('/api/constants')">
+                                        <i class="fas fa-database"></i> F1 Constants
+                                    </button>
+                                    <button class="btn btn-outline-info" onclick="testChampionship()">
+                                        <i class="fas fa-crown"></i> Championship Standings
+                                    </button>
+                                    <button class="btn btn-outline-warning" onclick="testLiveTiming()">
+                                        <i class="fas fa-stopwatch"></i> Live Timing Demo
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>API Response</h5>
+                                <div id="apiResponse" class="data-visualization">
+                                    <p class="text-muted">Click a button to test the API and see the response here...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced API Endpoints -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-code"></i> Enhanced API Endpoints
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Core Endpoints -->
+                            <div class="col-md-6 mb-4">
+                                <h4 class="text-primary">Core Data Access</h4>
+                                <div class="list-group">
+                                    <div class="list-group-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span><code>/api/health</code></span>
+                                            <span class="endpoint-badge badge bg-success">GET</span>
+                                        </div>
+                                        <small class="text-muted">System health check</small>
+                                    </div>
+                                    <div class="list-group-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span><code>/api/seasons</code></span>
+                                            <span class="endpoint-badge badge bg-success">GET</span>
+                                        </div>
+                                        <small class="text-muted">Available F1 seasons</small>
+                                    </div>
+                                    <div class="list-group-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span><code>/api/session-data</code></span>
+                                            <span class="endpoint-badge badge bg-success">GET</span>
+                                        </div>
+                                        <small class="text-muted">Session information and drivers</small>
+                                    </div>
+                                    <div class="list-group-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span><code>/api/telemetry</code></span>
+                                            <span class="endpoint-badge badge bg-success">GET</span>
+                                        </div>
+                                        <small class="text-muted">Detailed telemetry data</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Enhanced Features -->
+                            <div class="col-md-6 mb-4">
+                                <h4 class="text-warning">Enhanced Features</h4>
+                                <div class="list-group">
+                                    <div class="list-group-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span><code>/api/live-timing</code></span>
+                                            <span class="endpoint-badge badge bg-warning text-dark">NEW</span>
+                                        </div>
+                                        <small class="text-muted">Live session status and timing</small>
+                                    </div>
+                                    <div class="list-group-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span><code>/api/championship-standings</code></span>
+                                            <span class="endpoint-badge badge bg-warning text-dark">NEW</span>
+                                        </div>
+                                        <small class="text-muted">Current championship standings</small>
+                                    </div>
+                                    <div class="list-group-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span><code>/api/head-to-head</code></span>
+                                            <span class="endpoint-badge badge bg-warning text-dark">NEW</span>
+                                        </div>
+                                        <small class="text-muted">Driver head-to-head comparison</small>
+                                    </div>
+                                    <div class="list-group-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span><code>/api/sector-analysis</code></span>
+                                            <span class="endpoint-badge badge bg-warning text-dark">NEW</span>
+                                        </div>
+                                        <small class="text-muted">Detailed sector time analysis</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Analysis Endpoints -->
+                            <div class="col-md-6 mb-4">
+                                <h4 class="text-info">Performance Analysis</h4>
+                                <div class="list-group">
+                                    <div class="list-group-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span><code>/api/tire-strategy</code></span>
+                                            <span class="endpoint-badge badge bg-info">GET</span>
+                                        </div>
+                                        <small class="text-muted">Tire strategy analysis</small>
+                                    </div>
+                                    <div class="list-group-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span><code>/api/pit-stop-analysis</code></span>
+                                            <span class="endpoint-badge badge bg-warning text-dark">ENH</span>
+                                        </div>
+                                        <small class="text-muted">Enhanced pit stop analysis</small>
+                                    </div>
+                                    <div class="list-group-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span><code>/api/drs-analysis</code></span>
+                                            <span class="endpoint-badge badge bg-warning text-dark">NEW</span>
+                                        </div>
+                                        <small class="text-muted">DRS usage patterns</small>
+                                    </div>
+                                    <div class="list-group-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span><code>/api/weather-analysis</code></span>
+                                            <span class="endpoint-badge badge bg-info">GET</span>
+                                        </div>
+                                        <small class="text-muted">Weather impact analysis</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Team & Driver Analysis -->
+                            <div class="col-md-6 mb-4">
+                                <h4 class="text-success">Team & Driver Insights</h4>
+                                <div class="list-group">
+                                    <div class="list-group-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span><code>/api/team-performance</code></span>
+                                            <span class="endpoint-badge badge bg-warning text-dark">NEW</span>
+                                        </div>
+                                        <small class="text-muted">Comprehensive team analysis</small>
+                                    </div>
+                                    <div class="list-group-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span><code>/api/driver-stress</code></span>
+                                            <span class="endpoint-badge badge bg-success">GET</span>
+                                        </div>
+                                        <small class="text-muted">Driver stress analysis</small>
+                                    </div>
+                                    <div class="list-group-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span><code>/api/championship-predictions</code></span>
+                                            <span class="endpoint-badge badge bg-warning text-dark">NEW</span>
+                                        </div>
+                                        <small class="text-muted">Championship outcome predictions</small>
+                                    </div>
+                                    <div class="list-group-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span><code>/api/current-standings</code></span>
+                                            <span class="endpoint-badge badge bg-warning text-dark">NEW</span>
+                                        </div>
+                                        <small class="text-muted">Race results and standings</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Example Usage Section -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="card border-success">
+                    <div class="card-header bg-success text-white">
+                        <h3 class="card-title mb-0">
+                            <i class="fas fa-code"></i> Example API Usage
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <h5>Championship Standings for 2024</h5>
+                        <div class="bg-dark p-3 rounded mb-3">
+                            <code class="text-light">GET {{ request.url_root }}api/championship-standings?year=2024</code>
+                        </div>
+                        
+                        <h5>Head-to-Head Comparison</h5>
+                        <div class="bg-dark p-3 rounded mb-3">
+                            <code class="text-light">GET {{ request.url_root }}api/head-to-head?year=2024&driver1=VER&driver2=HAM</code>
+                        </div>
+                        
+                        <h5>Live Timing for Bahrain Race</h5>
+                        <div class="bg-dark p-3 rounded">
+                            <code class="text-light">GET {{ request.url_root }}api/live-timing?year=2024&grand_prix=Bahrain&session=Race</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API Testing Functions
+        async function testAPI(endpoint) {
+            const responseDiv = document.getElementById('apiResponse');
+            responseDiv.innerHTML = '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>';
+            
+            try {
+                const response = await fetch(endpoint);
+                const data = await response.json();
+                responseDiv.innerHTML = `<pre><code>${JSON.stringify(data, null, 2)}</code></pre>`;
+            } catch (error) {
+                responseDiv.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
+            }
+        }
+
+        async function testChampionship() {
+            await testAPI('/api/championship-standings?year=2024');
+        }
+
+        async function testLiveTiming() {
+            await testAPI('/api/live-timing?year=2024&grand_prix=Bahrain&session=Race');
+        }
+
+        async function loadSeasonData() {
+            await testAPI('/api/seasons');
+        }
+
+        async function showChampionshipStandings() {
+            await testChampionship();
+        }
+
+        // Auto-load health check on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => testAPI('/api/health'), 1000);
+        });
+    </script>
+</body>
+</html>

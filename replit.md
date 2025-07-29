@@ -2,7 +2,16 @@
 
 ## Overview
 
-This is a comprehensive Formula 1 data analysis platform built with Flask that provides REST API endpoints for analyzing F1 telemetry data, race strategies, tire performance, and driver analytics. The system leverages the FastF1 library to access official F1 timing data and provides both a web-based API and a Streamlit dashboard interface.
+This is a comprehensive Formula 1 data analysis platform built with Flask that provides REST API endpoints for analyzing F1 telemetry data, race strategies, tire performance, and driver analytics. The system leverages the FastF1 library to access official F1 timing data and provides both a web-based API and an enhanced interactive dashboard.
+
+## Recent Changes (July 29, 2025)
+
+✓ **Enhanced with Live Timing Features**: Added real-time session status, sector analysis, and track conditions monitoring
+✓ **Championship Tracking System**: Implemented comprehensive championship standings, predictions, and head-to-head driver comparisons  
+✓ **Advanced Pit Stop Analysis**: Enhanced pit stop timing analysis with strategic insights and DRS usage patterns
+✓ **Team Performance Analytics**: Added detailed team performance analysis and constructor standings tracking
+✓ **Interactive Web Dashboard**: Created enhanced web interface with real-time API testing and data visualization
+✓ **New API Endpoints**: Added 8 new endpoints for live timing, championship data, and advanced analytics
 
 ## User Preferences
 
