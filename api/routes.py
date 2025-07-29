@@ -832,8 +832,7 @@ def get_session_progression():
         session = request.args.get('session')
 
         if not all([year, grand_prix, session]):
-            ```python
-return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
+            return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
 
         analyzer = EnhancedF1Analytics()
         progression_data = analyzer.get_session_progression_analysis(year, grand_prix, session)
