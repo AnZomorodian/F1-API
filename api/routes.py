@@ -1312,7 +1312,8 @@ def get_multi_session_comparison():
                 logging.warning(f"Error processing session {session}: {str(session_error)}")
                 continue
 
-        return make_json_serializable(jsonify({
+        # Make data JSON serializable before returning
+        serializable_data = make_json_serializable({
             'multi_session_comparison': comparison_data,
             'driver': driver,
             'session_info': {
@@ -1320,7 +1321,8 @@ def get_multi_session_comparison():
                 'grand_prix': grand_prix,
                 'sessions_analyzed': len(comparison_data)
             }
-        }))
+        })
+        return jsonify(serializable_data)
 
     except Exception as e:
         logging.error(f"Error in multi-session comparison: {str(e)}")
@@ -1974,24 +1976,13 @@ def get_track_analysis():
         if session_data is None:
             return jsonify({'error': 'Session data not available'}), 404
 
-        # Initialize track analyzer
-        try:
-            from utils.track_analysis import analyze_track_characteristics
-            analysis_data = analyze_track_characteristics(year, grand_prix, session, driver)
-        except (ImportError, AttributeError):
-            # Fallback analysis if track_analysis module doesn't exist
-            analysis_data = {
-                'track_characteristics': {
-                    'track_type': 'High Speed Circuit',
-                    'difficulty_level': 'Medium',
-                    'overtaking_difficulty': 'Moderate'
-                },
-                'performance_metrics': {
-                    'average_lap_time': '1:21.500',
-                    'best_lap_time': '1:20.411',
-                    'consistency_score': '0.85'
-                }
-            }
+        # Initialize AI Track Analyzer with real FastF1 data
+        from utils.ai_track_analyzer import AITrackAnalyzer
+        ai_analyzer = AITrackAnalyzer()
+        analysis_data = ai_analyzer.analyze_track_performance(year, grand_prix, session, driver)
+        
+        if analysis_data is None:
+            return jsonify({'error': 'Unable to analyze track performance - insufficient data'}), 404
 
         return jsonify({
             'track_analysis': analysis_data,

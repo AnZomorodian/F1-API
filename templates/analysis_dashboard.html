@@ -521,16 +521,33 @@
             
             let html = '';
             
+            // Track Characteristics
             if (analysis.track_characteristics) {
-                html += '<div class="metric"><span class="metric-label">Track Type</span><span class="metric-value">' + (analysis.track_characteristics.track_type || 'N/A') + '</span></div>';
-                html += '<div class="metric"><span class="metric-label">Difficulty Level</span><span class="metric-value">' + (analysis.track_characteristics.difficulty_level || 'N/A') + '</span></div>';
-                html += '<div class="metric"><span class="metric-label">Overtaking Difficulty</span><span class="metric-value">' + (analysis.track_characteristics.overtaking_difficulty || 'N/A') + '</span></div>';
+                const tc = analysis.track_characteristics;
+                html += '<div class="metric"><span class="metric-label">Track Type</span><span class="metric-value">' + (tc.track_type || 'N/A') + '</span></div>';
+                html += '<div class="metric"><span class="metric-label">Layout Type</span><span class="metric-value">' + (tc.layout_type || 'N/A') + '</span></div>';
+                html += '<div class="metric"><span class="metric-label">Difficulty Level</span><span class="metric-value">' + (tc.difficulty_level || 'N/A') + '</span></div>';
+                html += '<div class="metric"><span class="metric-label">Max Speed</span><span class="metric-value">' + (tc.max_speed_achieved || 'N/A') + '</span></div>';
+                html += '<div class="metric"><span class="metric-label">Overtaking Difficulty</span><span class="metric-value">' + (tc.overtaking_difficulty || 'N/A') + '</span></div>';
             }
             
+            // Performance Metrics
             if (analysis.performance_metrics) {
-                html += '<div class="metric"><span class="metric-label">Average Lap Time</span><span class="metric-value">' + (analysis.performance_metrics.average_lap_time || 'N/A') + '</span></div>';
-                html += '<div class="metric"><span class="metric-label">Best Lap Time</span><span class="metric-value">' + (analysis.performance_metrics.best_lap_time || 'N/A') + '</span></div>';
-                html += '<div class="metric"><span class="metric-label">Consistency</span><span class="metric-value">' + (analysis.performance_metrics.consistency_score || 'N/A') + '</span></div>';
+                const pm = analysis.performance_metrics;
+                html += '<div class="metric"><span class="metric-label">Best Lap Time</span><span class="metric-value">' + (pm.best_lap_time || 'N/A') + '</span></div>';
+                html += '<div class="metric"><span class="metric-label">Average Lap Time</span><span class="metric-value">' + (pm.average_lap_time || 'N/A') + '</span></div>';
+                html += '<div class="metric"><span class="metric-label">Consistency Rating</span><span class="metric-value">' + (pm.consistency_rating || 'N/A') + '</span></div>';
+                html += '<div class="metric"><span class="metric-label">Performance Trend</span><span class="metric-value">' + (pm.performance_trend || 'N/A') + '</span></div>';
+            }
+
+            // AI Insights
+            if (analysis.ai_insights && analysis.ai_insights.length > 0) {
+                html += '<div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">';
+                html += '<div style="font-weight: 600; margin-bottom: 0.5rem; color: var(--primary-red);">🤖 AI Insights</div>';
+                analysis.ai_insights.forEach(insight => {
+                    html += '<div style="margin-bottom: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);">• ' + insight + '</div>';
+                });
+                html += '</div>';
             }
 
             content.innerHTML = html || '<p>No track analysis data available</p>';
@@ -563,5 +580,120 @@
             content.innerHTML = html || '<p>No track dominance data available</p>';
         }
     </script>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Track.lytix</h3>
+                <p>Advanced Formula 1 analytics platform powered by AI and real-time data intelligence.</p>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul class="footer-links">
+                    <li><a href="/">Dashboard</a></li>
+                    <li><a href="/docs">Documentation</a></li>
+                    <li><a href="/analysis">Track Analysis</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Connect</h3>
+                <div class="social-links">
+                    <a href="#" class="social-link"><i class="fab fa-telegram"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-discord"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2025 Track.lytix. Powered by FastF1 and AI Analytics.</p>
+        </div>
+    </footer>
+
+    <style>
+        .footer {
+            background: var(--surface-dark);
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 2rem 1rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-section h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .footer-section p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-red);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            background: var(--surface-light);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .social-link:hover {
+            background: var(--primary-red);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .footer-bottom {
+            max-width: 1400px;
+            margin: 2rem auto 0;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+    </style>
 </body>
 </html>
