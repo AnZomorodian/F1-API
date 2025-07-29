@@ -11,7 +11,6 @@ from utils.brake_analysis import BrakeAnalyzer
 from utils.composite_performance import CompositePerformanceAnalyzer
 from utils.enhanced_analytics import EnhancedF1Analytics
 from utils.driver_manager import DynamicDriverManager
-from utils.enhanced_metrics import EnhancedMetricsProvider
 from utils.visualizations import create_telemetry_plot, create_tire_strategy_plot, create_race_progression_plot
 from utils.track_dominance import create_track_dominance_map
 from utils.live_timing import LiveTimingAnalyzer
@@ -621,7 +620,7 @@ def get_current_standings():
 
 @api_bp.route('/telemetry-charts', methods=['GET'])
 def get_telemetry_charts():
-    """Get enhanced interactive telemetry visualization charts with premium styling"""
+    """Get interactive telemetry visualization charts"""
     try:
         year = request.args.get('year', type=int)
         grand_prix = request.args.get('grand_prix')
@@ -632,79 +631,13 @@ def get_telemetry_charts():
         if not all([year, grand_prix, session, drivers]):
             return jsonify({'error': 'Missing required parameters: year, grand_prix, session, drivers'}), 400
 
-        # Get enhanced telemetry charts
         visualizer = TelemetryVisualizer()
         charts = visualizer.create_telemetry_comparison_chart(year, grand_prix, session, drivers, lap_type)
-        
-        # Get enhanced metrics
-        metrics_provider = EnhancedMetricsProvider()
-        enhanced_metrics = metrics_provider.get_real_time_performance_metrics(year, grand_prix, session)
-        
-        # Add enhanced styling and metrics to response
-        if 'telemetry_charts' in charts:
-            charts['enhanced_metrics'] = enhanced_metrics
-            charts['styling_config'] = {
-                'premium_colors': metrics_provider.get_dynamic_color_palette(len(drivers)),
-                'animation_duration': 800,
-                'chart_theme': 'premium_dark',
-                'responsive_breakpoints': {
-                    'mobile': 768,
-                    'tablet': 1024,
-                    'desktop': 1440
-                }
-            }
 
         return jsonify(charts)
 
     except Exception as e:
-        logging.error(f"Error getting enhanced telemetry charts: {str(e)}")
-        return jsonify({'error': str(e)}), 500
-
-@api_bp.route('/enhanced-dashboard-metrics', methods=['GET'])
-def get_enhanced_dashboard_metrics():
-    """Get enhanced real-time dashboard metrics with advanced analytics"""
-    try:
-        year = request.args.get('year', type=int, default=2024)
-        grand_prix = request.args.get('grand_prix', default='Bahrain')
-        session = request.args.get('session', default='Race')
-        
-        metrics_provider = EnhancedMetricsProvider()
-        enhanced_metrics = metrics_provider.get_real_time_performance_metrics(year, grand_prix, session)
-        
-        # Add real-time simulation data
-        dashboard_data = {
-            'live_metrics': enhanced_metrics,
-            'session_status': {
-                'current_lap': 25,
-                'total_laps': 57,
-                'session_time_remaining': '01:23:45',
-                'track_status': 'GREEN',
-                'weather_status': 'DRY',
-                'temperature': {
-                    'air': 28.5,
-                    'track': 42.3
-                }
-            },
-            'top_performers': {
-                'fastest_lap': {'driver': 'VER', 'time': '1:18.456'},
-                'most_consistent': {'driver': 'HAM', 'coefficient': 0.012},
-                'best_sector_1': {'driver': 'LEC', 'time': '21.234'},
-                'best_sector_2': {'driver': 'RUS', 'time': '28.567'},
-                'best_sector_3': {'driver': 'NOR', 'time': '28.655'}
-            },
-            'real_time_data': {
-                'pit_stops_completed': 18,
-                'safety_car_deployments': 0,
-                'drs_activations_per_lap': 2.4,
-                'average_speed': 205.3,
-                'overtakes_completed': 23
-            }
-        }
-        
-        return jsonify(dashboard_data)
-        
-    except Exception as e:
-        logging.error(f"Error getting enhanced dashboard metrics: {str(e)}")
+        logging.error(f"Error getting telemetry charts: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 @api_bp.route('/sector-charts', methods=['GET'])
