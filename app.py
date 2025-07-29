@@ -25,15 +25,10 @@ def docs():
     """Enhanced documentation route"""
     return render_template('enhanced_documentation.html')
 
-@app.route('/telemetry')
-def telemetry_dashboard():
-    """Telemetry visualization dashboard"""
-    return render_template('telemetry_dashboard.html')
-
-@app.route('/about')
-def about():
-    """About page"""
-    return render_template('about.html')
+@app.route('/analysis')
+def analysis_dashboard():
+    """Track Analysis Dashboard"""
+    return render_template('analysis_dashboard.html')
 
 @app.errorhandler(404)
 def not_found(error):

@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track.lytix - Track Analysis Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-red: #e10600;
+            --primary-black: #15151e;
+            --secondary-gray: #8e8e93;
+            --surface-dark: #1c1c1e;
+            --surface-light: #2c2c2e;
+            --text-primary: #ffffff;
+            --text-secondary: #a8a8b3;
+            --accent-blue: #007aff;
+            --success-green: #30d158;
+            --warning-orange: #ff9f0a;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--primary-black) 0%, #1a1a24 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(21, 21, 30, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .logo:hover {
+            color: var(--primary-red);
+            transform: translateY(-2px);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--text-primary);
+            background: var(--surface-light);
+            transform: translateY(-2px);
+        }
+
+        /* Main Content */
+        .main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-red) 0%, #ff6b35 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        /* Selection Panel */
+        .selection-panel {
+            background: var(--surface-light);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .selection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .form-group select {
+            background: var(--surface-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.75rem;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            transition: var(--transition);
+        }
+
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-red);
+            box-shadow: 0 0 0 2px rgba(225, 6, 0, 0.2);
+        }
+
+        .analyze-btn {
+            background: var(--primary-red);
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 1rem 2rem;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 0 auto;
+        }
+
+        .analyze-btn:hover {
+            background: #cc0500;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .analyze-btn:disabled {
+            background: var(--secondary-gray);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Results Section */
+        .results-section {
+            display: none;
+            margin-top: 3rem;
+        }
+
+        .results-section.active {
+            display: block;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .result-card {
+            background: var(--surface-light);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            transition: var(--transition);
+        }
+
+        .result-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow);
+            border-color: rgba(225, 6, 0, 0.3);
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .result-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary-red) 0%, #ff6b35 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+        }
+
+        .result-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .result-content {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .metric:last-child {
+            border-bottom: none;
+        }
+
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .metric-value {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+
+        .loading i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-red);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: rgba(220, 53, 69, 0.1);
+            border: 1px solid rgba(220, 53, 69, 0.3);
+            color: #dc3545;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .selection-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <a href="/" class="logo">
+                <i class="fas fa-flag-checkered"></i>
+                Track.lytix
+            </a>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Dashboard</a>
+                <a href="/docs" class="nav-link">Documentation</a>
+                <a href="/analysis" class="nav-link active">Track Analysis</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1><i class="fas fa-chart-line"></i> Track Analysis</h1>
+            <p>Comprehensive track performance analysis and dominance insights using advanced F1 data analytics</p>
+        </section>
+
+        <!-- Selection Panel -->
+        <section class="selection-panel">
+            <div class="selection-grid">
+                <div class="form-group">
+                    <label for="year">Season Year</label>
+                    <select id="year">
+                        <option value="2024">2024</option>
+                        <option value="2023">2023</option>
+                        <option value="2022">2022</option>
+                        <option value="2021">2021</option>
+                        <option value="2020">2020</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="grandPrix">Grand Prix</label>
+                    <select id="grandPrix">
+                        <option value="Bahrain">Bahrain</option>
+                        <option value="Saudi Arabia">Saudi Arabia</option>
+                        <option value="Australia">Australia</option>
+                        <option value="Japan">Japan</option>
+                        <option value="China">China</option>
+                        <option value="Miami">Miami</option>
+                        <option value="Emilia Romagna">Emilia Romagna</option>
+                        <option value="Monaco">Monaco</option>
+                        <option value="Canada">Canada</option>
+                        <option value="Spain">Spain</option>
+                        <option value="Austria">Austria</option>
+                        <option value="Great Britain">Great Britain</option>
+                        <option value="Hungary">Hungary</option>
+                        <option value="Belgium">Belgium</option>
+                        <option value="Netherlands">Netherlands</option>
+                        <option value="Italy" selected>Italy</option>
+                        <option value="Azerbaijan">Azerbaijan</option>
+                        <option value="Singapore">Singapore</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="session">Session</label>
+                    <select id="session">
+                        <option value="Practice 1">Practice 1</option>
+                        <option value="Practice 2">Practice 2</option>
+                        <option value="Practice 3">Practice 3</option>
+                        <option value="Qualifying">Qualifying</option>
+                        <option value="Race" selected>Race</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="driver">Driver</label>
+                    <select id="driver">
+                        <option value="VER" selected>Max Verstappen</option>
+                        <option value="PER">Sergio Perez</option>
+                        <option value="LEC">Charles Leclerc</option>
+                        <option value="SAI">Carlos Sainz</option>
+                        <option value="HAM">Lewis Hamilton</option>
+                        <option value="RUS">George Russell</option>
+                        <option value="NOR">Lando Norris</option>
+                        <option value="PIA">Oscar Piastri</option>
+                        <option value="ALO">Fernando Alonso</option>
+                        <option value="STR">Lance Stroll</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button class="analyze-btn" onclick="runTrackAnalysis()">
+                <i class="fas fa-play"></i>
+                Analyze Track Performance
+            </button>
+        </section>
+
+        <!-- Results Section -->
+        <section class="results-section" id="resultsSection">
+            <div class="loading" id="loadingIndicator">
+                <i class="fas fa-cog"></i>
+                <p>Analyzing track performance data...</p>
+            </div>
+
+            <div class="results-grid" id="resultsGrid" style="display: none;">
+                <!-- Track Analysis Results -->
+                <div class="result-card">
+                    <div class="result-header">
+                        <div class="result-icon">
+                            <i class="fas fa-road"></i>
+                        </div>
+                        <div class="result-title">Track Analysis</div>
+                    </div>
+                    <div class="result-content" id="trackAnalysisContent">
+                        <!-- Track analysis data will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Track Dominance Results -->
+                <div class="result-card">
+                    <div class="result-header">
+                        <div class="result-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="result-title">Track Dominance</div>
+                    </div>
+                    <div class="result-content" id="trackDominanceContent">
+                        <!-- Track dominance data will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="error" id="errorMessage" style="display: none;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Error loading track analysis data. Please try again with different parameters.</p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        async function runTrackAnalysis() {
+            const year = document.getElementById('year').value;
+            const grandPrix = document.getElementById('grandPrix').value;
+            const session = document.getElementById('session').value;
+            const driver = document.getElementById('driver').value;
+
+            // Show results section and loading indicator
+            const resultsSection = document.getElementById('resultsSection');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const resultsGrid = document.getElementById('resultsGrid');
+            const errorMessage = document.getElementById('errorMessage');
+
+            resultsSection.classList.add('active');
+            loadingIndicator.style.display = 'block';
+            resultsGrid.style.display = 'none';
+            errorMessage.style.display = 'none';
+
+            try {
+                // Run both track analysis and track dominance APIs
+                const [trackAnalysisResponse, trackDominanceResponse] = await Promise.all([
+                    fetch(`/api/track-analysis?year=${year}&grand_prix=${encodeURIComponent(grandPrix)}&session=${encodeURIComponent(session)}&driver=${driver}`),
+                    fetch(`/api/track-dominance?year=${year}&grand_prix=${encodeURIComponent(grandPrix)}&session=${encodeURIComponent(session)}&driver=${driver}`)
+                ]);
+
+                const trackAnalysisData = await trackAnalysisResponse.json();
+                const trackDominanceData = await trackDominanceResponse.json();
+
+                // Hide loading and show results
+                loadingIndicator.style.display = 'none';
+                resultsGrid.style.display = 'grid';
+
+                // Populate track analysis results
+                displayTrackAnalysis(trackAnalysisData);
+                displayTrackDominance(trackDominanceData);
+
+            } catch (error) {
+                console.error('Error fetching track analysis:', error);
+                loadingIndicator.style.display = 'none';
+                errorMessage.style.display = 'block';
+            }
+        }
+
+        function displayTrackAnalysis(data) {
+            const content = document.getElementById('trackAnalysisContent');
+            
+            if (data.error) {
+                content.innerHTML = `<div class="error">Error: ${data.error}</div>`;
+                return;
+            }
+
+            const analysis = data.track_analysis || {};
+            
+            let html = '';
+            
+            if (analysis.track_characteristics) {
+                html += '<div class="metric"><span class="metric-label">Track Type</span><span class="metric-value">' + (analysis.track_characteristics.track_type || 'N/A') + '</span></div>';
+                html += '<div class="metric"><span class="metric-label">Difficulty Level</span><span class="metric-value">' + (analysis.track_characteristics.difficulty_level || 'N/A') + '</span></div>';
+                html += '<div class="metric"><span class="metric-label">Overtaking Difficulty</span><span class="metric-value">' + (analysis.track_characteristics.overtaking_difficulty || 'N/A') + '</span></div>';
+            }
+            
+            if (analysis.performance_metrics) {
+                html += '<div class="metric"><span class="metric-label">Average Lap Time</span><span class="metric-value">' + (analysis.performance_metrics.average_lap_time || 'N/A') + '</span></div>';
+                html += '<div class="metric"><span class="metric-label">Best Lap Time</span><span class="metric-value">' + (analysis.performance_metrics.best_lap_time || 'N/A') + '</span></div>';
+                html += '<div class="metric"><span class="metric-label">Consistency</span><span class="metric-value">' + (analysis.performance_metrics.consistency_score || 'N/A') + '</span></div>';
+            }
+
+            content.innerHTML = html || '<p>No track analysis data available</p>';
+        }
+
+        function displayTrackDominance(data) {
+            const content = document.getElementById('trackDominanceContent');
+            
+            if (data.error) {
+                content.innerHTML = `<div class="error">Error: ${data.error}</div>`;
+                return;
+            }
+
+            const dominance = data.track_dominance || {};
+            
+            let html = '';
+            
+            if (dominance.sector_dominance) {
+                html += '<div class="metric"><span class="metric-label">Sector 1 Performance</span><span class="metric-value">' + (dominance.sector_dominance.sector_1_performance || 'N/A') + '</span></div>';
+                html += '<div class="metric"><span class="metric-label">Sector 2 Performance</span><span class="metric-value">' + (dominance.sector_dominance.sector_2_performance || 'N/A') + '</span></div>';
+                html += '<div class="metric"><span class="metric-label">Sector 3 Performance</span><span class="metric-value">' + (dominance.sector_dominance.sector_3_performance || 'N/A') + '</span></div>';
+            }
+            
+            if (dominance.dominance_metrics) {
+                html += '<div class="metric"><span class="metric-label">Track Dominance Score</span><span class="metric-value">' + (dominance.dominance_metrics.dominance_score || 'N/A') + '</span></div>';
+                html += '<div class="metric"><span class="metric-label">Competitive Position</span><span class="metric-value">' + (dominance.dominance_metrics.competitive_position || 'N/A') + '</span></div>';
+                html += '<div class="metric"><span class="metric-label">Performance Rating</span><span class="metric-value">' + (dominance.dominance_metrics.performance_rating || 'N/A') + '</span></div>';
+            }
+
+            content.innerHTML = html || '<p>No track dominance data available</p>';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+=True)
+DEBUG:urllib3.connectionpool:Resetting dropped connection: livetiming.formula1.com
+DEBUG:urllib3.connectionpool:https://livetiming.formula1.com:443 "GET /static/2024/2024-09-01_Italian_Grand_Prix/2024-09-01_Race/Position.z.jsonStream HTTP/1.1" 200 7326179
+DEBUG:requests_cache.policy.actions:Cache directives from response headers: CacheDirectives(max_age=3600, etag='"46773df8f88df6bac6191941bf673410"', last_modified='Sun, 01 Sep 2024 14:40:43 GMT')
+DEBUG:charset_normalizer:Encoding detection: utf_8 is most likely the one.
+DEBUG:requests_cache.policy.actions:Pre-write cache checks: Passed
+DEBUG:charset_normalizer:Encoding detection: utf_8 is most likely the one.
+INFO:fastf1.api:Parsing position data...
+[2025-07-29 12:20:26 +0000] [1066] [CRITICAL] WORKER TIMEOUT (pid:1077)
+[2025-07-29 12:20:26 +0000] [1077] [ERROR] Error handling request /api/enhanced/multi-session-comparison
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/gunicorn/workers/sync.py", line 134, in handle
+    self.handle_request(listener, req, client, addr)
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/gunicorn/workers/sync.py", line 177, in handle_request
+    respiter = self.wsgi(environ, resp.start_response)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1536, in __call__
+    return self.wsgi_app(environ, start_response)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/werkzeug/middleware/proxy_fix.py", line 183, in __call__
+    return self.app(environ, start_response)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/api/routes.py", line 1289, in get_multi_session_comparison
+    session_data = data_loader.load_session_data(year, grand_prix, session)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/utils/data_loader.py", line 29, in load_session_data
+    session_obj.load()
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/fastf1/core.py", line 1443, in load
+    self._load_telemetry(livedata=livedata)
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/fastf1/logger.py", line 151, in __wrapped
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/fastf1/core.py", line 2605, in _load_telemetry
+    pos_data = api.position_data(self.api_path, livedata=livedata)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/fastf1/req.py", line 479, in _cached_api_request
+    data = func(api_path, **func_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/fastf1/_api.py", line 1211, in position_data
+    date = arr_all[:, 1].astype('datetime64[ns]')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/gunicorn/workers/base.py", line 204, in handle_abort
+    sys.exit(1)
+SystemExit: 1
+[2025-07-29 12:20:26 +0000] [1077] [INFO] Worker exiting (pid: 1077)
+[2025-07-29 12:20:27 +0000] [1344] [INFO] Booting worker with pid: 1344
+DEBUG:requests_cache.backends:Initializing backend: sqlite /tmp/fastf1_cache/fastf1_http_cache
+DEBUG:requests_cache.backends.base:Initialized SQLiteDict with serializer: SerializerPipeline(name=pickle, n_stages=2)
+DEBUG:requests_cache.backends.sqlite:Opening connection to /tmp/fastf1_cache/fastf1_http_cache.sqlite:responses
+DEBUG:requests_cache.backends.base:Initialized SQLiteDict with serializer: None
+DEBUG:requests_cache.backends.sqlite:Opening connection to /tmp/fastf1_cache/fastf1_http_cache.sqlite:redirects
+INFO:root:FastF1 cache configured at: /tmp/fastf1_cache
