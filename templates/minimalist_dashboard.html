@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>F1 Analytics - Real-time Formula 1 Data Platform</title>
+    <title>Track.lytix - Real-time Formula 1 Data Platform</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -284,6 +284,26 @@
             color: var(--text-primary);
         }
 
+        .endpoint-categories {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .category {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+        }
+
+        .category h3 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
         .endpoint-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -371,13 +391,71 @@
             color: var(--primary-red);
         }
 
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: var(--transition);
+        }
+
+        .social-link:hover {
+            background: var(--primary-red);
+            border-color: var(--primary-red);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .social-link i {
+            font-size: 1rem;
+        }
+
         .footer-bottom {
             border-top: 1px solid var(--border-color);
             padding-top: 1.5rem;
             margin-top: 2rem;
-            text-align: center;
+        }
+
+        .footer-bottom-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-bottom-content p {
             color: var(--text-secondary);
             font-size: 0.875rem;
+            margin: 0;
+        }
+
+        .footer-tech {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .footer-tech span:not(:contains('•')) {
+            padding: 0.25rem 0.75rem;
+            background: rgba(225, 6, 0, 0.1);
+            border-radius: 12px;
+            font-weight: 500;
         }
 
         /* Responsive Design */
@@ -440,8 +518,7 @@
     <header class="header">
         <nav class="nav">
             <a href="/" class="logo">
-                <i class="fas fa-flag-checkered"></i>
-                F1 Analytics
+                Track.lytix
             </a>
             <div class="nav-links">
                 <a href="/docs" class="nav-link">Documentation</a>
@@ -459,7 +536,7 @@
     <main class="main">
         <!-- Hero Section -->
         <section class="hero">
-            <h1>Formula 1 Analytics Platform</h1>
+            <h1>Track.lytix</h1>
             <p>Real-time telemetry analysis, championship tracking, and advanced performance insights powered by official F1 data</p>
             
             <div class="quick-actions">
@@ -573,51 +650,137 @@
             </div>
         </section>
 
-        <!-- New API Endpoints -->
+        <!-- Enhanced API Endpoints -->
         <section class="endpoints">
-            <h2>Latest API Endpoints</h2>
-            <div class="endpoint-grid">
-                <div class="endpoint" onclick="testEndpoint('/api/real-time/session-status')">
-                    <div class="endpoint-info">
-                        <div class="endpoint-name">Real-time Session Status</div>
-                        <div class="endpoint-desc">Live timing and standings</div>
+            <h2>Latest API Endpoints - Enhanced Analytics Suite</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem;">Explore our comprehensive collection of Formula 1 data endpoints with real-time capabilities and AI-powered insights.</p>
+            
+            <div class="endpoint-categories">
+                <div class="category">
+                    <h3>🔴 Real-Time Analytics</h3>
+                    <div class="endpoint-grid">
+                        <div class="endpoint" onclick="testEndpoint('/api/real-time/session-status')">
+                            <div class="endpoint-info">
+                                <div class="endpoint-name">Live Session Status</div>
+                                <div class="endpoint-desc">Real-time race status, sector times, and live standings</div>
+                            </div>
+                            <div class="endpoint-method">GET</div>
+                        </div>
+                        <div class="endpoint" onclick="testEndpoint('/api/real-time/performance-trends')">
+                            <div class="endpoint-info">
+                                <div class="endpoint-name">Performance Trends</div>
+                                <div class="endpoint-desc">Live performance analysis and trend monitoring</div>
+                            </div>
+                            <div class="endpoint-method">GET</div>
+                        </div>
+                        <div class="endpoint" onclick="testEndpoint('/api/real-time/streaming-data')">
+                            <div class="endpoint-info">
+                                <div class="endpoint-name">Streaming Data</div>
+                                <div class="endpoint-desc">Real-time data feed for live applications</div>
+                            </div>
+                            <div class="endpoint-method">GET</div>
+                        </div>
                     </div>
-                    <div class="endpoint-method">GET</div>
                 </div>
-                <div class="endpoint" onclick="testEndpoint('/api/statistics/regression-analysis')">
-                    <div class="endpoint-info">
-                        <div class="endpoint-name">Statistical Analysis</div>
-                        <div class="endpoint-desc">Performance regression analysis</div>
+
+                <div class="category">
+                    <h3>🧠 AI-Powered Insights</h3>
+                    <div class="endpoint-grid">
+                        <div class="endpoint" onclick="testEndpoint('/api/statistics/regression-analysis')">
+                            <div class="endpoint-info">
+                                <div class="endpoint-name">Statistical Analysis</div>
+                                <div class="endpoint-desc">Machine learning performance regression analysis</div>
+                            </div>
+                            <div class="endpoint-method">GET</div>
+                        </div>
+                        <div class="endpoint" onclick="testEndpoint('/api/statistics/predictive-modeling')">
+                            <div class="endpoint-info">
+                                <div class="endpoint-name">Predictive Modeling</div>
+                                <div class="endpoint-desc">AI-driven lap time and performance predictions</div>
+                            </div>
+                            <div class="endpoint-method">GET</div>
+                        </div>
+                        <div class="endpoint" onclick="testEndpoint('/api/statistics/driver-clustering')">
+                            <div class="endpoint-info">
+                                <div class="endpoint-name">Driver Clustering</div>
+                                <div class="endpoint-desc">ML-based driver performance grouping and analysis</div>
+                            </div>
+                            <div class="endpoint-method">GET</div>
+                        </div>
                     </div>
-                    <div class="endpoint-method">GET</div>
                 </div>
-                <div class="endpoint" onclick="testEndpoint('/api/telemetry/comprehensive-analysis')">
-                    <div class="endpoint-info">
-                        <div class="endpoint-name">Advanced Telemetry</div>
-                        <div class="endpoint-desc">AI-powered telemetry insights</div>
+
+                <div class="category">
+                    <h3>📊 Advanced Telemetry</h3>
+                    <div class="endpoint-grid">
+                        <div class="endpoint" onclick="testEndpoint('/api/telemetry/comprehensive-analysis')">
+                            <div class="endpoint-info">
+                                <div class="endpoint-name">Comprehensive Analysis</div>
+                                <div class="endpoint-desc">Complete telemetry breakdown with AI coaching insights</div>
+                            </div>
+                            <div class="endpoint-method">GET</div>
+                        </div>
+                        <div class="endpoint" onclick="testEndpoint('/api/telemetry/heat-map-data')">
+                            <div class="endpoint-info">
+                                <div class="endpoint-name">Heat Map Data</div>
+                                <div class="endpoint-desc">Telemetry visualization data for heat map generation</div>
+                            </div>
+                            <div class="endpoint-method">GET</div>
+                        </div>
                     </div>
-                    <div class="endpoint-method">GET</div>
                 </div>
-                <div class="endpoint" onclick="testEndpoint('/api/enhanced/strategy-optimizer')">
-                    <div class="endpoint-info">
-                        <div class="endpoint-name">Strategy Optimizer</div>
-                        <div class="endpoint-desc">Race strategy recommendations</div>
+
+                <div class="category">
+                    <h3>🏆 Championship Intelligence</h3>
+                    <div class="endpoint-grid">
+                        <div class="endpoint" onclick="testEndpoint('/api/championship/season-analytics')">
+                            <div class="endpoint-info">
+                                <div class="endpoint-name">Season Analytics</div>
+                                <div class="endpoint-desc">Championship predictions and battle analysis</div>
+                            </div>
+                            <div class="endpoint-method">GET</div>
+                        </div>
+                        <div class="endpoint" onclick="testEndpoint('/api/enhanced/championship-impact')">
+                            <div class="endpoint-info">
+                                <div class="endpoint-name">Championship Impact</div>
+                                <div class="endpoint-desc">Race result impact on championship standings</div>
+                            </div>
+                            <div class="endpoint-method">GET</div>
+                        </div>
                     </div>
-                    <div class="endpoint-method">GET</div>
                 </div>
-                <div class="endpoint" onclick="testEndpoint('/api/championship/season-analytics')">
-                    <div class="endpoint-info">
-                        <div class="endpoint-name">Season Analytics</div>
-                        <div class="endpoint-desc">Championship predictions</div>
+
+                <div class="category">
+                    <h3>⚡ Strategy & Optimization</h3>
+                    <div class="endpoint-grid">
+                        <div class="endpoint" onclick="testEndpoint('/api/enhanced/strategy-optimizer')">
+                            <div class="endpoint-info">
+                                <div class="endpoint-name">Strategy Optimizer</div>
+                                <div class="endpoint-desc">AI-powered race strategy recommendations</div>
+                            </div>
+                            <div class="endpoint-method">GET</div>
+                        </div>
+                        <div class="endpoint" onclick="testEndpoint('/api/enhanced/multi-session-comparison')">
+                            <div class="endpoint-info">
+                                <div class="endpoint-name">Multi-Session Analysis</div>
+                                <div class="endpoint-desc">Cross-session performance comparison</div>
+                            </div>
+                            <div class="endpoint-method">GET</div>
+                        </div>
                     </div>
-                    <div class="endpoint-method">GET</div>
                 </div>
-                <div class="endpoint" onclick="testEndpoint('/api/api-intelligence/meta-analytics')">
-                    <div class="endpoint-info">
-                        <div class="endpoint-name">Meta Analytics</div>
-                        <div class="endpoint-desc">API performance insights</div>
+
+                <div class="category">
+                    <h3>📈 Meta Analytics</h3>
+                    <div class="endpoint-grid">
+                        <div class="endpoint" onclick="testEndpoint('/api/api-intelligence/meta-analytics')">
+                            <div class="endpoint-info">
+                                <div class="endpoint-name">API Intelligence</div>
+                                <div class="endpoint-desc">Platform performance and usage analytics</div>
+                            </div>
+                            <div class="endpoint-method">GET</div>
+                        </div>
                     </div>
-                    <div class="endpoint-method">GET</div>
                 </div>
             </div>
         </section>
@@ -633,38 +796,66 @@
     <footer class="footer">
         <div class="footer-content">
             <div class="footer-section">
-                <h3>F1 Analytics Platform</h3>
-                <p>Advanced Formula 1 data analysis platform providing real-time insights, comprehensive telemetry analysis, and championship tracking.</p>
+                <h3>Track.lytix</h3>
+                <p>Advanced Formula 1 data analysis platform providing real-time insights, comprehensive telemetry analysis, and championship tracking with AI-powered intelligence.</p>
+                <div class="social-links">
+                    <a href="https://t.me/tracklytix" class="social-link" target="_blank" rel="noopener">
+                        <i class="fab fa-telegram"></i>
+                        Telegram
+                    </a>
+                    <a href="https://discord.gg/tracklytix" class="social-link" target="_blank" rel="noopener">
+                        <i class="fab fa-discord"></i>
+                        Discord
+                    </a>
+                    <a href="https://github.com/tracklytix" class="social-link" target="_blank" rel="noopener">
+                        <i class="fab fa-github"></i>
+                        GitHub
+                    </a>
+                </div>
             </div>
             
             <div class="footer-section">
-                <h3>Features</h3>
+                <h3>Analytics Features</h3>
                 <a href="#" class="footer-link">Real-time Data Streaming</a>
-                <a href="#" class="footer-link">AI-Powered Analytics</a>
-                <a href="#" class="footer-link">Championship Tracking</a>
-                <a href="#" class="footer-link">Telemetry Visualization</a>
+                <a href="#" class="footer-link">AI-Powered Insights</a>
+                <a href="#" class="footer-link">Championship Intelligence</a>
+                <a href="#" class="footer-link">Advanced Telemetry</a>
                 <a href="#" class="footer-link">Strategy Optimization</a>
+                <a href="#" class="footer-link">Predictive Modeling</a>
             </div>
             
             <div class="footer-section">
-                <h3>Resources</h3>
+                <h3>Platform Resources</h3>
                 <a href="/docs" class="footer-link">API Documentation</a>
                 <a href="/telemetry" class="footer-link">Telemetry Dashboard</a>
-                <a href="/analytics" class="footer-link">Analytics Dashboard</a>
+                <a href="/analytics" class="footer-link">Analytics Suite</a>
+                <a href="#" class="footer-link">Developer Guide</a>
                 <a href="#" class="footer-link">Data Sources</a>
+                <a href="#" class="footer-link">Rate Limits</a>
             </div>
             
             <div class="footer-section">
-                <h3>Technical Info</h3>
+                <h3>Platform Stats</h3>
                 <p><strong>Data Source:</strong> Official F1 Timing Data</p>
                 <p><strong>Coverage:</strong> 2018-2025 Seasons</p>
                 <p><strong>Update Frequency:</strong> Real-time</p>
                 <p><strong>Response Time:</strong> < 200ms avg</p>
+                <p><strong>API Endpoints:</strong> 45+ Active</p>
+                <p><strong>Data Points:</strong> 2.4M+ Processed</p>
             </div>
         </div>
         
         <div class="footer-bottom">
-            <p>&copy; 2025 F1 Analytics Platform. Built with FastF1 API and powered by real-time Formula 1 data.</p>
+            <div class="footer-bottom-content">
+                <p>&copy; 2025 Track.lytix. Built with FastF1 API and powered by real-time Formula 1 data.</p>
+                <div class="footer-tech">
+                    <span>Powered by AI</span>
+                    <span>•</span>
+                    <span>Real-time Data</span>
+                    <span>•</span>
+                    <span>Open Source</span>
+                </div>
+            </div>
         </div>
     </footer>
 

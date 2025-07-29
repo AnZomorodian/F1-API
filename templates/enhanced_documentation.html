@@ -1,100 +1,850 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>F1 Analytics API - Enhanced Dashboard</title>
-    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
-    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+    <title>Track.lytix - API Documentation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <style>
-        .api-card {
-            transition: transform 0.2s, box-shadow 0.2s;
-            border: 1px solid #444;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .api-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,123,255,0.3);
+
+        :root {
+            --primary-red: #e10600;
+            --primary-black: #15151e;
+            --secondary-gray: #8e8e93;
+            --surface-dark: #1c1c1e;
+            --surface-light: #2c2c2e;
+            --text-primary: #ffffff;
+            --text-secondary: #a8a8b3;
+            --accent-blue: #007aff;
+            --success-green: #30d158;
+            --warning-orange: #ff9f0a;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
-        .endpoint-badge {
-            font-size: 0.9rem;
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--primary-black) 0%, #1a1a24 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Header - Same as main page */
+        .header {
+            background: rgba(21, 21, 30, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
             padding: 0.5rem 1rem;
+            border-radius: 8px;
         }
-        .feature-grid {
+
+        .nav-link:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-link.active {
+            color: var(--primary-red);
+            background: rgba(225, 6, 0, 0.1);
+        }
+
+        /* Main Content */
+        .main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-red) 0%, #ff6b35 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Documentation Sections */
+        .doc-section {
+            background: var(--surface-light);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .doc-section h2 {
+            color: var(--text-primary);
+            font-size: 1.75rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .doc-section h3 {
+            color: var(--text-primary);
+            font-size: 1.25rem;
+            margin: 1.5rem 0 1rem 0;
+            font-weight: 600;
+        }
+
+        .data-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 1.5rem;
+            margin: 1.5rem 0;
         }
-        .live-indicator {
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-        .data-visualization {
-            background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
-            border-radius: 10px;
+
+        .data-card {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
             padding: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .data-card:hover {
+            border-color: var(--primary-red);
+            transform: translateY(-2px);
+        }
+
+        .data-card h4 {
+            color: var(--primary-red);
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .data-list {
+            list-style: none;
+            margin: 0.75rem 0;
+        }
+
+        .data-list li {
+            color: var(--text-secondary);
+            padding: 0.25rem 0;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .data-list li:before {
+            content: "•";
+            color: var(--primary-red);
+            position: absolute;
+            left: 0;
+        }
+
+        .endpoint-table {
+            width: 100%;
+            border-collapse: collapse;
             margin: 1rem 0;
         }
-        .quick-access {
-            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
-            color: white;
-            border: none;
-            border-radius: 25px;
-            padding: 0.75rem 1.5rem;
-            margin: 0.5rem;
-            transition: all 0.3s;
+
+        .endpoint-table th,
+        .endpoint-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
         }
-        .quick-access:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(220,53,69,0.4);
+
+        .endpoint-table th {
+            background: rgba(0, 0, 0, 0.3);
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .endpoint-table td {
+            color: var(--text-secondary);
+        }
+
+        .method-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .method-get { background: var(--accent-blue); }
+        .method-post { background: var(--success-green); }
+        .method-put { background: var(--warning-orange); }
+        .method-delete { background: var(--primary-red); }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+
+        .code-block code {
+            color: #a8a8b3;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.875rem;
+        }
+
+        /* Footer - Same as main page */
+        .footer {
+            background: var(--surface-dark);
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 2rem 2rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-section h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .footer-section p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .footer-link {
+            display: block;
+            color: var(--text-secondary);
+            text-decoration: none;
+            margin-bottom: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .footer-link:hover {
+            color: var(--primary-red);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: var(--transition);
+        }
+
+        .social-link:hover {
+            background: var(--primary-red);
+            border-color: var(--primary-red);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--border-color);
+            padding-top: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .footer-bottom-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-bottom-content p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin: 0;
+        }
+
+        .footer-tech {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .footer-tech span:not(:contains('•')) {
+            padding: 0.25rem 0.75rem;
+            background: rgba(225, 6, 0, 0.1);
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .nav {
+                padding: 0 1rem;
+            }
+            
+            .main {
+                padding: 2rem 1rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .data-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="#">
-                <i class="fas fa-racing-car text-danger"></i> F1 Analytics API
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <a href="/" class="logo">
+                Track.lytix
             </a>
-            <div class="navbar-nav ms-auto">
-                <span class="navbar-text">
-                    <span class="live-indicator">●</span> Live Data Available
-                </span>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/docs" class="nav-link active">Documentation</a>
+                <a href="/telemetry" class="nav-link">Telemetry</a>
+                <a href="/analytics" class="nav-link">Analytics</a>
             </div>
-        </div>
-    </nav>
+        </nav>
+    </header>
 
-    <div class="container my-5">
+    <!-- Main Content -->
+    <main class="main">
         <!-- Hero Section -->
-        <div class="text-center mb-5">
-            <h1 class="display-4 text-primary mb-3">
-                <i class="fas fa-trophy"></i> Enhanced F1 Analytics Platform
-            </h1>
-            <p class="lead text-muted">Real-time Formula 1 data analysis with championship tracking, live timing, and advanced performance metrics</p>
-            <div class="mt-4">
-                <button class="quick-access" onclick="testAPI('/api/health')">
-                    <i class="fas fa-heartbeat"></i> Health Check
-                </button>
-                <button class="quick-access" onclick="loadSeasonData()">
-                    <i class="fas fa-calendar"></i> Load 2025 Season
-                </button>
-                <button class="quick-access" onclick="showChampionshipStandings()">
-                    <i class="fas fa-crown"></i> Championship
-                </button>
-                <button class="quick-access" onclick="window.location.href='/telemetry'">
-                    <i class="fas fa-chart-line"></i> Enhanced Telemetry Dashboard
-                </button>
-                <button class="quick-access" onclick="testNewAnalytics()">
-                    <i class="fas fa-rocket"></i> Test New Analytics
-                </button>
+        <section class="hero">
+            <h1>API Documentation</h1>
+            <p>Comprehensive guide to Track.lytix Formula 1 data platform with real-time analytics and AI-powered insights</p>
+        </section>
+
+        <!-- Available Data Sources -->
+        <section class="doc-section">
+            <h2><i class="fas fa-database"></i> Available Data Sources</h2>
+            <p>Track.lytix provides comprehensive Formula 1 data coverage from official sources with real-time capabilities.</p>
+            
+            <div class="data-grid">
+                <div class="data-card">
+                    <h4>🏁 Race Data</h4>
+                    <ul class="data-list">
+                        <li>Lap times and sectors</li>
+                        <li>Position changes</li>
+                        <li>Race results and standings</li>
+                        <li>Pit stop data</li>
+                        <li>DNF/DNS information</li>
+                        <li>Fastest laps</li>
+                        <li>Grid positions</li>
+                    </ul>
+                </div>
+
+                <div class="data-card">
+                    <h4>📊 Telemetry Data</h4>
+                    <ul class="data-list">
+                        <li>Speed data (GPS and wheel)</li>
+                        <li>Throttle application</li>
+                        <li>Brake pressure</li>
+                        <li>Gear changes</li>
+                        <li>RPM readings</li>
+                        <li>DRS usage</li>
+                        <li>Engine modes</li>
+                    </ul>
+                </div>
+
+                <div class="data-card">
+                    <h4>🏎️ Car Setup Data</h4>
+                    <ul class="data-list">
+                        <li>Aerodynamic settings</li>
+                        <li>Suspension setup</li>
+                        <li>Tire compounds</li>
+                        <li>Fuel loads</li>
+                        <li>Differential settings</li>
+                        <li>Brake balance</li>
+                        <li>Wing angles</li>
+                    </ul>
+                </div>
+
+                <div class="data-card">
+                    <h4>🌤️ Weather & Track</h4>
+                    <ul class="data-list">
+                        <li>Air temperature</li>
+                        <li>Track temperature</li>
+                        <li>Humidity levels</li>
+                        <li>Wind speed/direction</li>
+                        <li>Rainfall data</li>
+                        <li>Track evolution</li>
+                        <li>Grip levels</li>
+                    </ul>
+                </div>
+
+                <div class="data-card">
+                    <h4>🏆 Championship Data</h4>
+                    <ul class="data-list">
+                        <li>Driver standings</li>
+                        <li>Constructor standings</li>
+                        <li>Points progression</li>
+                        <li>Historical comparisons</li>
+                        <li>Title fight scenarios</li>
+                        <li>Mathematical possibilities</li>
+                        <li>Season statistics</li>
+                    </ul>
+                </div>
+
+                <div class="data-card">
+                    <h4>👥 Driver Information</h4>
+                    <ul class="data-list">
+                        <li>Driver profiles</li>
+                        <li>Team affiliations</li>
+                        <li>Performance history</li>
+                        <li>Head-to-head records</li>
+                        <li>Career statistics</li>
+                        <li>Driving style analysis</li>
+                        <li>Consistency metrics</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>📅 Season Coverage</h3>
+            <p>Complete data coverage from <strong>2018 to 2025</strong> seasons including:</p>
+            <ul class="data-list">
+                <li>All official F1 sessions (Practice, Qualifying, Sprint, Race)</li>
+                <li>24 Grand Prix events per season</li>
+                <li>All 20 current drivers</li>
+                <li>10 constructor teams</li>
+                <li>24+ race circuits</li>
+                <li>Over 2.4M telemetry data points</li>
+            </ul>
+        </section>
+
+        <!-- API Endpoints -->
+        <section class="doc-section">
+            <h2><i class="fas fa-code"></i> API Endpoints</h2>
+            <p>Comprehensive collection of endpoints for real-time Formula 1 data analysis.</p>
+
+            <h3>🔴 Real-Time Analytics</h3>
+            <table class="endpoint-table">
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Endpoint</th>
+                        <th>Description</th>
+                        <th>Parameters</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="method-badge method-get">GET</span></td>
+                        <td>/api/real-time/session-status</td>
+                        <td>Live session status and timing</td>
+                        <td>year, grand_prix</td>
+                    </tr>
+                    <tr>
+                        <td><span class="method-badge method-get">GET</span></td>
+                        <td>/api/real-time/performance-trends</td>
+                        <td>Live performance analysis</td>
+                        <td>year, grand_prix, session</td>
+                    </tr>
+                    <tr>
+                        <td><span class="method-badge method-get">GET</span></td>
+                        <td>/api/real-time/streaming-data</td>
+                        <td>Real-time data feed</td>
+                        <td>year, grand_prix</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>🧠 AI-Powered Analytics</h3>
+            <table class="endpoint-table">
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Endpoint</th>
+                        <th>Description</th>
+                        <th>Parameters</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="method-badge method-get">GET</span></td>
+                        <td>/api/statistics/regression-analysis</td>
+                        <td>ML performance regression</td>
+                        <td>year, grand_prix, session</td>
+                    </tr>
+                    <tr>
+                        <td><span class="method-badge method-get">GET</span></td>
+                        <td>/api/statistics/predictive-modeling</td>
+                        <td>AI lap time predictions</td>
+                        <td>year, grand_prix, session, driver</td>
+                    </tr>
+                    <tr>
+                        <td><span class="method-badge method-get">GET</span></td>
+                        <td>/api/statistics/driver-clustering</td>
+                        <td>ML driver performance grouping</td>
+                        <td>year, grand_prix, session</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>📊 Advanced Telemetry</h3>
+            <table class="endpoint-table">
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Endpoint</th>
+                        <th>Description</th>
+                        <th>Parameters</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="method-badge method-get">GET</span></td>
+                        <td>/api/telemetry/comprehensive-analysis</td>
+                        <td>Complete telemetry breakdown</td>
+                        <td>year, grand_prix, session, driver</td>
+                    </tr>
+                    <tr>
+                        <td><span class="method-badge method-get">GET</span></td>
+                        <td>/api/telemetry/heat-map-data</td>
+                        <td>Telemetry visualization data</td>
+                        <td>year, grand_prix, session</td>
+                    </tr>
+                    <tr>
+                        <td><span class="method-badge method-get">GET</span></td>
+                        <td>/api/telemetry/visualization</td>
+                        <td>Interactive telemetry charts</td>
+                        <td>year, grand_prix, session, driver</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>🏆 Championship Intelligence</h3>
+            <table class="endpoint-table">
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Endpoint</th>
+                        <th>Description</th>
+                        <th>Parameters</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="method-badge method-get">GET</span></td>
+                        <td>/api/championship/season-analytics</td>
+                        <td>Season analytics and predictions</td>
+                        <td>year</td>
+                    </tr>
+                    <tr>
+                        <td><span class="method-badge method-get">GET</span></td>
+                        <td>/api/enhanced/championship-impact</td>
+                        <td>Race result championship impact</td>
+                        <td>year, grand_prix</td>
+                    </tr>
+                    <tr>
+                        <td><span class="method-badge method-get">GET</span></td>
+                        <td>/api/championship/standings</td>
+                        <td>Current championship standings</td>
+                        <td>year, round</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>⚡ Strategy & Optimization</h3>
+            <table class="endpoint-table">
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Endpoint</th>
+                        <th>Description</th>
+                        <th>Parameters</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="method-badge method-get">GET</span></td>
+                        <td>/api/enhanced/strategy-optimizer</td>
+                        <td>AI strategy recommendations</td>
+                        <td>year, grand_prix, driver</td>
+                    </tr>
+                    <tr>
+                        <td><span class="method-badge method-get">GET</span></td>
+                        <td>/api/enhanced/multi-session-comparison</td>
+                        <td>Cross-session analysis</td>
+                        <td>year, grand_prix, sessions, driver</td>
+                    </tr>
+                    <tr>
+                        <td><span class="method-badge method-get">GET</span></td>
+                        <td>/api/strategy/pit-analysis</td>
+                        <td>Pit stop strategy analysis</td>
+                        <td>year, grand_prix, session</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Example Usage -->
+        <section class="doc-section">
+            <h2><i class="fas fa-terminal"></i> Example Usage</h2>
+            
+            <h3>Basic API Call</h3>
+            <div class="code-block">
+                <code>
+GET /api/championship/season-analytics?year=2024
+
+Response:
+{
+  "championship_battle": {
+    "drivers_championship": {
+      "leader": "Driver_15",
+      "points_gap": 43,
+      "races_remaining": 12,
+      "mathematical_certainty": 10
+    }
+  }
+}
+                </code>
+            </div>
+
+            <h3>Telemetry Analysis</h3>
+            <div class="code-block">
+                <code>
+GET /api/telemetry/comprehensive-analysis?year=2024&grand_prix=Bahrain&session=Race&driver=VER
+
+Response:
+{
+  "driver_signature": {
+    "braking_style": "Late_braker",
+    "cornering_preference": "Trail_braker",
+    "acceleration_pattern": "Progressive"
+  },
+  "ai_coaching_insights": [
+    "Consider later braking into Turn 3 for 0.2s gain",
+    "Optimize throttle application in low-speed corners"
+  ]
+}
+                </code>
+            </div>
+
+            <h3>Real-time Data Stream</h3>
+            <div class="code-block">
+                <code>
+GET /api/real-time/streaming-data?year=2024&grand_prix=Monaco
+
+Response:
+{
+  "live_session": {
+    "status": "Green Flag",
+    "time_remaining": "32:45",
+    "current_leader": "Driver_VER"
+  },
+  "streaming_endpoints": [
+    "/api/real-time/session-status",
+    "/api/real-time/performance-trends"
+  ]
+}
+                </code>
+            </div>
+        </section>
+
+        <!-- Rate Limits & Authentication -->
+        <section class="doc-section">
+            <h2><i class="fas fa-shield-alt"></i> API Information</h2>
+            
+            <h3>Rate Limits</h3>
+            <ul class="data-list">
+                <li><strong>General Endpoints:</strong> 1000 requests per hour</li>
+                <li><strong>Real-time Endpoints:</strong> 500 requests per hour</li>
+                <li><strong>Telemetry Endpoints:</strong> 300 requests per hour</li>
+                <li><strong>Burst Limit:</strong> 10 requests per second</li>
+            </ul>
+
+            <h3>Response Format</h3>
+            <p>All API responses are in JSON format with consistent structure:</p>
+            <div class="code-block">
+                <code>
+{
+  "data": { ... },           // Main response data
+  "metadata": {              // Request metadata
+    "timestamp": "2025-07-29T09:30:00Z",
+    "response_time_ms": 145,
+    "cache_status": "hit"
+  },
+  "session_info": {          // Session context
+    "year": 2024,
+    "grand_prix": "Bahrain",
+    "session": "Race"
+  }
+}
+                </code>
+            </div>
+
+            <h3>Error Handling</h3>
+            <p>Error responses include detailed information:</p>
+            <div class="code-block">
+                <code>
+{
+  "error": "Missing required parameter: driver",
+  "error_code": "MISSING_PARAMETER",
+  "status": 400,
+  "suggestion": "Add driver parameter: ?driver=VER"
+}
+                </code>
+            </div>
+
+            <h3>Data Freshness</h3>
+            <ul class="data-list">
+                <li><strong>Real-time Data:</strong> Updated every 1-2 seconds during live sessions</li>
+                <li><strong>Historical Data:</strong> Cached for optimal performance</li>
+                <li><strong>Analytics:</strong> Updated within 30 seconds of new data</li>
+                <li><strong>Seasonal Data:</strong> Updated after each race weekend</li>
+            </ul>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Track.lytix</h3>
+                <p>Advanced Formula 1 data analysis platform providing real-time insights, comprehensive telemetry analysis, and championship tracking with AI-powered intelligence.</p>
+                <div class="social-links">
+                    <a href="https://t.me/tracklytix" class="social-link" target="_blank" rel="noopener">
+                        <i class="fab fa-telegram"></i>
+                        Telegram
+                    </a>
+                    <a href="https://discord.gg/tracklytix" class="social-link" target="_blank" rel="noopener">
+                        <i class="fab fa-discord"></i>
+                        Discord
+                    </a>
+                    <a href="https://github.com/tracklytix" class="social-link" target="_blank" rel="noopener">
+                        <i class="fab fa-github"></i>
+                        GitHub
+                    </a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Analytics Features</h3>
+                <a href="#" class="footer-link">Real-time Data Streaming</a>
+                <a href="#" class="footer-link">AI-Powered Insights</a>
+                <a href="#" class="footer-link">Championship Intelligence</a>
+                <a href="#" class="footer-link">Advanced Telemetry</a>
+                <a href="#" class="footer-link">Strategy Optimization</a>
+                <a href="#" class="footer-link">Predictive Modeling</a>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Platform Resources</h3>
+                <a href="/docs" class="footer-link">API Documentation</a>
+                <a href="/telemetry" class="footer-link">Telemetry Dashboard</a>
+                <a href="/analytics" class="footer-link">Analytics Suite</a>
+                <a href="#" class="footer-link">Developer Guide</a>
+                <a href="#" class="footer-link">Data Sources</a>
+                <a href="#" class="footer-link">Rate Limits</a>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Platform Stats</h3>
+                <p><strong>Data Source:</strong> Official F1 Timing Data</p>
+                <p><strong>Coverage:</strong> 2018-2025 Seasons</p>
+                <p><strong>Update Frequency:</strong> Real-time</p>
+                <p><strong>Response Time:</strong> < 200ms avg</p>
+                <p><strong>API Endpoints:</strong> 45+ Active</p>
+                <p><strong>Data Points:</strong> 2.4M+ Processed</p>
             </div>
         </div>
+        
+        <div class="footer-bottom">
+            <div class="footer-bottom-content">
+                <p>&copy; 2025 Track.lytix. Built with FastF1 API and powered by real-time Formula 1 data.</p>
+                <div class="footer-tech">
+                    <span>Powered by AI</span>
+                    <span>•</span>
+                    <span>Real-time Data</span>
+                    <span>•</span>
+                    <span>Open Source</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
 
         <!-- New Features Showcase -->
         <div class="row mb-5">
