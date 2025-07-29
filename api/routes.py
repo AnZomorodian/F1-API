@@ -522,17 +522,48 @@ def get_live_timing():
 def get_sector_analysis():
     """Get detailed sector time analysis"""
     try:
-        year = request.args.get('year', type=int)
-        grand_prix = request.args.get('grand_prix')
-        session = request.args.get('session')
+        year = request.args.get('year', type=int, default=2024)
+        grand_prix = request.args.get('grand_prix', default='Italy')
+        session = request.args.get('session', default='Race')
 
-        if not all([year, grand_prix, session]):
-            return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
+        session_data = data_loader.load_session_data(year, grand_prix, session)
+        if session_data is None:
+            return jsonify({'error': 'Failed to load session data'}), 404
 
-        analyzer = LiveTimingAnalyzer()
-        sector_data = analyzer.get_sector_analysis(year, grand_prix, session)
+        sector_analysis = {}
+        
+        for driver in session_data.drivers:
+            try:
+                driver_laps = session_data.laps.pick_driver(driver)
+                if not driver_laps.empty:
+                    valid_laps = driver_laps.dropna(subset=['Sector1Time', 'Sector2Time', 'Sector3Time'])
+                    
+                    if not valid_laps.empty:
+                        sector_analysis[str(driver)] = {
+                            'best_sector_1': str(valid_laps['Sector1Time'].min()),
+                            'best_sector_2': str(valid_laps['Sector2Time'].min()),
+                            'best_sector_3': str(valid_laps['Sector3Time'].min()),
+                            'avg_sector_1': str(valid_laps['Sector1Time'].mean()),
+                            'avg_sector_2': str(valid_laps['Sector2Time'].mean()),
+                            'avg_sector_3': str(valid_laps['Sector3Time'].mean()),
+                            'sector_consistency': {
+                                'sector_1_std': float(valid_laps['Sector1Time'].std().total_seconds()),
+                                'sector_2_std': float(valid_laps['Sector2Time'].std().total_seconds()),
+                                'sector_3_std': float(valid_laps['Sector3Time'].std().total_seconds())
+                            }
+                        }
+            except Exception as driver_error:
+                logging.warning(f"Error processing driver {driver}: {str(driver_error)}")
+                continue
 
-        return make_json_serializable(jsonify(sector_data))
+        return make_json_serializable(jsonify({
+            'sector_analysis': sector_analysis,
+            'session_info': {
+                'year': year,
+                'grand_prix': grand_prix,
+                'session': session
+            }
+        }))
 
     except Exception as e:
         logging.error(f"Error getting sector analysis: {str(e)}")
@@ -1148,15 +1179,12 @@ def get_regression_analysis():
 def get_predictive_modeling():
     """Get predictive lap time modeling"""
     try:
-        year = request.args.get('year', type=int)
-        grand_prix = request.args.get('grand_prix')
-        session = request.args.get('session')
-        driver = request.args.get('driver')
+        year = request.args.get('year', type=int, default=2024)
+        grand_prix = request.args.get('grand_prix', default='Italy')
+        session = request.args.get('session', default='Race')
+        driver = request.args.get('driver', default='VER')
         tire_age = request.args.get('tire_age', type=int, default=10)
         track_temp = request.args.get('track_temp', type=float, default=35.0)
-
-        if not all([year, grand_prix, session, driver]):
-            return jsonify({'error': 'Missing required parameters: year, grand_prix, session, driver'}), 400
 
         modeler = PredictiveModeling()
         prediction_data = modeler.predict_lap_times(year, grand_prix, session, driver, tire_age, track_temp)

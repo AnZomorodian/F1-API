@@ -408,6 +408,7 @@
                         <label><i class="fas fa-calendar"></i> Championship Year</label>
                         <select id="yearSelect">
                             <option value="">Choose Year...</option>
+                            <option value="2025">2025 Season</option>
                             <option value="2024">2024 Season</option>
                             <option value="2023">2023 Season</option>
                             <option value="2022">2022 Season</option>
@@ -460,15 +461,26 @@
                 <div class="selection-step" id="driverStep">
                     <div class="step-indicator">
                         <span class="step-number">4</span>
-                        <span>Select Driver</span>
+                        <span>Select Drivers</span>
                     </div>
-                    <div class="selection-item">
-                        <label><i class="fas fa-user"></i> Driver</label>
-                        <select id="driverSelect" disabled>
-                            <option value="">First select session...</option>
-                        </select>
-                        <div class="loading-indicator">
-                            <i class="fas fa-spinner fa-spin"></i>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="selection-item">
+                            <label><i class="fas fa-user"></i> Driver 1</label>
+                            <select id="driver1Select" disabled>
+                                <option value="">First select session...</option>
+                            </select>
+                            <div class="loading-indicator">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                        <div class="selection-item">
+                            <label><i class="fas fa-user"></i> Driver 2</label>
+                            <select id="driver2Select" disabled>
+                                <option value="">First select session...</option>
+                            </select>
+                            <div class="loading-indicator">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -692,12 +704,14 @@
             year: null,
             grandPrix: null,
             session: null,
-            driver: null
+            driver1: null,
+            driver2: null
         };
         let sessionData = null;
 
         // Grand Prix options for different years
         const grandPrixByYear = {
+            2025: ['Bahrain', 'Saudi Arabia', 'Australia', 'Japan', 'China', 'Miami', 'Emilia Romagna', 'Monaco', 'Canada', 'Spain', 'Austria', 'Great Britain', 'Hungary', 'Belgium', 'Netherlands', 'Italy', 'Azerbaijan', 'Singapore', 'United States', 'Mexico', 'Brazil', 'Las Vegas', 'Qatar', 'Abu Dhabi'],
             2024: ['Bahrain', 'Saudi Arabia', 'Australia', 'Japan', 'China', 'Miami', 'Emilia Romagna', 'Monaco', 'Canada', 'Spain', 'Austria', 'Great Britain', 'Hungary', 'Belgium', 'Netherlands', 'Italy', 'Azerbaijan', 'Singapore', 'United States', 'Mexico', 'Brazil', 'Las Vegas', 'Qatar', 'Abu Dhabi'],
             2023: ['Bahrain', 'Saudi Arabia', 'Australia', 'Azerbaijan', 'Miami', 'Monaco', 'Spain', 'Canada', 'Austria', 'Great Britain', 'Hungary', 'Belgium', 'Netherlands', 'Italy', 'Singapore', 'Japan', 'Qatar', 'United States', 'Mexico', 'Brazil', 'Las Vegas', 'Abu Dhabi'],
             2022: ['Bahrain', 'Saudi Arabia', 'Australia', 'Emilia Romagna', 'Miami', 'Spain', 'Monaco', 'Azerbaijan', 'Canada', 'Great Britain', 'Austria', 'France', 'Hungary', 'Belgium', 'Netherlands', 'Italy', 'Singapore', 'Japan', 'United States', 'Mexico', 'Brazil', 'Abu Dhabi'],
@@ -719,7 +733,8 @@
             document.getElementById('yearSelect').addEventListener('change', onYearChange);
             document.getElementById('grandPrixSelect').addEventListener('change', onGrandPrixChange);
             document.getElementById('sessionSelect').addEventListener('change', onSessionChange);
-            document.getElementById('driverSelect').addEventListener('change', onDriverChange);
+            document.getElementById('driver1Select').addEventListener('change', onDriver1Change);
+            document.getElementById('driver2Select').addEventListener('change', onDriver2Change);
         }
 
         function updateProgress() {
@@ -862,7 +877,8 @@
                     await loadSessionData();
                     await populateDriverDropdown();
                     
-                    document.getElementById('driverSelect').disabled = false;
+                    document.getElementById('driver1Select').disabled = false;
+                    document.getElementById('driver2Select').disabled = false;
                     showNotification(`✅ ${session} session selected. Choose a driver for analysis.`, 'success');
                 } catch (error) {
                     showNotification(`❌ Error loading session data: ${error.message}`, 'error');
@@ -927,8 +943,11 @@
         }
 
         async function populateDriverDropdown() {
-            const driverSelect = document.getElementById('driverSelect');
-            driverSelect.innerHTML = '<option value="">Choose Driver...</option>';
+            const driver1Select = document.getElementById('driver1Select');
+            const driver2Select = document.getElementById('driver2Select');
+            
+            driver1Select.innerHTML = '<option value="">Choose Driver 1...</option>';
+            driver2Select.innerHTML = '<option value="">Choose Driver 2...</option>';
             
             // Driver code to full name mapping
             const driverNames = {
@@ -957,21 +976,39 @@
             };
             
             availableDrivers.forEach(driver => {
-                const option = document.createElement('option');
-                option.value = driver;
-                option.textContent = driverNames[driver] || driver; // Use full name or fallback to code
-                driverSelect.appendChild(option);
+                const option1 = document.createElement('option');
+                option1.value = driver;
+                option1.textContent = driverNames[driver] || driver;
+                driver1Select.appendChild(option1);
+
+                const option2 = document.createElement('option');
+                option2.value = driver;
+                option2.textContent = driverNames[driver] || driver;
+                driver2Select.appendChild(option2);
             });
         }
 
-        function onDriverChange() {
-            const driver = document.getElementById('driverSelect').value;
+        function onDriver1Change() {
+            const driver1 = document.getElementById('driver1Select').value;
             
-            if (driver) {
-                currentSelection.driver = driver;
-                showNotification(`🏎️ Driver ${driver} selected. Ready for telemetry analysis!`, 'success');
+            if (driver1) {
+                currentSelection.driver1 = driver1;
+                showNotification(`🏎️ Driver 1: ${driver1} selected!`, 'success');
             } else {
-                currentSelection.driver = null;
+                currentSelection.driver1 = null;
+            }
+            
+            updateProgress();
+        }
+
+        function onDriver2Change() {
+            const driver2 = document.getElementById('driver2Select').value;
+            
+            if (driver2) {
+                currentSelection.driver2 = driver2;
+                showNotification(`🏎️ Driver 2: ${driver2} selected!`, 'success');
+            } else {
+                currentSelection.driver2 = null;
             }
             
             updateProgress();
@@ -979,17 +1016,28 @@
 
         function resetSubsequentSelections(selections) {
             selections.forEach(selection => {
-                currentSelection[selection] = null;
-                const selectElement = document.getElementById(selection + 'Select');
-                selectElement.selectedIndex = 0;
-                selectElement.disabled = true;
-                
-                if (selection === 'grandPrix') {
-                    selectElement.innerHTML = '<option value="">First select a year...</option>';
-                } else if (selection === 'session') {
-                    selectElement.innerHTML = '<option value="">First select Grand Prix...</option>';
-                } else if (selection === 'driver') {
-                    selectElement.innerHTML = '<option value="">First select session...</option>';
+                if (selection === 'driver') {
+                    currentSelection.driver1 = null;
+                    currentSelection.driver2 = null;
+                    const driver1Select = document.getElementById('driver1Select');
+                    const driver2Select = document.getElementById('driver2Select');
+                    driver1Select.selectedIndex = 0;
+                    driver2Select.selectedIndex = 0;
+                    driver1Select.disabled = true;
+                    driver2Select.disabled = true;
+                    driver1Select.innerHTML = '<option value="">First select session...</option>';
+                    driver2Select.innerHTML = '<option value="">First select session...</option>';
+                } else {
+                    currentSelection[selection] = null;
+                    const selectElement = document.getElementById(selection + 'Select');
+                    selectElement.selectedIndex = 0;
+                    selectElement.disabled = true;
+                    
+                    if (selection === 'grandPrix') {
+                        selectElement.innerHTML = '<option value="">First select a year...</option>';
+                    } else if (selection === 'session') {
+                        selectElement.innerHTML = '<option value="">First select Grand Prix...</option>';
+                    }
                 }
             });
             
@@ -1001,10 +1049,10 @@
         }
 
         async function loadTelemetryData() {
-            const { year, grandPrix, session, driver } = currentSelection;
+            const { year, grandPrix, session, driver1, driver2 } = currentSelection;
             
-            if (!year || !grandPrix || !session || !driver) {
-                showNotification('❌ Please complete all selection steps first', 'error');
+            if (!year || !grandPrix || !session || (!driver1 && !driver2)) {
+                showNotification('❌ Please complete session selection and choose at least one driver', 'error');
                 return;
             }
             
@@ -1012,7 +1060,9 @@
             output.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading detailed telemetry data...</div>';
             
             try {
-                const response = await fetch(`/api/telemetry?year=${year}&grand_prix=${encodeURIComponent(grandPrix)}&session=${encodeURIComponent(session)}&drivers=${driver}`);
+                const drivers = [driver1, driver2].filter(d => d);
+                const driverParams = drivers.map(d => `drivers=${d}`).join('&');
+                const response = await fetch(`/api/telemetry?year=${year}&grand_prix=${encodeURIComponent(grandPrix)}&session=${encodeURIComponent(session)}&${driverParams}`);
                 const data = await response.json();
                 
                 if (data.error) {
@@ -1072,8 +1122,8 @@
                     </div>
                     
                     <div class="data-summary">
-                        <h4>📊 Telemetry Overview</h4>
-                        <div class="stats-grid">
+                        <h4>📊 Enhanced Telemetry Overview</h4>
+                        <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));">
                             <div class="stat-item">
                                 <div class="stat-value">${driverData.speed ? driverData.speed.length : 0}</div>
                                 <div class="stat-label">Data Points</div>
@@ -1083,12 +1133,47 @@
                                 <div class="stat-label">Max Speed (km/h)</div>
                             </div>
                             <div class="stat-item">
+                                <div class="stat-value">${driverData.speed ? Math.round(driverData.speed.reduce((a,b) => a+b, 0) / driverData.speed.length) : 0}</div>
+                                <div class="stat-label">Avg Speed (km/h)</div>
+                            </div>
+                            <div class="stat-item">
                                 <div class="stat-value">${driverData.rpm ? Math.max(...driverData.rpm) : 0}</div>
                                 <div class="stat-label">Max RPM</div>
                             </div>
                             <div class="stat-item">
                                 <div class="stat-value">${driverData.gear ? Math.max(...driverData.gear) : 0}</div>
                                 <div class="stat-label">Max Gear</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">${driverData.throttle ? Math.round(driverData.throttle.reduce((a,b) => a+b, 0) / driverData.throttle.length) : 0}%</div>
+                                <div class="stat-label">Avg Throttle</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">${driverData.brake ? Math.max(...driverData.brake) : 0}%</div>
+                                <div class="stat-label">Max Brake</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">${driverData.distance ? Math.round(driverData.distance[driverData.distance.length-1] / 1000 * 100) / 100 : 0}</div>
+                                <div class="stat-label">Lap Distance (km)</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 1rem; padding: 1rem; background: var(--background); border-radius: 8px;">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                                <div>
+                                    <h5 style="margin: 0 0 0.5rem 0; color: var(--primary-red);">🏎️ Performance Metrics</h5>
+                                    <p><strong>Top Speed Zone:</strong> ${driverData.speed ? (driverData.distance[driverData.speed.indexOf(Math.max(...driverData.speed))] / 1000).toFixed(2) + 'km' : 'N/A'}</p>
+                                    <p><strong>Gear Changes:</strong> ${driverData.gear ? driverData.gear.filter((g, i) => i > 0 && g !== driverData.gear[i-1]).length : 0}</p>
+                                </div>
+                                <div>
+                                    <h5 style="margin: 0 0 0.5rem 0; color: var(--primary-red);">⚡ Power Unit Data</h5>
+                                    <p><strong>RPM Range:</strong> ${driverData.rpm ? Math.min(...driverData.rpm) + ' - ' + Math.max(...driverData.rpm) : 'N/A'}</p>
+                                    <p><strong>Throttle Usage:</strong> ${driverData.throttle ? Math.round(driverData.throttle.filter(t => t > 90).length / driverData.throttle.length * 100) : 0}% full throttle</p>
+                                </div>
+                                <div>
+                                    <h5 style="margin: 0 0 0.5rem 0; color: var(--primary-red);">🛑 Braking Analysis</h5>
+                                    <p><strong>Braking Zones:</strong> ${driverData.brake ? driverData.brake.filter(b => b > 50).length : 0} heavy braking points</p>
+                                    <p><strong>Brake Efficiency:</strong> ${driverData.brake ? Math.round(driverData.brake.filter(b => b > 0).length / driverData.brake.length * 100) : 0}% brake usage</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1608,27 +1693,144 @@
                 'cornering': '🏁 Cornering Performance Analysis'
             };
             
-            output.innerHTML = `
-                <div class="response-content">
-                    <div class="success">
-                        <h3>✅ ${analysisTypes[analysisType]} Complete</h3>
-                        <p>Analysis for: <strong>${currentSelection.driver}</strong> | Session: <strong>${currentSelection.session}</strong></p>
+            const driver = currentSelection.driver1 || currentSelection.driver2 || 'N/A';
+            
+            if (analysisType === 'comprehensive' && data.driver_signature) {
+                output.innerHTML = `
+                    <div class="response-content">
+                        <div class="success">
+                            <h3>✅ ${analysisTypes[analysisType]} Complete</h3>
+                            <p>Analysis for: <strong>${driver}</strong> | Session: <strong>${currentSelection.session}</strong></p>
+                        </div>
+                        
+                        <div class="analysis-cards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+                            <!-- Driver Signature Card -->
+                            <div class="analysis-card" style="background: var(--surface); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border);">
+                                <h4 style="margin: 0 0 1rem 0; color: var(--primary-red); display: flex; align-items: center; gap: 0.5rem;">
+                                    <i class="fas fa-fingerprint"></i> Driver Signature
+                                </h4>
+                                <div class="signature-grid" style="display: grid; gap: 0.75rem;">
+                                    <div class="signature-item" style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: var(--background); border-radius: 6px;">
+                                        <span>🛑 Braking Style:</span>
+                                        <span class="signature-value" style="font-weight: 600; color: var(--primary-red);">${data.driver_signature.braking_style.replace('_', ' ')}</span>
+                                    </div>
+                                    <div class="signature-item" style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: var(--background); border-radius: 6px;">
+                                        <span>🏎️ Cornering:</span>
+                                        <span class="signature-value" style="font-weight: 600; color: var(--primary-red);">${data.driver_signature.cornering_preference.replace('_', ' ')}</span>
+                                    </div>
+                                    <div class="signature-item" style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: var(--background); border-radius: 6px;">
+                                        <span>⚡ Acceleration:</span>
+                                        <span class="signature-value" style="font-weight: 600; color: var(--primary-red);">${data.driver_signature.acceleration_pattern}</span>
+                                    </div>
+                                    <div class="signature-item" style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: var(--background); border-radius: 6px;">
+                                        <span>⚙️ Gear Timing:</span>
+                                        <span class="signature-value" style="font-weight: 600; color: var(--primary-red);">${data.driver_signature.gear_change_timing}s</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Performance Consistency Card -->
+                            <div class="analysis-card" style="background: var(--surface); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border);">
+                                <h4 style="margin: 0 0 1rem 0; color: var(--primary-red); display: flex; align-items: center; gap: 0.5rem;">
+                                    <i class="fas fa-heartbeat"></i> Performance Consistency
+                                </h4>
+                                <div class="consistency-metrics">
+                                    <div class="metric-circle" style="text-align: center; margin-bottom: 1rem;">
+                                        <div style="width: 80px; height: 80px; border-radius: 50%; background: conic-gradient(var(--primary-red) ${data.performance_consistency.sector_consistency_score * 3.6}deg, var(--border) 0deg); display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                                            <div style="width: 60px; height: 60px; border-radius: 50%; background: var(--surface); display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--primary-red);">
+                                                ${data.performance_consistency.sector_consistency_score}
+                                            </div>
+                                        </div>
+                                        <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; color: var(--text-secondary);">Consistency Score</p>
+                                    </div>
+                                    <div style="display: grid; gap: 0.5rem;">
+                                        <div style="display: flex; justify-content: space-between;">
+                                            <span>Lap Variation:</span>
+                                            <span style="font-weight: 600;">${data.performance_consistency.lap_to_lap_variation}s</span>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between;">
+                                            <span>Tire Management:</span>
+                                            <span style="font-weight: 600; color: #28a745;">${data.performance_consistency.tire_management_rating}/10</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Sector Breakdown Card -->
+                            <div class="analysis-card" style="background: var(--surface); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border); grid-column: span 2;">
+                                <h4 style="margin: 0 0 1rem 0; color: var(--primary-red); display: flex; align-items: center; gap: 0.5rem;">
+                                    <i class="fas fa-chart-line"></i> Sector Performance Breakdown
+                                </h4>
+                                <div class="sector-analysis" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                                    ${Object.entries(data.sector_breakdown).map((sector, index) => `
+                                        <div class="sector-card" style="background: var(--background); padding: 1rem; border-radius: 8px; text-align: center;">
+                                            <h5 style="margin: 0 0 0.5rem 0; color: var(--primary-red);">Sector ${index + 1}</h5>
+                                            <div class="sector-performance" style="margin-bottom: 0.75rem;">
+                                                <div style="font-size: 1.5rem; font-weight: bold; color: ${sector[1].relative_performance > 100 ? '#dc3545' : '#28a745'};">
+                                                    ${sector[1].relative_performance}%
+                                                </div>
+                                                <div style="font-size: 0.8rem; color: var(--text-secondary);">Relative Performance</div>
+                                            </div>
+                                            <div class="improvement-potential" style="margin-bottom: 0.75rem;">
+                                                <div style="font-weight: 600; color: var(--primary-red);">-${sector[1].improvement_potential}s</div>
+                                                <div style="font-size: 0.8rem; color: var(--text-secondary);">Improvement Potential</div>
+                                            </div>
+                                            <div class="time-loss-factors" style="font-size: 0.8rem;">
+                                                <div style="font-weight: 600; margin-bottom: 0.25rem;">Issues:</div>
+                                                ${sector[1].time_loss_factors.map(factor => `
+                                                    <div style="color: var(--text-secondary); margin-bottom: 0.25rem;">• ${factor.replace('_', ' ')}</div>
+                                                `).join('')}
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+
+                            <!-- AI Coaching Insights Card -->
+                            <div class="analysis-card" style="background: var(--surface); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border); grid-column: span 2;">
+                                <h4 style="margin: 0 0 1rem 0; color: var(--primary-red); display: flex; align-items: center; gap: 0.5rem;">
+                                    <i class="fas fa-robot"></i> AI Coaching Insights
+                                </h4>
+                                <div class="coaching-insights" style="display: grid; gap: 0.75rem;">
+                                    ${data.ai_coaching_insights.map((insight, index) => `
+                                        <div class="insight-item" style="display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.75rem; background: var(--background); border-radius: 8px; border-left: 4px solid var(--primary-red);">
+                                            <div style="background: var(--primary-red); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; flex-shrink: 0;">
+                                                ${index + 1}
+                                            </div>
+                                            <div style="flex: 1;">
+                                                <p style="margin: 0; color: var(--text-primary);">${insight}</p>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    
-                    <div style="margin-top: 2rem; padding: 1.5rem; background: var(--surface); border-radius: 12px; border: 1px solid var(--border);">
-                        <h4 style="margin: 0 0 1rem 0; color: var(--primary-red);">📊 Analysis Results</h4>
-                        <pre style="background: var(--background); padding: 1rem; border-radius: 8px; overflow-x: auto; color: var(--text-primary);"><code>${JSON.stringify(data, null, 2)}</code></pre>
+                `;
+            } else {
+                // Fallback for other analysis types or incomplete data
+                output.innerHTML = `
+                    <div class="response-content">
+                        <div class="success">
+                            <h3>✅ ${analysisTypes[analysisType]} Complete</h3>
+                            <p>Analysis for: <strong>${driver}</strong> | Session: <strong>${currentSelection.session}</strong></p>
+                        </div>
+                        
+                        <div style="margin-top: 2rem; padding: 1.5rem; background: var(--surface); border-radius: 12px; border: 1px solid var(--border);">
+                            <h4 style="margin: 0 0 1rem 0; color: var(--primary-red);">📊 Analysis Results</h4>
+                            <pre style="background: var(--background); padding: 1rem; border-radius: 8px; overflow-x: auto; color: var(--text-primary); font-size: 0.9rem;"><code>${JSON.stringify(data, null, 2)}</code></pre>
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
+            }
         }
 
         // Update progress function to populate comparison drivers
         function updateProgress() {
-            const steps = ['year', 'grandPrix', 'session', 'driver'];
+            const coreSteps = ['year', 'grandPrix', 'session'];
             let completedSteps = 0;
             
-            steps.forEach((step, index) => {
+            coreSteps.forEach((step, index) => {
                 const stepElement = document.getElementById(step + 'Step');
                 if (currentSelection[step]) {
                     stepElement.classList.add('completed');
@@ -1644,28 +1846,47 @@
                 }
             });
 
-            const progressPercent = (completedSteps / steps.length) * 100;
+            // Handle driver step separately
+            const driverStep = document.getElementById('driverStep');
+            const hasDriver1 = currentSelection.driver1;
+            const hasDriver2 = currentSelection.driver2;
+            
+            if (hasDriver1 || hasDriver2) {
+                driverStep.classList.add('completed');
+                driverStep.classList.remove('active');
+                completedSteps++;
+            } else {
+                driverStep.classList.remove('completed');
+                if (completedSteps === 3) {
+                    driverStep.classList.add('active');
+                } else {
+                    driverStep.classList.remove('active');
+                }
+            }
+
+            const progressPercent = (completedSteps / 4) * 100;
             document.getElementById('progressFill').style.width = progressPercent + '%';
             
             const progressMessages = [
                 'Step 1: Select a year to begin telemetry analysis',
                 'Step 2: Choose a Grand Prix from the selected season',
                 'Step 3: Select a session type for detailed analysis',
-                'Step 4: Choose a driver to view their telemetry data',
+                'Step 4: Choose one or two drivers for comparison',
                 '✅ All steps completed! Ready for telemetry analysis'
             ];
             
             document.getElementById('progressText').textContent = progressMessages[completedSteps];
             
             // Enable/disable action buttons
-            const allStepsComplete = completedSteps === steps.length;
-            document.getElementById('loadTelemetryBtn').disabled = !allStepsComplete;
+            const allStepsComplete = completedSteps === 4;
+            const hasAnyDriver = hasDriver1 || hasDriver2;
+            document.getElementById('loadTelemetryBtn').disabled = !hasAnyDriver || completedSteps < 3;
             document.getElementById('compareDriversBtn').disabled = completedSteps < 3;
-            document.getElementById('loadAnalysisBtn').disabled = !allStepsComplete;
+            document.getElementById('loadAnalysisBtn').disabled = !hasAnyDriver || completedSteps < 3;
             
             // Enable/disable tabs
             ['chartsTabBtn', 'comparisonTabBtn', 'analysisTabBtn'].forEach(btnId => {
-                document.getElementById(btnId).disabled = !allStepsComplete;
+                document.getElementById(btnId).disabled = !hasAnyDriver || completedSteps < 3;
             });
             
             // Populate comparison drivers if session is selected
