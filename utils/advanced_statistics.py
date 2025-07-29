@@ -116,7 +116,7 @@ class StatisticalAnalyzer:
                 'r_squared': float(r2),
                 'base_lap_time': float(model.intercept_),
                 'correlation_strength': 'strong' if r2 > 0.7 else 'moderate' if r2 > 0.4 else 'weak',
-                'sample_size': len(filtered_df)
+                'sample_size': int(len(filtered_df))
             }
             
         except Exception as e:

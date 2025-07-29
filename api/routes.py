@@ -1168,8 +1168,10 @@ def get_regression_analysis():
 
         analyzer = StatisticalAnalyzer()
         regression_data = analyzer.perform_regression_analysis(year, grand_prix, session)
-
-        return make_json_serializable(jsonify(regression_data))
+        
+        # Make the data JSON serializable before returning
+        serializable_data = make_json_serializable(regression_data)
+        return jsonify(serializable_data)
 
     except Exception as e:
         logging.error(f"Error in regression analysis: {str(e)}")
@@ -1188,8 +1190,10 @@ def get_predictive_modeling():
 
         modeler = PredictiveModeling()
         prediction_data = modeler.predict_lap_times(year, grand_prix, session, driver, tire_age, track_temp)
-
-        return make_json_serializable(jsonify(prediction_data))
+        
+        # Make the data JSON serializable before returning
+        serializable_data = make_json_serializable(prediction_data)
+        return jsonify(serializable_data)
 
     except Exception as e:
         logging.error(f"Error in predictive modeling: {str(e)}")
@@ -1208,8 +1212,10 @@ def get_driver_clustering():
 
         modeler = PredictiveModeling()
         clustering_data = modeler.cluster_driver_performance(year, grand_prix, session)
-
-        return make_json_serializable(jsonify(clustering_data))
+        
+        # Make the data JSON serializable before returning  
+        serializable_data = make_json_serializable(clustering_data)
+        return jsonify(serializable_data)
 
     except Exception as e:
         logging.error(f"Error in driver clustering: {str(e)}")
