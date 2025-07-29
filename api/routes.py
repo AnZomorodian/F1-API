@@ -25,6 +25,7 @@ from utils.advanced_statistics import StatisticalAnalyzer, PredictiveModeling
 from utils.constants import GRANDS_PRIX, SESSIONS, TEAM_COLORS, DRIVER_TEAMS, TIRE_COLORS
 import traceback
 import pandas as pd
+from utils.json_utils import make_json_serializable
 
 api_bp = Blueprint('api', __name__)
 
@@ -402,14 +403,14 @@ def get_advanced_analytics():
         analyzer = AdvancedF1Analytics()
         analytics_data = analyzer.comprehensive_session_analysis(year, grand_prix, session)
 
-        return jsonify({
+        return make_json_serializable(jsonify({
             'advanced_analytics': analytics_data,
             'session_info': {
                 'year': year,
                 'grand_prix': grand_prix,
                 'session': session
             }
-        })
+        }))
 
     except Exception as e:
         logging.error(f"Error getting advanced analytics: {str(e)}")
@@ -429,14 +430,14 @@ def get_enhanced_analytics():
         analyzer = EnhancedF1Analytics()
         enhanced_data = analyzer.enhanced_session_analysis(year, grand_prix, session)
 
-        return jsonify({
+        return make_json_serializable(jsonify({
             'enhanced_analytics': enhanced_data,
             'session_info': {
                 'year': year,
                 'grand_prix': grand_prix,
                 'session': session
             }
-        })
+        }))
 
     except Exception as e:
         logging.error(f"Error getting enhanced analytics: {str(e)}")
@@ -458,7 +459,7 @@ def get_live_timing():
         analyzer = LiveTimingAnalyzer()
         live_data = analyzer.get_live_session_status(year, grand_prix, session)
 
-        return jsonify(live_data)
+        return make_json_serializable(jsonify(live_data))
 
     except Exception as e:
         logging.error(f"Error getting live timing: {str(e)}")
@@ -478,7 +479,7 @@ def get_sector_analysis():
         analyzer = LiveTimingAnalyzer()
         sector_data = analyzer.get_sector_analysis(year, grand_prix, session)
 
-        return jsonify(sector_data)
+        return make_json_serializable(jsonify(sector_data))
 
     except Exception as e:
         logging.error(f"Error getting sector analysis: {str(e)}")
@@ -497,7 +498,7 @@ def get_pit_stop_analysis():
         analyzer = LiveTimingAnalyzer()
         pit_data = analyzer.get_pit_stop_analysis(year, grand_prix)
 
-        return jsonify(pit_data)
+        return make_json_serializable(jsonify(pit_data))
 
     except Exception as e:
         logging.error(f"Error getting pit stop analysis: {str(e)}")
@@ -517,7 +518,7 @@ def get_drs_analysis():
         analyzer = LiveTimingAnalyzer()
         drs_data = analyzer.get_drs_usage_analysis(year, grand_prix, session)
 
-        return jsonify(drs_data)
+        return make_json_serializable(jsonify(drs_data))
 
     except Exception as e:
         logging.error(f"Error getting DRS analysis: {str(e)}")
@@ -536,7 +537,7 @@ def get_championship_standings():
         tracker = ChampionshipTracker()
         standings = tracker.get_season_standings(year, up_to_race)
 
-        return jsonify(standings)
+        return make_json_serializable(jsonify(standings))
 
     except Exception as e:
         logging.error(f"Error getting championship standings: {str(e)}")
@@ -555,7 +556,7 @@ def get_championship_predictions():
         standings = tracker.get_season_standings(year)
         predictions = tracker.predict_championship_outcome(year, standings)
 
-        return jsonify(predictions)
+        return make_json_serializable(jsonify(predictions))
 
     except Exception as e:
         logging.error(f"Error getting championship predictions: {str(e)}")
@@ -575,7 +576,7 @@ def get_championship_head_to_head():
         tracker = ChampionshipTracker()
         comparison = tracker.get_head_to_head_comparison(year, driver1, driver2)
 
-        return jsonify(comparison)
+        return make_json_serializable(jsonify(comparison))
 
     except Exception as e:
         logging.error(f"Error getting championship head-to-head comparison: {str(e)}")
@@ -594,7 +595,7 @@ def get_team_performance():
         tracker = ChampionshipTracker()
         team_data = tracker.get_team_performance_analysis(year, team)
 
-        return jsonify(team_data)
+        return make_json_serializable(jsonify(team_data))
 
     except Exception as e:
         logging.error(f"Error getting team performance: {str(e)}")
@@ -613,7 +614,7 @@ def get_current_standings():
         analyzer = LiveTimingAnalyzer()
         standings = analyzer.get_current_standings(year, grand_prix)
 
-        return jsonify(standings)
+        return make_json_serializable(jsonify(standings))
 
     except Exception as e:
         logging.error(f"Error getting current standings: {str(e)}")
@@ -637,7 +638,7 @@ def get_telemetry_charts():
         visualizer = TelemetryVisualizer()
         charts = visualizer.create_telemetry_comparison_chart(year, grand_prix, session, drivers, lap_type)
 
-        return jsonify(charts)
+        return make_json_serializable(jsonify(charts))
 
     except Exception as e:
         logging.error(f"Error getting telemetry charts: {str(e)}")
@@ -657,7 +658,7 @@ def get_sector_charts():
         visualizer = TelemetryVisualizer()
         sector_data = visualizer.create_sector_time_analysis(year, grand_prix, session)
 
-        return jsonify(sector_data)
+        return make_json_serializable(jsonify(sector_data))
 
     except Exception as e:
         logging.error(f"Error getting sector charts: {str(e)}")
@@ -678,7 +679,7 @@ def get_lap_evolution():
         visualizer = TelemetryVisualizer()
         evolution_data = visualizer.create_lap_time_evolution(year, grand_prix, session, drivers)
 
-        return jsonify(evolution_data)
+        return make_json_serializable(jsonify(evolution_data))
 
     except Exception as e:
         logging.error(f"Error getting lap evolution: {str(e)}")
@@ -699,7 +700,7 @@ def get_overtaking_analysis():
         analyzer = AdvancedPerformanceAnalyzer()
         overtaking_data = analyzer.analyze_overtaking_opportunities(year, grand_prix)
 
-        return jsonify(overtaking_data)
+        return make_json_serializable(jsonify(overtaking_data))
 
     except Exception as e:
         logging.error(f"Error getting overtaking analysis: {str(e)}")
@@ -720,7 +721,7 @@ def get_cornering_analysis():
         analyzer = AdvancedPerformanceAnalyzer()
         cornering_data = analyzer.analyze_cornering_performance(year, grand_prix, session, driver)
 
-        return jsonify(cornering_data)
+        return make_json_serializable(jsonify(cornering_data))
 
     except Exception as e:
         logging.error(f"Error getting cornering analysis: {str(e)}")
@@ -739,7 +740,7 @@ def get_fuel_effect_analysis():
         analyzer = AdvancedPerformanceAnalyzer()
         fuel_data = analyzer.analyze_fuel_effect(year, grand_prix)
 
-        return jsonify(fuel_data)
+        return make_json_serializable(jsonify(fuel_data))
 
     except Exception as e:
         logging.error(f"Error getting fuel effect analysis: {str(e)}")
@@ -759,7 +760,7 @@ def get_consistency_analysis():
         analyzer = AdvancedPerformanceAnalyzer()
         consistency_data = analyzer.analyze_consistency_metrics(year, grand_prix, session)
 
-        return jsonify(consistency_data)
+        return make_json_serializable(jsonify(consistency_data))
 
     except Exception as e:
         logging.error(f"Error getting consistency analysis: {str(e)}")
@@ -778,7 +779,7 @@ def get_racecraft_analysis():
         analyzer = AdvancedPerformanceAnalyzer()
         racecraft_data = analyzer.analyze_racecraft_metrics(year, grand_prix)
 
-        return jsonify(racecraft_data)
+        return make_json_serializable(jsonify(racecraft_data))
 
     except Exception as e:
         logging.error(f"Error getting racecraft analysis: {str(e)}")
@@ -800,7 +801,7 @@ def get_tyre_analysis():
         analyzer = EnhancedF1Analytics()
         tyre_data = analyzer.get_tyre_performance_degradation(year, grand_prix, session)
 
-        return jsonify(tyre_data)
+        return make_json_serializable(jsonify(tyre_data))
 
     except Exception as e:
         logging.error(f"Error getting tyre analysis: {str(e)}")
@@ -815,12 +816,13 @@ def get_weather_analysis():
         session = request.args.get('session')
 
         if not all([year, grand_prix, session]):
-            return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
+            ```python
+return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
 
         analyzer = EnhancedF1Analytics()
         weather_data = analyzer.get_weather_impact_analysis(year, grand_prix, session)
 
-        return jsonify(weather_data)
+        return make_json_serializable(jsonify(weather_data))
 
     except Exception as e:
         logging.error(f"Error getting weather analysis: {str(e)}")
@@ -840,7 +842,7 @@ def get_session_progression():
         analyzer = EnhancedF1Analytics()
         progression_data = analyzer.get_session_progression_analysis(year, grand_prix, session)
 
-        return jsonify(progression_data)
+        return make_json_serializable(jsonify(progression_data))
 
     except Exception as e:
         logging.error(f"Error getting session progression: {str(e)}")
@@ -860,7 +862,7 @@ def get_track_characteristics():
         analyzer = TrackAnalyzer()
         track_data = analyzer.get_track_characteristics(year, grand_prix, session)
 
-        return jsonify(track_data)
+        return make_json_serializable(jsonify(track_data))
 
     except Exception as e:
         logging.error(f"Error getting track characteristics: {str(e)}")
@@ -880,7 +882,7 @@ def get_driver_mastery():
         analyzer = TrackAnalyzer()
         mastery_data = analyzer.get_driver_track_mastery(year, grand_prix, session)
 
-        return jsonify(mastery_data)
+        return make_json_serializable(jsonify(mastery_data))
 
     except Exception as e:
         logging.error(f"Error getting driver mastery: {str(e)}")
@@ -901,7 +903,7 @@ def get_racing_line_analysis():
         analyzer = TrackAnalyzer()
         racing_line_data = analyzer.get_optimal_racing_line_analysis(year, grand_prix, session, driver)
 
-        return jsonify(racing_line_data)
+        return make_json_serializable(jsonify(racing_line_data))
 
     except Exception as e:
         logging.error(f"Error getting racing line analysis: {str(e)}")
@@ -925,7 +927,7 @@ def get_driver_comparison():
         analyzer = DriverComparisonAnalyzer()
         comparison_data = analyzer.create_comprehensive_comparison(year, grand_prix, session, drivers)
 
-        return jsonify(comparison_data)
+        return make_json_serializable(jsonify(comparison_data))
 
     except Exception as e:
         logging.error(f"Error in driver comparison: {str(e)}")
@@ -977,7 +979,7 @@ def get_performance_intelligence():
             "Weather conditions favor aggressive cornering styles, benefiting late-brakers by 0.3s per lap"
         ]
 
-        return jsonify(intelligence_data)
+        return make_json_serializable(jsonify(intelligence_data))
 
     except Exception as e:
         logging.error(f"Error in performance intelligence: {str(e)}")
@@ -1002,7 +1004,7 @@ def get_enhanced_metrics():
             'track_evolution': round(2 + (hash(f"{session}{year}") % 8), 1)
         }
 
-        return jsonify(enhanced_metrics)
+        return make_json_serializable(jsonify(enhanced_metrics))
 
     except Exception as e:
         logging.error(f"Error in enhanced metrics: {str(e)}")
@@ -1023,7 +1025,7 @@ def get_real_time_session_status():
         analyzer = RealTimeAnalyzer()
         live_status = analyzer.get_live_session_status(year, grand_prix)
 
-        return jsonify(live_status)
+        return make_json_serializable(jsonify(live_status))
 
     except Exception as e:
         logging.error(f"Error in real-time session status: {str(e)}")
@@ -1043,7 +1045,7 @@ def get_real_time_performance_trends():
         analyzer = RealTimeAnalyzer()
         trends = analyzer.get_performance_trends(year, grand_prix, session)
 
-        return jsonify(trends)
+        return make_json_serializable(jsonify(trends))
 
     except Exception as e:
         logging.error(f"Error in performance trends: {str(e)}")
@@ -1062,7 +1064,7 @@ def get_streaming_data():
         streamer = LiveDataStreamer()
         streaming_data = streamer.get_streaming_data(year, grand_prix)
 
-        return jsonify(streaming_data)
+        return make_json_serializable(jsonify(streaming_data))
 
     except Exception as e:
         logging.error(f"Error in streaming data: {str(e)}")
@@ -1084,7 +1086,7 @@ def get_regression_analysis():
         analyzer = StatisticalAnalyzer()
         regression_data = analyzer.perform_regression_analysis(year, grand_prix, session)
 
-        return jsonify(regression_data)
+        return make_json_serializable(jsonify(regression_data))
 
     except Exception as e:
         logging.error(f"Error in regression analysis: {str(e)}")
@@ -1107,7 +1109,7 @@ def get_predictive_modeling():
         modeler = PredictiveModeling()
         prediction_data = modeler.predict_lap_times(year, grand_prix, session, driver, tire_age, track_temp)
 
-        return jsonify(prediction_data)
+        return make_json_serializable(jsonify(prediction_data))
 
     except Exception as e:
         logging.error(f"Error in predictive modeling: {str(e)}")
@@ -1127,7 +1129,7 @@ def get_driver_clustering():
         modeler = PredictiveModeling()
         clustering_data = modeler.cluster_driver_performance(year, grand_prix, session)
 
-        return jsonify(clustering_data)
+        return make_json_serializable(jsonify(clustering_data))
 
     except Exception as e:
         logging.error(f"Error in driver clustering: {str(e)}")
@@ -1153,11 +1155,11 @@ def get_multi_session_comparison():
                 session_data = data_loader.load_session_data(year, grand_prix, session)
                 if session_data and not session_data.laps.empty:
                     driver_laps = session_data.laps[session_data.laps['Driver'] == driver]
-                    
+
                     if not driver_laps.empty:
                         driver_laps_copy = driver_laps.copy()
                         driver_laps_copy['LapTime_seconds'] = pd.to_timedelta(driver_laps_copy['LapTime']).dt.total_seconds()
-                        
+
                         comparison_data[session] = {
                             'fastest_lap': float(driver_laps_copy['LapTime_seconds'].min()),
                             'average_lap': float(driver_laps_copy['LapTime_seconds'].mean()),
@@ -1169,7 +1171,7 @@ def get_multi_session_comparison():
                 logging.warning(f"Error processing session {session}: {str(session_error)}")
                 continue
 
-        return jsonify({
+        return make_json_serializable(jsonify({
             'multi_session_comparison': comparison_data,
             'driver': driver,
             'session_info': {
@@ -1177,7 +1179,7 @@ def get_multi_session_comparison():
                 'grand_prix': grand_prix,
                 'sessions_analyzed': len(comparison_data)
             }
-        })
+        }))
 
     except Exception as e:
         logging.error(f"Error in multi-session comparison: {str(e)}")
@@ -1213,7 +1215,7 @@ def get_championship_impact():
             }
         }
 
-        return jsonify(impact_data)
+        return make_json_serializable(jsonify(impact_data))
 
     except Exception as e:
         logging.error(f"Error in championship impact analysis: {str(e)}")
@@ -1234,7 +1236,7 @@ def get_strategy_optimizer():
 
         # Generate strategic recommendations
         strategy_options = []
-        
+
         # Option 1: Conservative strategy
         strategy_options.append({
             'strategy_name': 'Conservative',
@@ -1245,7 +1247,7 @@ def get_strategy_optimizer():
             'probability_success': 75 + (hash(driver) % 20),
             'points_potential': 8 + (hash(f"{driver}conservative") % 10)
         })
-        
+
         # Option 2: Aggressive strategy
         strategy_options.append({
             'strategy_name': 'Aggressive',
@@ -1256,7 +1258,7 @@ def get_strategy_optimizer():
             'probability_success': 45 + (hash(driver) % 30),
             'points_potential': 15 + (hash(f"{driver}aggressive") % 15)
         })
-        
+
         # Option 3: Adaptive strategy
         strategy_options.append({
             'strategy_name': 'Adaptive',
@@ -1280,7 +1282,7 @@ def get_strategy_optimizer():
             'confidence_level': 82
         }
 
-        return jsonify(optimizer_data)
+        return make_json_serializable(jsonify(optimizer_data))
 
     except Exception as e:
         logging.error(f"Error in strategy optimizer: {str(e)}")
@@ -1337,7 +1339,7 @@ def get_comprehensive_telemetry_analysis():
             }
         }
 
-        return jsonify(telemetry_analysis)
+        return make_json_serializable(jsonify(telemetry_analysis))
 
     except Exception as e:
         logging.error(f"Error in comprehensive telemetry analysis: {str(e)}")
@@ -1378,7 +1380,7 @@ def get_telemetry_heat_map_data():
             }
         }
 
-        return jsonify(heat_map_data)
+        return make_json_serializable(jsonify(heat_map_data))
 
     except Exception as e:
         logging.error(f"Error in heat map data: {str(e)}")
@@ -1438,7 +1440,7 @@ def get_season_analytics():
             }
         }
 
-        return jsonify(season_data)
+        return make_json_serializable(jsonify(season_data))
 
     except Exception as e:
         logging.error(f"Error in season analytics: {str(e)}")
@@ -1489,7 +1491,7 @@ def get_meta_analytics():
             }
         }
 
-        return jsonify(meta_data)
+        return make_json_serializable(jsonify(meta_data))
 
     except Exception as e:
         logging.error(f"Error in meta analytics: {str(e)}")

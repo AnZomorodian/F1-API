@@ -40,11 +40,11 @@ class AdvancedF1Analytics:
                 
                 fastest_lap = driver_laps.pick_fastest()
                 
-                performance_data[driver] = {
+                performance_data[str(driver)] = {
                     'fastest_lap_time': str(fastest_lap['LapTime']),
                     'average_lap_time': str(driver_laps['LapTime'].mean()),
-                    'total_laps': len(driver_laps),
-                    'valid_laps': len(driver_laps[driver_laps['IsPersonalBest'] == True]),
+                    'total_laps': int(len(driver_laps)),
+                    'valid_laps': int(len(driver_laps[driver_laps['IsPersonalBest'] == True])),
                     'position': int(fastest_lap['Position']) if pd.notna(fastest_lap['Position']) else None
                 }
                 
@@ -83,11 +83,11 @@ class AdvancedF1Analytics:
                 # Convert to seconds for calculation
                 lap_times_seconds = [lt.total_seconds() for lt in lap_times]
                 
-                consistency_data[driver] = {
+                consistency_data[str(driver)] = {
                     'standard_deviation': float(np.std(lap_times_seconds)),
                     'coefficient_of_variation': float(np.std(lap_times_seconds) / np.mean(lap_times_seconds)),
-                    'consistency_score': self.calculate_consistency_score(lap_times_seconds),
-                    'outlier_laps': self.identify_outlier_laps(lap_times_seconds)
+                    'consistency_score': float(self.calculate_consistency_score(lap_times_seconds)),
+                    'outlier_laps': [int(x) for x in self.identify_outlier_laps(lap_times_seconds)]
                 }
             
             return consistency_data

@@ -49,7 +49,7 @@ class AdvancedPerformanceAnalyzer:
                                 curr_pos = driver_laps.iloc[i]['Position']
                                 
                                 if pd.notna(prev_pos) and pd.notna(curr_pos):
-                                    change = prev_pos - curr_pos  # Positive = gained positions
+                                    change = float(prev_pos - curr_pos)  # Convert to float
                                     if change > 0:
                                         overtakes_made += change
                                     elif change < 0:
@@ -57,11 +57,11 @@ class AdvancedPerformanceAnalyzer:
                                     
                                     position_changes.append(change)
                             
-                            overtaking_data['driver_overtakes'][driver] = {
-                                'overtakes_made': int(overtakes_made),
-                                'overtakes_lost': int(overtakes_lost),
-                                'net_overtakes': int(overtakes_made - overtakes_lost),
-                                'position_volatility': float(np.std(position_changes)) if position_changes else 0
+                            overtaking_data['driver_overtakes'][str(driver)] = {
+                                'overtakes_made': float(overtakes_made),
+                                'overtakes_lost': float(overtakes_lost),
+                                'net_overtakes': float(overtakes_made - overtakes_lost),
+                                'position_volatility': float(np.std(position_changes)) if position_changes else 0.0
                             }
                             
                             overtaking_data['total_overtakes'] += overtakes_made
@@ -70,11 +70,14 @@ class AdvancedPerformanceAnalyzer:
                         self.logger.warning(f"Error analyzing overtaking for {driver}: {str(driver_error)}")
                         continue
             
+            # Ensure all values are JSON serializable
+            overtaking_data['total_overtakes'] = float(overtaking_data['total_overtakes'])
+            
             return {
                 'overtaking_analysis': overtaking_data,
                 'session_info': {
-                    'year': year,
-                    'grand_prix': grand_prix
+                    'year': int(year),
+                    'grand_prix': str(grand_prix)
                 }
             }
             
@@ -272,13 +275,13 @@ class AdvancedPerformanceAnalyzer:
                             else:
                                 fuel_effect = 0
                             
-                            fuel_analysis[driver] = {
+                            fuel_analysis[str(driver)] = {
                                 'fuel_effect_per_lap': float(fuel_effect),
                                 'correlation_coefficient': float(correlation),
                                 'fastest_lap_time': float(min(lap_times)),
                                 'slowest_lap_time': float(max(lap_times)),
                                 'lap_time_variance': float(np.var(lap_times)),
-                                'total_laps': len(lap_times)
+                                'total_laps': int(len(lap_times))
                             }
                 
                 except Exception as driver_error:
@@ -328,15 +331,15 @@ class AdvancedPerformanceAnalyzer:
                                 sector_3_times.append(lap['Sector3Time'].total_seconds())
                         
                         if valid_lap_times:
-                            consistency_metrics[driver] = {
+                            consistency_metrics[str(driver)] = {
                                 'lap_time_std': float(np.std(valid_lap_times)),
-                                'lap_time_cv': float(np.std(valid_lap_times) / np.mean(valid_lap_times)) if np.mean(valid_lap_times) > 0 else 0,
-                                'sector_1_std': float(np.std(sector_1_times)) if sector_1_times else 0,
-                                'sector_2_std': float(np.std(sector_2_times)) if sector_2_times else 0,
-                                'sector_3_std': float(np.std(sector_3_times)) if sector_3_times else 0,
-                                'total_valid_laps': len(valid_lap_times),
+                                'lap_time_cv': float(np.std(valid_lap_times) / np.mean(valid_lap_times)) if np.mean(valid_lap_times) > 0 else 0.0,
+                                'sector_1_std': float(np.std(sector_1_times)) if sector_1_times else 0.0,
+                                'sector_2_std': float(np.std(sector_2_times)) if sector_2_times else 0.0,
+                                'sector_3_std': float(np.std(sector_3_times)) if sector_3_times else 0.0,
+                                'total_valid_laps': int(len(valid_lap_times)),
                                 'fastest_lap': float(min(valid_lap_times)),
-                                'consistency_score': self._calculate_consistency_score(valid_lap_times)
+                                'consistency_score': float(self._calculate_consistency_score(valid_lap_times))
                             }
                 
                 except Exception as driver_error:
@@ -407,14 +410,14 @@ class AdvancedPerformanceAnalyzer:
                                 end_pos = position_data.iloc[-1] if len(position_data) > 0 else None
                                 position_gain = float(start_pos - end_pos) if start_pos and end_pos else 0
                                 
-                                racecraft_metrics[driver] = {
-                                    'position_stability': position_stability,
-                                    'race_pace_consistency': race_pace_std,
-                                    'position_gain': position_gain,
+                                racecraft_metrics[str(driver)] = {
+                                    'position_stability': float(position_stability),
+                                    'race_pace_consistency': float(race_pace_std),
+                                    'position_gain': float(position_gain),
                                     'average_position': float(position_data.mean()),
                                     'best_position': float(position_data.min()),
                                     'worst_position': float(position_data.max()),
-                                    'total_laps_completed': len(driver_laps)
+                                    'total_laps_completed': int(len(driver_laps))
                                 }
                     
                     except Exception as driver_error:
