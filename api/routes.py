@@ -816,8 +816,7 @@ def get_weather_analysis():
         session = request.args.get('session')
 
         if not all([year, grand_prix, session]):
-            ```python
-return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
+            return jsonify({'error': 'Missing required parameters: year, grand_prix, session'}), 400
 
         analyzer = EnhancedF1Analytics()
         weather_data = analyzer.get_weather_impact_analysis(year, grand_prix, session)
