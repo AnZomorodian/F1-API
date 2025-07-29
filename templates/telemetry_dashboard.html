@@ -899,22 +899,88 @@
                 }
             };
 
+            // Render speed chart first (primary chart)
+            if (charts.speed_chart) {
+                const enhancedSpeedData = charts.speed_chart.data.map((trace, index) => ({
+                    ...trace,
+                    line: {
+                        ...trace.line,
+                        width: 3,
+                        shape: 'spline',
+                        smoothing: 1.3
+                    },
+                    marker: {
+                        size: 6,
+                        symbol: 'circle',
+                        line: { width: 2, color: 'rgba(255,255,255,0.8)' }
+                    },
+                    hovertemplate: '<b>%{fullData.name}</b><br>' +
+                                 'Distance: %{x:.0f}m<br>' +
+                                 'Speed: %{y:.1f} km/h<br>' +
+                                 '<extra></extra>',
+                    hoverlabel: {
+                        bgcolor: 'rgba(0,0,0,0.8)',
+                        bordercolor: trace.line.color,
+                        font: { size: 14, color: 'white' }
+                    }
+                }));
+
+                const speedLayout = {
+                    ...commonLayout,
+                    title: {
+                        text: '🏎️ Speed Analysis & Comparison - Premium View',
+                        font: { size: 20, color: 'white', weight: 700 },
+                        x: 0.5,
+                        xanchor: 'center'
+                    },
+                    xaxis: {
+                        ...commonLayout.xaxis,
+                        title: { text: 'Distance (m)', font: { size: 14, weight: 600 } }
+                    },
+                    yaxis: {
+                        ...commonLayout.yaxis,
+                        title: { text: 'Speed (km/h)', font: { size: 14, weight: 600 } },
+                        range: [0, 350]
+                    },
+                    annotations: [{
+                        x: 0.02,
+                        y: 0.98,
+                        xref: 'paper',
+                        yref: 'paper',
+                        text: '⚡ Enhanced Telemetry Data',
+                        showarrow: false,
+                        font: { size: 12, color: 'rgba(255,255,255,0.7)' }
+                    }]
+                };
+
+                await Plotly.newPlot('speedChart', enhancedSpeedData, speedLayout, config);
+                chartInstances['speedChart'] = true;
+            }
+
             if (charts.throttle_brake_chart) {
-                Plotly.newPlot('throttleBrakeChart', charts.throttle_brake_chart.data, {
+                await Plotly.newPlot('throttleBrakeChart', charts.throttle_brake_chart.data, {
                     ...charts.throttle_brake_chart.layout,
-                    plot_bgcolor: 'rgba(0,0,0,0)',
-                    paper_bgcolor: 'rgba(0,0,0,0)',
-                    font: { color: 'white', family: 'Inter, sans-serif' }
-                }, { responsive: true });
+                    ...commonLayout,
+                    title: {
+                        text: '🚗 Throttle & Brake Dynamics',
+                        font: { size: 16, color: 'white' },
+                        x: 0.5
+                    }
+                }, config);
+                chartInstances['throttleBrakeChart'] = true;
             }
 
             if (charts.rpm_gear_chart) {
-                Plotly.newPlot('rpmGearChart', charts.rpm_gear_chart.data, {
+                await Plotly.newPlot('rpmGearChart', charts.rpm_gear_chart.data, {
                     ...charts.rpm_gear_chart.layout,
-                    plot_bgcolor: 'rgba(0,0,0,0)',
-                    paper_bgcolor: 'rgba(0,0,0,0)',
-                    font: { color: 'white', family: 'Inter, sans-serif' }
-                }, { responsive: true });
+                    ...commonLayout,
+                    title: {
+                        text: '⚙️ Engine Performance & Gear Analysis',
+                        font: { size: 16, color: 'white' },
+                        x: 0.5
+                    }
+                }, config);
+                chartInstances['rpmGearChart'] = true;
             }
 
             // Generate additional charts
@@ -1266,10 +1332,63 @@
             }
         });
 
-        // Auto-load demo data
-        setTimeout(() => {
-            loadEnhancedTelemetry();
-        }, 3000);
+        // Auto-load demo data with improved error handling
+        setTimeout(async () => {
+            try {
+                console.log('Auto-loading telemetry data...');
+                await loadEnhancedTelemetry();
+            } catch (error) {
+                console.error('Auto-load failed:', error);
+                // Try with fallback data
+                generateFallbackCharts();
+            }
+        }, 2000);
+
+        // Fallback chart generation for when API fails
+        function generateFallbackCharts() {
+            console.log('Generating fallback charts...');
+            
+            // Show sections even with fallback data
+            showSections(['telemetrySection', 'performanceSection', 'metricsSection']);
+            
+            // Generate demo speed chart
+            const demoSpeedData = [];
+            const drivers = selectedDrivers.slice(0, 2);
+            const distance = Array.from({length: 100}, (_, i) => i * 50);
+            
+            drivers.forEach((driver, index) => {
+                const baseSpeed = 200 + index * 20;
+                const speeds = distance.map(d => baseSpeed + Math.sin(d/500) * 50 + Math.random() * 20);
+                
+                demoSpeedData.push({
+                    x: distance,
+                    y: speeds,
+                    type: 'scatter',
+                    mode: 'lines',
+                    name: `${driver} (Demo)`,
+                    line: { width: 3, color: ['#FF6B6B', '#4ECDC4'][index] }
+                });
+            });
+
+            const speedLayout = {
+                title: '🏎️ Speed Analysis (Demo Data)',
+                xaxis: { title: 'Distance (m)', gridcolor: 'rgba(255,255,255,0.1)' },
+                yaxis: { title: 'Speed (km/h)', gridcolor: 'rgba(255,255,255,0.1)' },
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                font: { color: 'white' }
+            };
+
+            Plotly.newPlot('speedChart', demoSpeedData, speedLayout, { responsive: true });
+            chartInstances['speedChart'] = true;
+            
+            // Update metrics
+            loadedCharts = 4;
+            dataPoints = 800;
+            updateMetrics();
+            
+            hideLoading();
+        }
     </script>
 </body>
 </html>
