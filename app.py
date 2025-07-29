@@ -30,10 +30,10 @@ def telemetry_dashboard():
     """Telemetry visualization dashboard"""
     return render_template('telemetry_dashboard.html')
 
-@app.route('/analytics')
-def analytics_dashboard():
-    """Advanced analytics dashboard"""
-    return render_template('analytics_dashboard.html')
+@app.route('/about')
+def about():
+    """About page"""
+    return render_template('about.html')
 
 @app.errorhandler(404)
 def not_found(error):
